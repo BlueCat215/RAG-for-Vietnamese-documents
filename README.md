@@ -6,14 +6,15 @@
 
 ---
 
-## 📌 Giới thiệu Tổng quan
+## Giới thiệu Tổng quan
 
 Hệ thống RAG tiếng Việt được xây dựng nhằm giải quyết bài toán tra cứu chính xác, tự động hóa giải đáp thắc mắc của sinh viên dựa trên hệ thống văn bản pháp quy, hạn chế tối đa hiện tượng "ảo giác" (hallucination) của các mô hình ngôn ngữ lớn (LLM).
 
 ### Các điểm nổi bật của hệ thống:
+
 1. **Phân đoạn có nhận thức cấu trúc (Structural S3 Chunking):** Tự động bóc tách và phân đoạn văn bản theo ranh giới pháp lý tự nhiên (Điều, Khoản, Mục, Chương) thay vì cắt đoạn theo số lượng từ cố định, giúp bảo toàn tính toàn vẹn ngữ nghĩa của từng quy định.
 2. **Truy hồi lai 2 tầng (Two-stage Hybrid Retrieval):**
-   - **Tầng 1 (Lọc thô - Candidate Generation):** Kết hợp tìm kiếm từ khóa chính xác BM25 (chế độ phân tích từ tố kép *Dual Tokenization*: âm tiết đơn + từ ghép) và tìm kiếm ngữ nghĩa Dense Vector (`AITeamVN/Vietnamese_Embedding` + FAISS IndexFlatIP) qua thuật toán **Weighted Reciprocal Rank Fusion (Weighted RRF)** với trọng số tối ưu ($w_{\text{dense}}=0.7, w_{\text{bm25}}=0.3, k=20$).
+   - **Tầng 1 (Lọc thô - Candidate Generation):** Kết hợp tìm kiếm từ khóa chính xác BM25 (chế độ phân tích từ tố kép _Dual Tokenization_: âm tiết đơn + từ ghép) và tìm kiếm ngữ nghĩa Dense Vector (`AITeamVN/Vietnamese_Embedding` + FAISS IndexFlatIP) qua thuật toán **Weighted Reciprocal Rank Fusion (Weighted RRF)** với trọng số tối ưu ($w_{\text{dense}}=0.7, w_{\text{bm25}}=0.3, k=20$).
    - **Tầng 2 (Xếp hạng lại - Re-ranking):** Mô hình Cross-Encoder chuyên sâu cho tiếng Việt (`thanhtantran/Vietnamese_Reranker`) kết hợp cơ chế Re-ranking mềm (Soft Re-ranking, $\alpha=0.75$) để đọc hiểu sâu mối tương quan ngữ nghĩa giữa câu hỏi khẩu ngữ tự nhiên và câu chữ văn bản hành chính.
 3. **Cơ chế từ chối 2 lớp (Two-tier Refusal Guardrails):**
    - **Lớp 1 (Refusal Gate tại tầng truy hồi):** Ngưỡng tương đồng $\tau = 0.05$ phát hiện và từ chối ngay các câu hỏi ngoài phạm vi (Out-of-Domain), tiết kiệm 100% tài nguyên GPU và thời gian suy luận của LLM.
@@ -24,7 +25,7 @@ Hệ thống RAG tiếng Việt được xây dựng nhằm giải quyết bài 
 
 ---
 
-## 🏗️ Kiến trúc Hệ thống (System Architecture)
+## Kiến trúc Hệ thống (System Architecture)
 
 ```
                             [Người dùng đặt câu hỏi]
@@ -66,17 +67,17 @@ Hệ thống RAG tiếng Việt được xây dựng nhằm giải quyết bài 
 
 ---
 
-## 💻 Yêu cầu Hệ thống & Phần cứng
+## Yêu cầu Hệ thống & Phần cứng
 
 - **Hệ điều hành:** Windows 10/11, Ubuntu 20.04/22.04 LTS, hoặc macOS.
 - **Python:** Phiên bản 3.10 đến 3.14 (khuyến nghị 3.10 hoặc 3.11).
 - **RAM:** Tối thiểu 8 GB (khuyến nghị 16 GB).
 - **GPU (Khuyến nghị):** NVIDIA GPU có tối thiểu 4 GB VRAM (RTX 3050, GTX 1650 Ti, T4, RTX 3060...). Hỗ trợ CUDA 11.8 hoặc 12.x.
-  - *Lưu ý:* Hệ thống vẫn hỗ trợ chạy hoàn toàn trên CPU nếu không có GPU (thời gian sinh câu trả lời sẽ chậm hơn).
+  - _Lưu ý:_ Hệ thống vẫn hỗ trợ chạy hoàn toàn trên CPU nếu không có GPU (thời gian sinh câu trả lời sẽ chậm hơn).
 
 ---
 
-## 📦 Hướng dẫn Cài đặt Môi trường
+## Hướng dẫn Cài đặt Môi trường
 
 ### Bước 1: Clone dự án và khởi tạo môi trường ảo
 
@@ -104,7 +105,7 @@ pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-*(Nếu gặp lỗi cài đặt PyTorch với CUDA, hãy truy cập [pytorch.org](https://pytorch.org/) để cài đặt phiên bản PyTorch phù hợp với phiên bản CUDA của máy).*
+_(Nếu gặp lỗi cài đặt PyTorch với CUDA, hãy truy cập [pytorch.org](https://pytorch.org/) để cài đặt phiên bản PyTorch phù hợp với phiên bản CUDA của máy)._
 
 ---
 
@@ -121,6 +122,7 @@ python run_indexing.py
 ```
 
 **Quy trình xử lý tự động:**
+
 - Bóc tách văn bản thô từ tài liệu và chuẩn hóa Unicode NFC, nối lại các dòng gãy do ngắt trang PDF (`src/clean.py`).
 - Cắt đoạn cấu trúc thông minh theo Điều/Khoản (`src/chunking/structural.py`).
 - Tính toán vector embedding và lưu trữ vào FAISS Index (`data/index/faiss.index`).
@@ -137,6 +139,7 @@ streamlit run app.py
 ```
 
 Sau khi chạy lệnh:
+
 1. Trình duyệt web sẽ tự động mở giao diện tại địa chỉ: `http://localhost:8501`.
 2. **Cửa sổ Debug Terminal tự động xuất hiện:** Một cửa sổ dòng lệnh riêng biệt sẽ tự động được khởi chạy song song để hiển thị theo thời gian thực (realtime) từng bước xử lý dữ liệu của hệ thống:
    - Câu hỏi của người dùng và các tham số truy xuất.
@@ -173,17 +176,18 @@ python log_viewer.py
 
 ---
 
-## 🧪 Đánh giá & Kiểm thử Định lượng (Evaluation Suite)
+## Đánh giá & Kiểm thử Định lượng (Evaluation Suite)
 
 Hệ thống đi kèm bộ công cụ đo lường thực nghiệm khoa học, phục vụ việc viết báo cáo và bảo vệ đề tài:
 
 ### 1. Bộ dữ liệu Đánh giá Chuẩn mực (`data/qa/`)
+
 - Bao gồm **150 câu hỏi** được gắn nhãn thủ công với cấu trúc rõ ràng:
   - `data/qa/dev.jsonl`: 45 câu hỏi (35 câu có bằng chứng, 10 câu ngoài phạm vi/từ chối).
   - `data/qa/test.jsonl`: 105 câu hỏi (84 câu có bằng chứng, 21 câu ngoài phạm vi/từ chối).
 - Phân loại rõ ràng 2 nhóm truy vấn:
   - **Nhóm Factoid / Numeric / Lexical:** Câu hỏi tra cứu trực diện số hiệu, mã môn, điều khoản pháp lý chuẩn.
-  - **Nhóm Paraphrase / Colloquial:** Câu hỏi diễn đạt bằng khẩu ngữ đời sống sinh viên (ví dụ: *"bị đuổi học"*, *"tạch môn"*, *"nợ bao nhiêu tín"*...).
+  - **Nhóm Paraphrase / Colloquial:** Câu hỏi diễn đạt bằng khẩu ngữ đời sống sinh viên (ví dụ: _"bị đuổi học"_, _"tạch môn"_, _"nợ bao nhiêu tín"_...).
 
 ---
 
@@ -200,6 +204,7 @@ python eval/eval_retrieval.py --split test
 ```
 
 **Các chỉ số khoa học được tính toán:**
+
 - **Recall@K (K = 1, 2, 3, 5, 10):** Tỷ lệ câu hỏi tìm thấy ít nhất một đoạn văn bản bằng chứng đúng trong Top-K.
 - **MRR (Mean Reciprocal Rank):** Điểm nghịch đảo thứ hạng của đoạn trúng đầu tiên.
 - **nDCG@10 (Normalized Discounted Cumulative Gain):** Đánh giá chất lượng xếp hạng phân cấp (đảm bảo nghiêm ngặt trong khoảng $[0, 1]$).
@@ -213,6 +218,7 @@ python eval/eval_retrieval.py --split test
 ### 3. Đánh giá Định lượng Tầng Sinh & Toàn bộ Hệ thống (Generation Ablation)
 
 So sánh toàn diện 4 kịch bản (Ablation Baselines B0 – B3):
+
 - **B0:** LLM thuần túy không có truy hồi (No Retrieval Baseline).
 - **B1:** LLM kết hợp BM25.
 - **B2:** LLM kết hợp Dense Search.
@@ -227,6 +233,7 @@ python eval/eval_generation.py --split test
 ```
 
 **Các chỉ số đo lường:**
+
 - **Exact Match (EM)** & **Token F1:** Đo mức độ trùng khớp giữa câu trả lời sinh ra và đáp án chuẩn.
 - **ROUGE-L** & **BLEU-4:** Đo độ tương đồng về mặt từ vựng và trật tự câu văn.
 - **Citation Precision & Citation Recall:** Đo tính chính xác của các mã trích dẫn `[n]`, phát hiện trích dẫn bịa (Citation Hallucination).
@@ -234,27 +241,28 @@ python eval/eval_generation.py --split test
 
 ---
 
-## 📊 Bảng Kết quả Thực nghiệm Thực tế
+## Bảng Kết quả Thực nghiệm Thực tế
 
 ### 1. Hiệu năng Tầng Truy hồi trên Tập Kiểm thử (`test.jsonl` - 84 câu hỏi có đáp án):
 
-| Phương pháp | Recall@1 | Recall@3 | Recall@10 | MRR | nDCG@10 | Độ trễ TB (ms) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **BM25 Baseline** | 64.29% | 83.33% | 89.29% | 0.7521 | 0.7818 | **11 ms** |
-| **Dense Vector (FAISS)** | 66.67% | 85.71% | 90.48% | 0.7816 | 0.8087 | 148 ms |
-| **Hybrid (Weighted RRF)** | **73.81%** | **88.10%** | **92.86%** | **0.8218** | **0.8443** | **152 ms** |
-| **Hybrid + Reranker** | 66.67% | 88.10% | 92.86% | 0.7860 | 0.8170 | 9,320 ms |
+| Phương pháp               |  Recall@1  |  Recall@3  | Recall@10  |    MRR     |  nDCG@10   | Độ trễ TB (ms) |
+| :------------------------ | :--------: | :--------: | :--------: | :--------: | :--------: | :------------: |
+| **BM25 Baseline**         |   64.29%   |   83.33%   |   89.29%   |   0.7521   |   0.7818   |   **11 ms**    |
+| **Dense Vector (FAISS)**  |   66.67%   |   85.71%   |   90.48%   |   0.7816   |   0.8087   |     148 ms     |
+| **Hybrid (Weighted RRF)** | **73.81%** | **88.10%** | **92.86%** | **0.8218** | **0.8443** |   **152 ms**   |
+| **Hybrid + Reranker**     |   66.67%   |   88.10%   |   92.86%   |   0.7860   |   0.8170   |    9,320 ms    |
 
 ### 2. Phát hiện Thực nghiệm Đắt giá (Empirical Insights):
+
 1. **Weighted RRF vượt trội về hiệu năng và chi phí:** Khi được tinh chỉnh trọng số hợp lý ($w_{\text{dense}}=0.7, w_{\text{bm25}}=0.3, k=20$), phương pháp Hybrid đạt đỉnh về MRR ($0.8218$) và Recall@1 ($73.81\%$), đồng thời có tốc độ nhanh hơn mô hình Cross-Encoder **gấp 61 lần** (152ms so với 9.3s).
 2. **Vai trò của Reranker trên các dạng câu hỏi:**
    - Trên tập `dev.jsonl` (tập trung 57% câu hỏi khẩu ngữ/paraphrase), Reranker phát huy tối đa sức mạnh Cross-Attention khi đưa MRR từ $0.6664$ lên **$0.7748$** ($\Delta = +0.1084, p = 0.0160^*$).
    - Trên tập `test.jsonl` với các câu hỏi tra cứu con số/thuật ngữ pháp lý chính xác, Weighted RRF đã đưa đoạn đúng lên Hạng 1 rất tốt ($R@1 = 82.05\%$), việc áp dụng Reranker mềm trên pool $N=10$ đôi khi gây hiện tượng đảo thứ hạng nhẹ giữa các điều khoản liên quan.
-   - Đây là luận cứ thực nghiệm quan trọng chứng minh: *Trong môi trường triển khai thực tế có tài nguyên hạn chế, cấu hình Weighted RRF là giải pháp tối ưu nhất về cả độ chính xác lẫn tốc độ phản hồi.*
+   - Đây là luận cứ thực nghiệm quan trọng chứng minh: _Trong môi trường triển khai thực tế có tài nguyên hạn chế, cấu hình Weighted RRF là giải pháp tối ưu nhất về cả độ chính xác lẫn tốc độ phản hồi._
 
 ---
 
-## 📁 Cấu trúc Thư mục Dự án
+## Cấu trúc Thư mục Dự án
 
 ```
 RAG-For-Vietnamese-Documents/
@@ -291,6 +299,6 @@ RAG-For-Vietnamese-Documents/
 
 ---
 
-## 📜 Giấy phép & Thông tin Đề tài
+## Giấy phép & Thông tin Đề tài
 
-Dự án được phát triển trong khuôn khổ môn học Xử lý Ngôn ngữ Tự nhiên (NLP-21). Mã nguồn được mở cho mục đích học tập, nghiên cứu và phát triển học thuật.
+Dự án được phát triển trong khuôn khổ môn học Xử lý Ngôn ngữ Tự nhiên. Mã nguồn được mở cho mục đích học tập, nghiên cứu và phát triển học thuật.
