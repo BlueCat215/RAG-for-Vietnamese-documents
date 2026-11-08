@@ -109,7 +109,7 @@ _(Nếu gặp lỗi cài đặt PyTorch với CUDA, hãy truy cập [pytorch.org
 
 ---
 
-## 🚀 Hướng dẫn Sử dụng Hệ thống
+## Hướng dẫn Sử dụng Hệ thống
 
 Quy trình vận hành hệ thống gồm các bước tuần tự sau:
 
@@ -274,25 +274,13 @@ python plot_results.py
 
 Bộ biểu đồ chất lượng cao (300 DPI) được tự động tạo bởi script `python plot_results.py` từ dữ liệu thực nghiệm trong `results/`:
 
-#### Biểu đồ 1: Đường cong hội tụ Recall@K
-
-Biểu thị tốc độ tìm thấy tài liệu đúng khi mở rộng ngưỡng $K$ từ 1 đến 10. Hybrid Weighted RRF đạt độ dốc lớn nhất ngay từ các hạng đầu ($K=1 \rightarrow 3$).
-![Đường cong hội tụ Recall@K](results/figures/fig1_recall_curve.png)
-
-#### Biểu đồ 2: So sánh Chất lượng Xếp hạng (MRR và nDCG@10 có 95% Bootstrap CI)
-
-So sánh điểm phân cấp thứ bậc nghiêm ngặt kèm khoảng tin cậy 95% qua 1.000 lần lấy mẫu lại có hoàn lại.
-![So sánh MRR và nDCG](results/figures/fig2_mrr_ndcg.png)
-
-#### Biểu đồ 3: Phân tích Tách nhóm (Tra cứu Từ khóa vs Khẩu ngữ đời sống)
-
-BM25 suy giảm mạnh khi câu hỏi là khẩu ngữ tự nhiên (MRR rơi từ $0.829 \rightarrow 0.686$), trong khi Dense Vector và Hybrid bảo toàn năng lực hiểu ngữ nghĩa tương đồng.
-![Phân tích tách nhóm](results/figures/fig3_category_breakdown.png)
-
-#### Biểu đồ 4: Đánh đổi giữa Độ trễ và Độ chính xác (Latency vs MRR)
-
-Trục hoành biểu thị thời gian đáp ứng (thang đo Logarit). Điểm tối ưu thuộc về Hybrid Weighted RRF: đạt MRR cao nhất ($0.822$) với độ trễ chỉ $152\text{ms}$ (nhanh hơn Reranker 61 lần).
-![Đánh đổi Latency và MRR](results/figures/fig4_latency_tradeoff.png)
+| Biểu đồ 1: Đường cong hội tụ Recall@K | Biểu đồ 2: So sánh Chất lượng Xếp hạng (MRR & nDCG@10) |
+| :---: | :---: |
+| <img src="results/figures/fig1_recall_curve.png" alt="Đường cong hội tụ Recall@K" width="100%" /> | <img src="results/figures/fig2_mrr_ndcg.png" alt="So sánh MRR và nDCG" width="100%" /> |
+| *Tốc độ tìm thấy tài liệu đúng theo K (1–10). Hybrid Weighted RRF đạt độ dốc lớn nhất từ K=1–3.* | *So sánh điểm phân cấp kèm khoảng tin cậy 95% Bootstrap CI qua 1.000 lần lấy mẫu lại.* |
+| **Biểu đồ 3: Phân tích Tách nhóm (Từ khóa vs Khẩu ngữ)** | **Biểu đồ 4: Đánh đổi giữa Độ trễ và Độ chính xác (Latency vs MRR)** |
+| <img src="results/figures/fig3_category_breakdown.png" alt="Phân tích tách nhóm" width="100%" /> | <img src="results/figures/fig4_latency_tradeoff.png" alt="Đánh đổi Latency và MRR" width="100%" /> |
+| *BM25 suy giảm mạnh ở câu hỏi khẩu ngữ; Dense và Hybrid bảo toàn năng lực hiểu ngữ nghĩa.* | *Điểm tối ưu thuộc về Hybrid: MRR cao nhất (0.822) với độ trễ 152ms (nhanh gấp 61 lần Reranker).* |
 
 ---
 

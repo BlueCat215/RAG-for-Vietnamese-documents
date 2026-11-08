@@ -42,8 +42,12 @@ desktop.ini
 .coverage
 htmlcov/
 
-# docs
+# docs & logs
 docs/CHECKLIST.md
 docs/RAG.md
+docs/TESTING_GUIDE.md
+TESTING_GUIDE.md
+docs/logRag.txt
+logRag.txt
 logs/
 *.log
