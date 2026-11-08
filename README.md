@@ -234,6 +234,16 @@ python eval/eval_generation.py --split test
 
 ---
 
+### 4. Xuất Bộ Biểu Đồ Báo Cáo Khoa Học (300 DPI)
+
+Tự động đọc các file kết quả CSV và vẽ 4 biểu đồ xuất bản chất lượng cao vào `results/figures/`:
+
+```bash
+python plot_results.py
+```
+
+---
+
 ## 📊 Bảng Kết quả Thực nghiệm Thực tế
 
 ### 1. Hiệu năng Tầng Truy hồi trên Tập Kiểm thử (`test.jsonl` - 84 câu hỏi có đáp án):
@@ -251,6 +261,26 @@ python eval/eval_generation.py --split test
    - Trên tập `dev.jsonl` (tập trung 57% câu hỏi khẩu ngữ/paraphrase), Reranker phát huy tối đa sức mạnh Cross-Attention khi đưa MRR từ $0.6664$ lên **$0.7748$** ($\Delta = +0.1084, p = 0.0160^*$).
    - Trên tập `test.jsonl` với các câu hỏi tra cứu con số/thuật ngữ pháp lý chính xác, Weighted RRF đã đưa đoạn đúng lên Hạng 1 rất tốt ($R@1 = 82.05\%$), việc áp dụng Reranker mềm trên pool $N=10$ đôi khi gây hiện tượng đảo thứ hạng nhẹ giữa các điều khoản liên quan.
    - Đây là luận cứ thực nghiệm quan trọng chứng minh: *Trong môi trường triển khai thực tế có tài nguyên hạn chế, cấu hình Weighted RRF là giải pháp tối ưu nhất về cả độ chính xác lẫn tốc độ phản hồi.*
+
+### 3. Biểu đồ Minh Họa Trực Quan (Experimental Visualizations)
+
+Bộ biểu đồ chất lượng cao (300 DPI) được tự động tạo bởi script `python plot_results.py` từ dữ liệu thực nghiệm trong `results/`:
+
+#### Biểu đồ 1: Đường cong hội tụ Recall@K
+Biểu thị tốc độ tìm thấy tài liệu đúng khi mở rộng ngưỡng $K$ từ 1 đến 10. Hybrid Weighted RRF đạt độ dốc lớn nhất ngay từ các hạng đầu ($K=1 \rightarrow 3$).
+![Đường cong hội tụ Recall@K](results/figures/fig1_recall_curve.png)
+
+#### Biểu đồ 2: So sánh Chất lượng Xếp hạng (MRR và nDCG@10 có 95% Bootstrap CI)
+So sánh điểm phân cấp thứ bậc nghiêm ngặt kèm khoảng tin cậy 95% qua 1.000 lần lấy mẫu lại có hoàn lại.
+![So sánh MRR và nDCG](results/figures/fig2_mrr_ndcg.png)
+
+#### Biểu đồ 3: Phân tích Tách nhóm (Tra cứu Từ khóa vs Khẩu ngữ đời sống)
+BM25 suy giảm mạnh khi câu hỏi là khẩu ngữ tự nhiên (MRR rơi từ $0.829 \rightarrow 0.686$), trong khi Dense Vector và Hybrid bảo toàn năng lực hiểu ngữ nghĩa tương đồng.
+![Phân tích tách nhóm](results/figures/fig3_category_breakdown.png)
+
+#### Biểu đồ 4: Đánh đổi giữa Độ trễ và Độ chính xác (Latency vs MRR)
+Trục hoành biểu thị thời gian đáp ứng (thang đo Logarit). Điểm tối ưu thuộc về Hybrid Weighted RRF: đạt MRR cao nhất ($0.822$) với độ trễ chỉ $152\text{ms}$ (nhanh hơn Reranker 61 lần).
+![Đánh đổi Latency và MRR](results/figures/fig4_latency_tradeoff.png)
 
 ---
 
@@ -280,9 +310,12 @@ RAG-For-Vietnamese-Documents/
 │   ├── eval_retrieval.py       # Script đánh giá định lượng tầng truy hồi (Ablation, Bootstrap CI)
 │   └── eval_generation.py      # Script đánh giá định lượng tầng sinh (B0 - B3, ROUGE, BLEU, F1)
 ├── logs/                       # Thư mục lưu vết nhật ký debug chi tiết từng phiên chạy
-├── results/                    # Tệp kết quả thực nghiệm chi tiết (.csv)
+├── results/
+│   ├── figures/                # Các biểu đồ xuất bản chất lượng cao 300 DPI (.png)
+│   └── *.csv                   # Tệp kết quả thực nghiệm chi tiết (.csv)
 ├── app.py                      # Giao diện Web Streamlit hoàn chỉnh
 ├── log_viewer.py               # Trình xem log thời gian thực trên terminal riêng
+├── plot_results.py             # Script tự động vẽ và xuất 4 biểu đồ báo cáo khoa học
 ├── run_indexing.py             # Script chạy toàn bộ quy trình tiền xử lý và dựng index
 ├── run_query.py                # Script chạy thử nghiệm hỏi đáp dòng lệnh (CLI Interactive)
 ├── requirements.txt            # Danh sách các thư viện Python phụ thuộc
