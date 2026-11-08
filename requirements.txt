@@ -25,3 +25,5 @@ streamlit>=1.32.0
 pyyaml>=6.0
 tqdm>=4.66.0
 pytest>=8.0.0
+matplotlib>=3.7.0
+seaborn>=0.12.0
