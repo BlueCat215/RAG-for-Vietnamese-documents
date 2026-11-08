@@ -74,15 +74,25 @@ def clean_llm_response(raw_text: str) -> str:
             res_lines.pop()
             result = "\n".join(res_lines).strip()
 
-    # Cắt bỏ dòng cuối nếu bị cụt chữ do chạm trần token (ví dụ: "- Điểm")
+    # Cắt bỏ dòng cuối nếu bị cụt chữ do chạm trần token
+    # Chỉ cắt khi dòng thực sự ngắn/cụt (<= 3 từ SAU ký hiệu đầu dòng)
+    # Tránh cắt nhầm các bullet hợp lệ như "• Điểm trung bình năm học đạt dưới 0.8"
     if res_lines:
         last = res_lines[-1].strip()
-        if (last.startswith(("-", "*", "•")) or last.endswith((": ", ":", "và", "hoặc", "nếu"))) and not last.endswith((".", "!", "?", ";", "...")):
-            if len(last.split()) <= 4:
-                res_lines.pop()
-                if res_lines and res_lines[-1].strip().endswith(":"):
-                    res_lines.pop()
-                result = "\n".join(res_lines).strip()
+        # Lấy phần nội dung sau ký hiệu gạch đầu dòng
+        content_after_bullet = re.sub(r"^[-*•]\s*", "", last).strip()
+        is_dangling_bullet = (
+            last.startswith(("-", "*", "•"))
+            and not last.endswith((".", "!", "?", ";", "..."))
+            and len(content_after_bullet.split()) <= 2  # Chỉ cắt khi cực ngắn (≤2 từ)
+        )
+        is_dangling_colon = last.endswith((":", ": ")) and not last.startswith(("["))
+        if is_dangling_bullet or is_dangling_colon:
+            res_lines.pop()
+            # Nếu dòng trước đó kết thúc bằng ":" và cũng sẽ trở nên lơ lửng, cắt luôn
+            if res_lines and res_lines[-1].strip().endswith(":") and not res_lines[-1].strip().startswith("["):
+                pass  # Giữ lại header ":" để người dùng biết danh sách bị cắt
+            result = "\n".join(res_lines).strip()
 
     return result
 

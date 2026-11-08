@@ -34,7 +34,7 @@ models:
   llm:
     name: "Qwen/Qwen2.5-3B-Instruct" # LLM 3B thông số, tối ưu tốt cho tiếng Việt
     quantization: "4bit" # Lượng tử hóa 4-bit (bitsandbytes) để vừa GPU 4GB VRAM
-    max_new_tokens: 600 # Tăng từ 350 lên 600 token để tránh bị cắt cụt câu khi trả lời các điều khoản dài
+    max_new_tokens: 900 # Tăng lên 900 token để tránh bị cắt cụt câu khi trả lời các điều khoản dài, danh sách nhiều điều kiện
     temperature: 0.1 # Nhiệt độ thấp (0.1) để giảm hallucination, bám sát context
     device: "cuda" # Giữ cố định LLM trên GPU
 
