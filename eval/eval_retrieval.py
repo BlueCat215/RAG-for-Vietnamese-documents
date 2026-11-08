@@ -1,16 +1,24 @@
 """
 Module đánh giá định lượng tầng truy hồi (Retrieval Evaluation) - NLP-21.
 
-Tính toán các chỉ số học thuật chuẩn:
-- Recall@K (K=1, 3, 5, 10): Tỷ lệ câu hỏi tìm thấy ít nhất 1 đoạn bằng chứng trong top K.
-- MRR (Mean Reciprocal Rank): Điểm trung bình nghịch đảo thứ hạng xuất hiện của đoạn bằng chứng đầu tiên.
-- nDCG@K: Đánh giá chất lượng xếp hạng có trọng số theo vị trí.
-- Phân tách đo riêng cho: BM25, Dense Vector, Hybrid RRF, và Hybrid + Reranker (Ablation Study).
+Các tính năng học thuật nâng cao:
+- Recall@K (K = 1, 2, 3, 5, 10): Tỷ lệ tìm thấy ít nhất 1 chunk bằng chứng.
+- MRR (Mean Reciprocal Rank): Điểm nghịch đảo thứ hạng chunk trúng đầu tiên.
+- nDCG@10: Đánh giá xếp hạng phân cấp chuẩn xác (đảm bảo nghiêm ngặt trong [0, 1]).
+- Latency (ms): Thời gian truy hồi trung bình và p95 (95th percentile).
+- Phân tích tách nhóm (Category Breakdown):
+  + Nhóm Lexical / Numeric (từ khóa trực tiếp, số hiệu, Điều khoản)
+  + Nhóm Paraphrase / Colloquial (khẩu ngữ sinh viên, đo năng lực ngữ nghĩa)
+- Bootstrap 95% Confidence Interval (CI) qua 1000 lần lấy mẫu lại có hoàn lại.
+- So sánh cặp (Paired Bootstrap Test): Đo mức độ cải thiện delta và p-value có ý nghĩa thống kê.
 """
 
 import os
 import sys
 import math
+import time
+import argparse
+from typing import List, Dict, Any, Tuple
 
 # Đảm bảo import được module 'src' khi chạy trực tiếp từ thư mục eval
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -29,7 +37,6 @@ if sys.stderr.encoding and sys.stderr.encoding.lower() != "utf-8":
 
 import numpy as np
 import pandas as pd
-from typing import List, Dict, Any, Tuple
 from src.utils import load_config, load_jsonl
 from src.pipeline import RAGPipeline
 
@@ -48,7 +55,6 @@ def is_hit(chunk: Dict[str, Any], evidences: List[Dict[str, Any]]) -> bool:
 
     for ev in evidences:
         ev_doc = ev.get("doc_id", "")
-        # Kiểm tra trùng doc_id
         if ev_doc and ev_doc != chunk_doc:
             continue
 
@@ -66,59 +72,72 @@ def is_hit(chunk: Dict[str, Any], evidences: List[Dict[str, Any]]) -> bool:
     return False
 
 
-def calculate_retrieval_metrics(
-    retrieved_results: List[List[Dict[str, Any]]],
-    ground_truths: List[List[Dict[str, Any]]],
-    k_list: List[int] = [1, 3, 5, 10]
+def calculate_per_query_metrics(
+    retrieved_chunks: List[Dict[str, Any]],
+    evidences: List[Dict[str, Any]],
+    k_list: List[int] = [1, 2, 3, 5, 10]
 ) -> Dict[str, float]:
-    """
-    Tính Recall@K, MRR, nDCG@10 cho toàn bộ tập câu hỏi có đáp án.
-    """
-    recalls = {k: [] for k in k_list}
-    mrr_list = []
-    ndcg_list = []
+    """Tính toán chi tiết các metric cho từng câu hỏi đơn lẻ."""
+    hit_ranks = []
+    for rank, c in enumerate(retrieved_chunks, 1):
+        if is_hit(c, evidences):
+            hit_ranks.append(rank)
 
-    for chunks, evidences in zip(retrieved_results, ground_truths):
-        if not evidences: # Bỏ qua câu không có đáp án khi đo retrieval hit
-            continue
-
-        # Tìm các vị trí hit (1-based index)
-        hit_ranks = []
-        for rank, c in enumerate(chunks, 1):
-            if is_hit(c, evidences):
-                hit_ranks.append(rank)
-
-        # Tính Recall@K
-        for k in k_list:
-            hit_at_k = any(r <= k for r in hit_ranks)
-            recalls[k].append(1.0 if hit_at_k else 0.0)
-
-        # Tính MRR
-        if hit_ranks:
-            first_hit = min(hit_ranks)
-            mrr_list.append(1.0 / first_hit)
-        else:
-            mrr_list.append(0.0)
-
-        # Tính nDCG@10 chuẩn xác theo lý thuyết IR:
-        # IDCG phải được tính từ min(|Rel|, K) chunk đúng ở các thứ hạng lý tưởng đầu tiên (1, 2, ..., n_ideal)
-        hits_at_10 = [r for r in hit_ranks if r <= 10]
-        if hits_at_10:
-            dcg = sum(1.0 / math.log2(r + 1) for r in hits_at_10)
-            # Số chunk đúng tối đa có thể xếp vào top 10
-            n_ideal = min(max(len(hit_ranks), len(evidences)), 10)
-            idcg = sum(1.0 / math.log2(i + 1) for i in range(1, n_ideal + 1))
-            ndcg_list.append(min(1.0, dcg / idcg) if idcg > 0 else 0.0)
-        else:
-            ndcg_list.append(0.0)
-
-    results = {}
+    q_metrics = {}
     for k in k_list:
-        results[f"Recall@{k}"] = float(np.mean(recalls[k])) if recalls[k] else 0.0
-    results["MRR"] = float(np.mean(mrr_list)) if mrr_list else 0.0
-    results["nDCG@10"] = float(np.mean(ndcg_list)) if ndcg_list else 0.0
+        q_metrics[f"Recall@{k}"] = 1.0 if any(r <= k for r in hit_ranks) else 0.0
 
-    return results
+    q_metrics["MRR"] = (1.0 / min(hit_ranks)) if hit_ranks else 0.0
+
+    # nDCG@10 chuẩn xác
+    hits_at_10 = [r for r in hit_ranks if r <= 10]
+    if hits_at_10:
+        dcg = sum(1.0 / math.log2(r + 1) for r in hits_at_10)
+        n_ideal = min(max(len(hit_ranks), len(evidences)), 10)
+        idcg = sum(1.0 / math.log2(i + 1) for i in range(1, n_ideal + 1))
+        q_metrics["nDCG@10"] = min(1.0, dcg / idcg) if idcg > 0 else 0.0
+    else:
+        q_metrics["nDCG@10"] = 0.0
+
+    return q_metrics
+
+
+def bootstrap_ci(scores: List[float], n_bootstraps: int = 1000, ci: float = 0.95) -> Tuple[float, float]:
+    """Tính 95% Confidence Interval bằng Bootstrap resampling."""
+    if not scores or len(scores) < 2:
+        return 0.0, 0.0
+    arr = np.array(scores)
+    boot_means = []
+    rng = np.random.RandomState(42)
+    n = len(arr)
+    for _ in range(n_bootstraps):
+        idx = rng.randint(0, n, size=n)
+        boot_means.append(np.mean(arr[idx]))
+    alpha = (1.0 - ci) / 2.0
+    lower = float(np.percentile(boot_means, alpha * 100))
+    upper = float(np.percentile(boot_means, (1.0 - alpha) * 100))
+    return lower, upper
+
+
+def paired_bootstrap_test(scores_a: List[float], scores_b: List[float], n_bootstraps: int = 1000) -> Tuple[float, float, float]:
+    """Kiểm định so sánh cặp (Paired Bootstrap Test): Đo delta và p-value."""
+    arr_a = np.array(scores_a)
+    arr_b = np.array(scores_b)
+    diff = arr_a - arr_b
+    observed_delta = float(np.mean(diff))
+
+    rng = np.random.RandomState(42)
+    boot_deltas = []
+    n = len(diff)
+    for _ in range(n_bootstraps):
+        idx = rng.randint(0, n, size=n)
+        boot_deltas.append(np.mean(diff[idx]))
+
+    # p-value: Tỷ lệ mẫu có delta <= 0 (nếu kỳ vọng A > B)
+    p_val = float(np.mean(np.array(boot_deltas) <= 0.0))
+    lower = float(np.percentile(boot_deltas, 2.5))
+    upper = float(np.percentile(boot_deltas, 97.5))
+    return observed_delta, p_val, (lower, upper)
 
 
 def run_evaluation(
@@ -127,11 +146,11 @@ def run_evaluation(
 ):
     qa_file = f"data/qa/{split}.jsonl"
     output_csv = f"results/retrieval_ablation_{split}.csv"
-    default_csv = "results/retrieval_ablation.csv"
+    breakdown_csv = f"results/retrieval_breakdown_{split}.csv"
 
-    print("=" * 60)
-    print(f"🔬 CHẠY ĐÁNH GIÁ ĐỊNH LƯỢNG TẦNG TRUY HỒI (SPLIT: {split.upper()})")
-    print("=" * 60)
+    print("=" * 75)
+    print(f"🔬 ĐÁNH GIÁ ĐỊNH LƯỢNG TẦNG TRUY HỒI & SO SÁNH PHƯƠNG PHÁP ({split.upper()})")
+    print("=" * 75)
 
     qa_data = load_jsonl(qa_file)
     if not qa_data:
@@ -140,63 +159,140 @@ def run_evaluation(
 
     # Lọc câu hỏi có đáp án
     eval_samples = [q for q in qa_data if q.get("answerable", True) and q.get("evidence")]
-    print(f"[*] Tổng số câu hỏi kiểm thử: {len(eval_samples)}")
+    print(f"[*] Tổng số câu hỏi kiểm thử có đáp án: {len(eval_samples)} câu")
 
     pipeline = RAGPipeline(config_path=config_path)
-    # Tầng đánh giá truy hồi chỉ cần BM25, Vector Index và Reranker; tắt nạp trước LLM để chạy nhanh và tiết kiệm VRAM
     pipeline.initialize(preload_llm=False)
 
     experiments = [
         {"name": "BM25 (Baseline)", "method": "bm25", "use_rerank": False},
         {"name": "Dense Vector", "method": "dense", "use_rerank": False},
-        {"name": "Hybrid (RRF)", "method": "hybrid", "use_rerank": False},
-        {"name": "Hybrid + Reranker (Full)", "method": "hybrid", "use_rerank": True},
+        {"name": "Hybrid (Weighted RRF)", "method": "hybrid", "use_rerank": False},
+        {"name": "Hybrid + Reranker (Đề xuất)", "method": "hybrid", "use_rerank": True},
     ]
 
-    all_metrics = []
+    k_list = [1, 2, 3, 5, 10]
+    exp_results = {}
 
     for exp in experiments:
         name = exp["name"]
         print(f"\n[*] Đang chạy thí nghiệm: {name}...")
-        retrieved_all = []
-        gt_all = []
+        per_query_data = []
+        latencies = []
 
         for sample in eval_samples:
             q = sample["question"]
             evs = sample["evidence"]
-            chunks, _ = pipeline.retrieve(
+            p_level = sample.get("paraphrase_level", "lexical-overlap")
+
+            t0 = time.time()
+            chunks, timings = pipeline.retrieve(
                 query=q,
                 method=exp["method"],
                 top_k=10,
                 use_rerank=exp["use_rerank"]
             )
-            retrieved_all.append(chunks)
-            gt_all.append(evs)
+            lat_ms = (time.time() - t0) * 1000
+            latencies.append(lat_ms)
 
-        metrics = calculate_retrieval_metrics(retrieved_all, gt_all, k_list=[1, 3, 5, 10])
-        metrics["Method"] = name
-        all_metrics.append(metrics)
-        print(f"    -> Recall@1: {metrics['Recall@1']:.3f} | Recall@5: {metrics['Recall@5']:.3f} | MRR: {metrics['MRR']:.3f}")
+            q_met = calculate_per_query_metrics(chunks, evs, k_list=k_list)
+            q_met["qid"] = sample["qid"]
+            q_met["paraphrase_level"] = p_level
+            q_met["latency_ms"] = lat_ms
+            per_query_data.append(q_met)
 
-    # Xuất bảng tổng hợp kết quả
-    df = pd.DataFrame(all_metrics)
-    cols = ["Method", "Recall@1", "Recall@3", "Recall@5", "Recall@10", "MRR", "nDCG@10"]
-    df = df[cols]
+        exp_results[name] = {
+            "per_query": per_query_data,
+            "latencies": latencies
+        }
 
+    # ==============================================================================
+    # 1. BẢNG KẾT QUẢ TỔNG THỂ (OVERALL ABLATION + BOOTSTRAP CI + LATENCY)
+    # ==============================================================================
+    summary_rows = []
+    for exp in experiments:
+        name = exp["name"]
+        pq = exp_results[name]["per_query"]
+        lats = exp_results[name]["latencies"]
+
+        row = {"Method": name}
+        for k in k_list:
+            row[f"Recall@{k}"] = round(float(np.mean([x[f"Recall@{k}"] for x in pq])), 4)
+        mrr_val = float(np.mean([x["MRR"] for x in pq]))
+        row["MRR"] = round(mrr_val, 4)
+        mrr_ci_low, mrr_ci_high = bootstrap_ci([x["MRR"] for x in pq])
+        row["MRR (95% CI)"] = f"[{mrr_ci_low:.3f}, {mrr_ci_high:.3f}]"
+
+        row["nDCG@10"] = round(float(np.mean([x["nDCG@10"] for x in pq])), 4)
+        row["Latency_mean_ms"] = round(float(np.mean(lats)), 1)
+        row["Latency_p95_ms"] = round(float(np.percentile(lats, 95)), 1)
+        summary_rows.append(row)
+
+    df_summary = pd.DataFrame(summary_rows)
     os.makedirs("results", exist_ok=True)
-    df.to_csv(output_csv, index=False, encoding="utf-8-sig")
-    if split == "dev":
-        df.to_csv(default_csv, index=False, encoding="utf-8-sig")
+    df_summary.to_csv(output_csv, index=False, encoding="utf-8-sig")
 
-    print("\n" + "=" * 60)
-    print("📊 BẢNG KẾT QUẢ SO SÁNH PHƯƠNG PHÁP (ABLATION STUDY)")
-    print("=" * 60)
-    print(df.to_string(index=False))
-    print(f"\n[+] Đã lưu bảng số liệu khoa học vào: {output_csv}")
+    print("\n" + "=" * 75)
+    print("📊 BẢNG 1: TỔNG HỢP SO SÁNH PHƯƠNG PHÁP (OVERALL RETRIEVAL ABLATION)")
+    print("=" * 75)
+    cols_display = ["Method", "Recall@1", "Recall@2", "Recall@3", "Recall@5", "Recall@10", "MRR", "MRR (95% CI)", "nDCG@10", "Latency_mean_ms", "Latency_p95_ms"]
+    print(df_summary[cols_display].to_string(index=False))
+    print(f"[+] Đã lưu vào: {output_csv}")
+
+    # ==============================================================================
+    # 2. BẢNG PHÂN TÍCH TÁCH NHÓM (BREAKDOWN BY QUESTION TYPE)
+    # ==============================================================================
+    breakdown_rows = []
+    categories = [
+        ("lexical-overlap", "Nhóm Từ khóa / Số liệu (Lexical / Numeric)"),
+        ("paraphrase", "Nhóm Khẩu ngữ tự nhiên (Paraphrase / Colloquial)")
+    ]
+
+    for cat_key, cat_name in categories:
+        for exp in experiments:
+            name = exp["name"]
+            pq_cat = [x for x in exp_results[name]["per_query"] if x["paraphrase_level"] == cat_key]
+            if not pq_cat:
+                continue
+            b_row = {
+                "Category": cat_name,
+                "Sample Count": len(pq_cat),
+                "Method": name,
+                "Recall@1": round(float(np.mean([x["Recall@1"] for x in pq_cat])), 4),
+                "Recall@3": round(float(np.mean([x["Recall@3"] for x in pq_cat])), 4),
+                "Recall@5": round(float(np.mean([x["Recall@5"] for x in pq_cat])), 4),
+                "MRR": round(float(np.mean([x["MRR"] for x in pq_cat])), 4),
+                "nDCG@10": round(float(np.mean([x["nDCG@10"] for x in pq_cat])), 4),
+            }
+            breakdown_rows.append(b_row)
+
+    df_breakdown = pd.DataFrame(breakdown_rows)
+    df_breakdown.to_csv(breakdown_csv, index=False, encoding="utf-8-sig")
+
+    print("\n" + "=" * 75)
+    print("📊 BẢNG 2: PHÂN TÍCH TÁCH THEO LOẠI CÂU HỎI (CATEGORY BREAKDOWN)")
+    print("=" * 75)
+    print(df_breakdown.to_string(index=False))
+    print(f"[+] Đã lưu vào: {breakdown_csv}")
+
+    # ==============================================================================
+    # 3. KIỂM ĐỊNH SO SÁNH CẶP (PAIRED BOOTSTRAP TEST: RERANKER VS OTHERS)
+    # ==============================================================================
+    print("\n" + "=" * 75)
+    print("🔬 BẢNG 3: KIỂM ĐỊNH Ý NGHĨA THỐNG KÊ SO SÁNH CẶP (PAIRED TEST TRÊN MRR)")
+    print("=" * 75)
+    target_exp = "Hybrid + Reranker (Đề xuất)"
+    target_mrrs = [x["MRR"] for x in exp_results[target_exp]["per_query"]]
+
+    for base_exp in ["BM25 (Baseline)", "Dense Vector", "Hybrid (Weighted RRF)"]:
+        base_mrrs = [x["MRR"] for x in exp_results[base_exp]["per_query"]]
+        delta, p_val, ci_diff = paired_bootstrap_test(target_mrrs, base_mrrs)
+        signif = "***" if p_val < 0.01 else ("**" if p_val < 0.05 else "ns")
+        print(f"[*] {target_exp} vs {base_exp}:")
+        print(f"    -> Δ MRR: +{delta:.4f} | 95% CI of Δ: [{ci_diff[0]:.4f}, {ci_diff[1]:.4f}] | p-value: {p_val:.4f} ({signif})")
 
 
 if __name__ == "__main__":
-    import argparse
     parser = argparse.ArgumentParser(description="Đánh giá tầng truy hồi RAG Tiếng Việt (NLP-21)")
     parser.add_argument("--split", type=str, default="dev", choices=["dev", "test"], help="Tập dữ liệu cần đo (dev hoặc test)")
     args = parser.parse_args()

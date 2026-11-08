@@ -129,11 +129,16 @@ class RAGPipeline:
         elif method == "dense":
             candidates = self.vector_index.search(query, self.query_encoder, top_k=n_candidates)
         elif method == "hybrid":
-            bm25_results = self.bm25_retriever.search(query, top_k=n_candidates)
+            rrf_cfg = self.retrieval_cfg.get("rrf", {})
+            bm25_top_n = min(n_candidates, rrf_cfg.get("bm25_top_candidates", 10))
+            bm25_results = self.bm25_retriever.search(query, top_k=bm25_top_n)
             dense_results = self.vector_index.search(query, self.query_encoder, top_k=n_candidates)
+            w_dense = rrf_cfg.get("weight_dense", 0.7)
+            w_bm25 = rrf_cfg.get("weight_bm25", 0.3)
             candidates = reciprocal_rank_fusion(
                 [bm25_results, dense_results],
-                k=self.retrieval_cfg.get("rrf", {}).get("k", 60),
+                weights=[w_bm25, w_dense],
+                k=rrf_cfg.get("k", 20),
                 top_k=n_candidates
             )
         else:

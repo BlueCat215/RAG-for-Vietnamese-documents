@@ -4,8 +4,22 @@ Raw Data (PDF/DOCX/TXT) -> Extract -> Clean -> Chunk (S3) -> FAISS Indexing (GPU
 """
 
 import os
+import sys
 import glob
 import time
+
+# Cấu hình UTF-8 cho Windows console để tránh UnicodeEncodeError
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+if sys.stderr.encoding and sys.stderr.encoding.lower() != "utf-8":
+    try:
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 from src.utils import load_config
 from src.extract import extract_document
 from src.chunking import chunk_structural, save_chunks_to_jsonl

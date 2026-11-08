@@ -98,18 +98,22 @@ class BM25Retriever:
 # ==============================================================================
 def reciprocal_rank_fusion(
     results_list: List[List[Dict[str, Any]]], 
-    k: int = 60, 
+    weights: Optional[List[float]] = None,
+    k: int = 20, 
     top_k: int = 5
 ) -> List[Dict[str, Any]]:
     """
-    Hợp nhất nhiều danh sách kết quả (BM25 + Dense) bằng thuật toán RRF:
-    RRF_score(d) = sum(1 / (k + rank_r(d)))
+    Hợp nhất nhiều danh sách kết quả (BM25 + Dense) bằng thuật toán Weighted RRF:
+    RRF_score(d) = sum(w_r * 1 / (k + rank_r(d)))
     Bảo toàn thuộc tính dense_score từ mô hình vector embedding để phục vụ Re-ranking mềm.
     """
+    if weights is None or len(weights) != len(results_list):
+        weights = [1.0] * len(results_list)
+
     rrf_scores: Dict[str, float] = {}
     chunk_map: Dict[str, Dict[str, Any]] = {}
 
-    for results in results_list:
+    for results, w in zip(results_list, weights):
         for rank, item in enumerate(results):
             c_id = item["chunk_id"]
             if c_id not in chunk_map:
@@ -128,7 +132,7 @@ def reciprocal_rank_fusion(
                 chunk_map[c_id]["bm25_score"] = float(item["bm25_score"])
 
             # rank trong Python bắt đầu từ 0 -> thứ hạng thật là rank + 1
-            rrf_scores[c_id] = rrf_scores.get(c_id, 0.0) + (1.0 / (k + (rank + 1)))
+            rrf_scores[c_id] = rrf_scores.get(c_id, 0.0) + (w / (k + (rank + 1)))
 
     # Sắp xếp theo điểm RRF giảm dần
     sorted_items = sorted(rrf_scores.items(), key=lambda x: x[1], reverse=True)[:top_k]

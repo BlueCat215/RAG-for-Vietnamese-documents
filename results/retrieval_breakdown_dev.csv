@@ -1,0 +1,9 @@
+﻿Category,Sample Count,Method,Recall@1,Recall@3,Recall@5,MRR,nDCG@10
+Nhóm Từ khóa / Số liệu (Lexical / Numeric),15,BM25 (Baseline),0.4667,0.6667,0.7333,0.5645,0.6397
+Nhóm Từ khóa / Số liệu (Lexical / Numeric),15,Dense Vector,0.6667,0.8,0.8,0.7317,0.756
+Nhóm Từ khóa / Số liệu (Lexical / Numeric),15,Hybrid (Weighted RRF),0.6,0.7333,0.8,0.6917,0.7493
+Nhóm Từ khóa / Số liệu (Lexical / Numeric),15,Hybrid + Reranker (Đề xuất),0.6,0.8,0.8667,0.7022,0.7398
+Nhóm Khẩu ngữ tự nhiên (Paraphrase / Colloquial),20,BM25 (Baseline),0.35,0.6,0.65,0.4851,0.5655
+Nhóm Khẩu ngữ tự nhiên (Paraphrase / Colloquial),20,Dense Vector,0.5,0.95,1.0,0.7208,0.7918
+Nhóm Khẩu ngữ tự nhiên (Paraphrase / Colloquial),20,Hybrid (Weighted RRF),0.45,0.8,1.0,0.6475,0.739
+Nhóm Khẩu ngữ tự nhiên (Paraphrase / Colloquial),20,Hybrid + Reranker (Đề xuất),0.7,0.95,1.0,0.8292,0.861

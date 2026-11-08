@@ -51,5 +51,8 @@ retrieval:
     b: 0.75 # Tham số phạt độ dài văn bản (Document Length Normalization)
     mode: "dual" # Chế độ tách từ cho BM25: 'dual' (lai ghép âm tiết + từ ghép tiếng Việt)
   rrf:
-    k: 60 # Hằng số k trong công thức Reciprocal Rank Fusion (kết hợp BM25 + Dense)
+    k: 20 # Giảm hằng số k từ 60 xuống 20 để tạo độ dốc thứ hạng rõ ràng hơn cho các rank đầu
+    weight_dense: 0.7 # Trọng số ưu tiên vector ngữ nghĩa (Dense)
+    weight_bm25: 0.3 # Trọng số từ khóa chính xác (BM25)
+    bm25_top_candidates: 10 # Giới hạn top 10 từ BM25 để tránh nhiễu từ vựng kéo tụt thứ hạng ngữ nghĩa
   refusal_threshold: 0.05 # Ngưỡng tau: Nếu score top-1 sau Rerank < 0.05 -> Từ chối trả lời (Out-of-domain)
