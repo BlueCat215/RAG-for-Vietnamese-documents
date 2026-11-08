@@ -100,13 +100,17 @@ def calculate_retrieval_metrics(
         else:
             mrr_list.append(0.0)
 
-        # Tính nDCG@10
-        dcg = 0.0
-        for rank in hit_ranks:
-            if rank <= 10:
-                dcg += 1.0 / math.log2(rank + 1)
-        idcg = 1.0 # Giả định tối thiểu có 1 đoạn lý tưởng ở hạng 1
-        ndcg_list.append(dcg / idcg if idcg > 0 else 0.0)
+        # Tính nDCG@10 chuẩn xác theo lý thuyết IR:
+        # IDCG phải được tính từ min(|Rel|, K) chunk đúng ở các thứ hạng lý tưởng đầu tiên (1, 2, ..., n_ideal)
+        hits_at_10 = [r for r in hit_ranks if r <= 10]
+        if hits_at_10:
+            dcg = sum(1.0 / math.log2(r + 1) for r in hits_at_10)
+            # Số chunk đúng tối đa có thể xếp vào top 10
+            n_ideal = min(max(len(hit_ranks), len(evidences)), 10)
+            idcg = sum(1.0 / math.log2(i + 1) for i in range(1, n_ideal + 1))
+            ndcg_list.append(min(1.0, dcg / idcg) if idcg > 0 else 0.0)
+        else:
+            ndcg_list.append(0.0)
 
     results = {}
     for k in k_list:
