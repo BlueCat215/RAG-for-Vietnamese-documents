@@ -289,6 +289,98 @@ def plot_fig4_latency_tradeoff(df: pd.DataFrame, out_dir: str):
     print(f"[+] Đã lưu Biểu đồ 4: {out_path}")
 
 
+def plot_fig5_rag_vs_no_rag(df_gen: pd.DataFrame, out_dir: str):
+    """Biểu đồ 5: So sánh Không dùng RAG (B0) vs Có dùng RAG (B1, B2, B3)."""
+    fig, ax = plt.subplots(figsize=(9.2, 5.5))
+
+    methods = [
+        "B0: Không RAG\n(LLM thuần)",
+        "B1: RAG\n(BM25)",
+        "B2: RAG\n(Dense)",
+        "B3: RAG Đề xuất\n(Hybrid + Rerank)"
+    ]
+    x = np.arange(len(methods))
+    width = 0.25
+
+    f1_vals = df_gen["Accuracy F1 (%)"].values
+    faith_vals = df_gen["Faithfulness (%)"].values
+    cite_vals = df_gen["Citation Rate (%)"].values
+
+    rects1 = ax.bar(
+        x - width,
+        f1_vals,
+        width,
+        color="#3b75af",
+        label="Độ chính xác F1 Overlap (%)",
+        edgecolor="black",
+        linewidth=0.6,
+        alpha=0.9
+    )
+
+    rects2 = ax.bar(
+        x,
+        faith_vals,
+        width,
+        color="#2ca02c",
+        label="Độ trung thực / Bằng chứng (Faithfulness %)",
+        edgecolor="black",
+        linewidth=0.6,
+        alpha=0.9
+    )
+
+    rects3 = ax.bar(
+        x + width,
+        cite_vals,
+        width,
+        color="#ff7f0e",
+        label="Tỷ lệ trích dẫn nguồn (Citation Rate %)",
+        edgecolor="black",
+        linewidth=0.6,
+        alpha=0.9
+    )
+
+    # Hiển thị số liệu trên đỉnh cột
+    for rect in rects1:
+        h = rect.get_height()
+        ax.annotate(f"{h:.1f}%", xy=(rect.get_x() + rect.get_width() / 2, h),
+                    xytext=(0, 3), textcoords="offset points", ha="center", va="bottom", fontsize=8.5, fontweight="bold")
+
+    for rect in rects2:
+        h = rect.get_height()
+        ax.annotate(f"{h:.1f}%", xy=(rect.get_x() + rect.get_width() / 2, h),
+                    xytext=(0, 3), textcoords="offset points", ha="center", va="bottom", fontsize=8.5, fontweight="bold")
+
+    for rect in rects3:
+        h = rect.get_height()
+        ax.annotate(f"{h:.0f}%", xy=(rect.get_x() + rect.get_width() / 2, h),
+                    xytext=(0, 3), textcoords="offset points", ha="center", va="bottom", fontsize=8.5)
+
+    # Đánh dấu chú thích làm nổi bật luận điểm khoa học
+    ax.annotate(
+        "B0 (Không RAG):\n0% Bằng chứng\n(Ảo giác 100%)",
+        xy=(0, 17),
+        xytext=(0.15, 45),
+        arrowprops=dict(facecolor="#d62728", shrink=0.08, width=1.5, headwidth=6),
+        fontsize=9,
+        fontweight="bold",
+        color="#b71c1c",
+        ha="center",
+        bbox=dict(boxstyle="round,pad=0.4", fc="#ffebee", ec="#ef9a9a", lw=1)
+    )
+
+    ax.set_title("So sánh Đột phá: Khi KHÔNG DÙNG RAG (B0) vs CÓ DÙNG RAG (B1 - B3)", fontsize=13, fontweight="bold", pad=14)
+    ax.set_ylabel("Tỷ lệ phần trăm (%)", fontsize=11, labelpad=8)
+    ax.set_xticks(x)
+    ax.set_xticklabels(methods, fontsize=10)
+    ax.set_ylim(0, 118)
+    ax.legend(loc="upper left", fontsize=9.5, framealpha=0.95)
+
+    out_path = os.path.join(out_dir, "fig5_rag_vs_no_rag.png")
+    plt.savefig(out_path, dpi=300)
+    plt.close()
+    print(f"[+] Đã lưu Biểu đồ 5: {out_path}")
+
+
 def main():
     setup_plotting_style()
     out_dir = "results/figures"
@@ -296,6 +388,7 @@ def main():
 
     test_ablation_file = "results/retrieval_ablation_test.csv"
     test_breakdown_file = "results/retrieval_breakdown_test.csv"
+    gen_summary_file = "results/generation_summary_dev.csv"
 
     if not os.path.exists(test_ablation_file) or not os.path.exists(test_breakdown_file):
         print(f"[!] Lỗi: Không tìm thấy file dữ liệu thực nghiệm trong results/")
@@ -313,8 +406,12 @@ def main():
     plot_fig3_category_breakdown(df_bd, out_dir)
     plot_fig4_latency_tradeoff(df_test, out_dir)
 
+    if os.path.exists(gen_summary_file):
+        df_gen = pd.read_csv(gen_summary_file)
+        plot_fig5_rag_vs_no_rag(df_gen, out_dir)
+
     print("=" * 60)
-    print(f"[+] Hoan tat! Tat ca 4 anh bieu do da duoc luu tai: {out_dir}/")
+    print(f"[+] Hoan tat! Tat ca anh bieu do da duoc luu tai: {out_dir}/")
     print("=" * 60)
 
 

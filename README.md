@@ -262,17 +262,35 @@ python plot_results.py
 | **Hybrid (Weighted RRF)** | **73.81%** | **88.10%** | **92.86%** | **0.8218** | **0.8443** |   **152 ms**   |
 | **Hybrid + Reranker**     |   66.67%   |   88.10%   |   92.86%   |   0.7860   |   0.8170   |    9,320 ms    |
 
-### 2. Phát hiện Thực nghiệm Đắt giá (Empirical Insights):
+### 2. Đánh giá Tầng Sinh: So sánh khi KHÔNG DÙNG RAG (B0) vs CÓ DÙNG RAG (B1 - B3)
 
-1. **Weighted RRF vượt trội về hiệu năng và chi phí:** Khi được tinh chỉnh trọng số hợp lý ($w_{\text{dense}}=0.7, w_{\text{bm25}}=0.3, k=20$), phương pháp Hybrid đạt đỉnh về MRR ($0.8218$) và Recall@1 ($73.81\%$), đồng thời có tốc độ nhanh hơn mô hình Cross-Encoder **gấp 61 lần** (152ms so với 9.3s).
-2. **Vai trò của Reranker trên các dạng câu hỏi:**
+Bảng so sánh cốt lõi chứng minh tính cần thiết của RAG trong việc giảm thiểu ảo giác (Hallucination) từ dữ liệu thực nghiệm `results/generation_summary_dev.csv`:
+
+| Kịch bản thử nghiệm | F1 Overlap (%) | Độ trung thực / Bằng chứng (Faithfulness) | Tỷ lệ trích dẫn (Citation Rate) | Hiện tượng & Nhận xét thực nghiệm |
+| :--- | :---: | :---: | :---: | :--- |
+| **B0: KHÔNG DÙNG RAG (LLM thuần)** | **16.49%** | **0.0%** | **0.0%** | **Ảo giác 100%:** LLM trả lời dựa vào tri thức tham số chung chung, sai các mốc số liệu (số tín chỉ nợ, điểm cảnh báo) và hoàn toàn không thể dẫn nguồn. |
+| **B1: RAG với BM25** | 18.26% | 75.05% | 100.0% | Bắt đầu có trích dẫn, nhưng F1 thấp do BM25 bỏ sót tài liệu khi gặp câu hỏi khẩu ngữ/paraphrase. |
+| **B2: RAG với Dense Vector** | 35.64% | 81.82% | 100.0% | Điểm F1 tăng vọt gấp đôi, hiểu ngữ nghĩa tốt. |
+| **B3: RAG Đề xuất (Hybrid + Reranker)** | **32.17%** | **81.87%** | **100.0%** | **Độ trung thực cao nhất (81.87%):** 100% câu trả lời gắn chính xác mã trích dẫn [n], bám sát văn bản pháp lý gốc. |
+
+### 3. Phát hiện Thực nghiệm Đắt giá (Empirical Insights):
+
+1. **Tại sao RAG là bắt buộc?** Khi không có RAG (B0), mô hình ngôn ngữ hoàn toàn "mù" trước các văn bản nội bộ trường đại học (Faithfulness = 0%, Citation = 0%). RAG giúp nâng độ trung thực lên **81.87%** và độ phủ trích dẫn đạt **100%**.
+2. **Weighted RRF vượt trội về hiệu năng và chi phí:** Khi được tinh chỉnh trọng số hợp lý ($w_{\text{dense}}=0.7, w_{\text{bm25}}=0.3, k=20$), phương pháp Hybrid đạt đỉnh về MRR ($0.8218$) và Recall@1 ($73.81\%$), đồng thời có tốc độ nhanh hơn mô hình Cross-Encoder **gấp 61 lần** (152ms so với 9.3s).
+3. **Vai trò của Reranker trên các dạng câu hỏi:**
    - Trên tập `dev.jsonl` (tập trung 57% câu hỏi khẩu ngữ/paraphrase), Reranker phát huy tối đa sức mạnh Cross-Attention khi đưa MRR từ $0.6664$ lên **$0.7748$** ($\Delta = +0.1084, p = 0.0160^*$).
    - Trên tập `test.jsonl` với các câu hỏi tra cứu con số/thuật ngữ pháp lý chính xác, Weighted RRF đã đưa đoạn đúng lên Hạng 1 rất tốt ($R@1 = 82.05\%$), việc áp dụng Reranker mềm trên pool $N=10$ đôi khi gây hiện tượng đảo thứ hạng nhẹ giữa các điều khoản liên quan.
    - Đây là luận cứ thực nghiệm quan trọng chứng minh: _Trong môi trường triển khai thực tế có tài nguyên hạn chế, cấu hình Weighted RRF là giải pháp tối ưu nhất về cả độ chính xác lẫn tốc độ phản hồi._
 
-### 3. Biểu đồ Minh Họa Trực Quan (Experimental Visualizations)
+### 4. Biểu đồ Minh Họa Trực Quan (Experimental Visualizations)
 
-Bộ biểu đồ chất lượng cao (300 DPI) được tự động tạo bởi script `python plot_results.py` từ dữ liệu thực nghiệm trong `results/`:
+Bộ 5 biểu đồ chất lượng cao (300 DPI) được tự động tạo bởi script `python plot_results.py` từ dữ liệu thực nghiệm trong `results/`:
+
+#### Biểu đồ 5: Đột phá khi CÓ DÙNG RAG (B1 - B3) so với KHÔNG DÙNG RAG (B0)
+Chứng minh thực nghiệm: LLM thuần (B0) hoàn toàn bị ảo giác (0.0% Faithfulness, 0.0% Citation Rate), trong khi RAG giúp độ trung thực tăng vọt lên **81.87%** và tỷ lệ trích dẫn đạt **100%**.
+<p align="center">
+  <img src="results/figures/fig5_rag_vs_no_rag.png" alt="So sánh Không RAG vs Có RAG" width="85%" />
+</p>
 
 | Biểu đồ 1: Đường cong hội tụ Recall@K | Biểu đồ 2: So sánh Chất lượng Xếp hạng (MRR & nDCG@10) |
 | :---: | :---: |
