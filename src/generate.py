@@ -292,6 +292,65 @@ Hãy đọc hiểu các đoạn tài liệu trên và trả lời câu hỏi c�
             "prompt": prompt
         }
 
+    def generate_without_retrieval(self, query: str) -> Dict[str, Any]:
+        """
+        Sinh câu trả lời trực tiếp từ tri thức tham số nội tại của LLM (Baseline B0: No Retrieval).
+        Dùng để chứng minh sự cần thiết của RAG trong việc giảm thiểu ảo giác (hallucination).
+        """
+        self.load_model()
+        messages = [
+            {
+                "role": "system",
+                "content": "Bạn là trợ lý giải đáp thắc mắc về quy chế đào tạo. Hãy trả lời câu hỏi sau của người dùng bằng tiếng Việt một cách chính xác."
+            },
+            {"role": "user", "content": query}
+        ]
+
+        if hasattr(self.tokenizer, "apply_chat_template"):
+            prompt = self.tokenizer.apply_chat_template(
+                messages,
+                tokenize=False,
+                add_generation_prompt=True
+            )
+        else:
+            prompt = f"HỎI: {query}\n\nTRẢ LỜI:"
+
+        inputs = self.tokenizer(prompt, return_tensors="pt")
+        input_ids = inputs.input_ids.to(self.model.device)
+        attention_mask = inputs.attention_mask.to(self.model.device)
+
+        with torch.no_grad():
+            output_tokens = self.model.generate(
+                input_ids=input_ids,
+                attention_mask=attention_mask,
+                max_new_tokens=self.max_new_tokens,
+                temperature=self.temperature,
+                do_sample=self.temperature > 0.05,
+                top_p=0.9,
+                repetition_penalty=1.1,
+                pad_token_id=self.tokenizer.eos_token_id
+            )
+
+        generated_tokens = output_tokens[0][input_ids.shape[1]:]
+        raw_answer = self.tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
+        final_answer = clean_llm_response(raw_answer)
+
+        refusal_phrases = [
+            "không tìm thấy thông tin",
+            "không có thông tin",
+            "tôi không biết",
+            "không thể trả lời"
+        ]
+        is_refused = any(p in final_answer.lower() for p in refusal_phrases) and len(final_answer) < 150
+
+        return {
+            "answer": final_answer,
+            "refused": is_refused,
+            "citations": [],
+            "hallucinated_citations": [],
+            "prompt": prompt
+        }
+
     def unload(self):
         """Giải phóng hoàn toàn LLM khỏi bộ nhớ khi không dùng đến."""
         del self.model

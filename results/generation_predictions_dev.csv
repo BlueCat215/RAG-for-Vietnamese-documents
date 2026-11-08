@@ -1,0 +1,176 @@
+﻿split,method,qid,question,answerable,ground_truth,generated_answer,is_refused,over_refused,f1_score,groundedness,has_citation,latency_ms
+dev,B0: No-Retrieval (LLM thuần),q001,Điều kiện để sinh viên được công nhận tốt nghiệp là gì?,True,"Không bị truy cứu trách nhiệm hình sự, tích lũy đủ học phần, ĐTB tích lũy từ 2.0 trở lên, có chứng chỉ ngoại ngữ, tin học, GDQP-AN và GDTC.","Để sinh viên có thể được công nhận tốt nghiệp, thường cần tuân thủ các điều kiện sau:
+
+1. Đủ số tín chỉ theo yêu cầu của chương trình học: Đây là điều kiện cơ bản nhất, sinh viên phải hoàn thành đủ số lượng tín chỉ đã đăng ký.
+
+2. Đạt điểm trung bình giữa kỳ và cuối kỳ: Điểm trung bình này thường được tính dựa trên kết quả thi và bài tập nhóm, tiểu luận, hoặc các hoạt động khác trong quá trình học.
+
+3. Không vi phạm kỷ luật trường học: Điều này bao gồm việc không bị kỷ luật vì vi phạm quy định về hành vi học tập, tuân thủ nguyên tắc đạo đức và pháp luật.
+
+4. Tham gia các hoạt động ngoại khóa: Một số trường có yêu cầu sinh viên tham gia một số hoạt động ngoại khóa như tình nguyện, làm báo cáo thực tế xã hội...
+
+5. Có chứng chỉ ngoại ngữ nếu yêu cầu: Nếu chương trình học yêu cầu sinh viên phải đạt chứng chỉ tiếng Anh (ví dụ IELTS, TOEFL) thì sinh viên cũng cần đảm bảo đạt tiêu chuẩn này.
+
+6. Thực hiện tốt các hoạt động ngoại khóa: Ví dụ như tham gia vào các tổ chức sinh viên, tham gia các cuộc thi khoa học kỹ thuật, ...
+
+Lưu ý rằng các điều kiện cụ thể sẽ phụ thuộc vào từng chương trình học và trường đại học mà bạn đang theo học. Vì vậy, trước khi tốt nghiệp, sinh viên nên kiểm tra kĩ với bộ phận quản lý hồ sơ của trường.",False,False,0.113,0.0,False,23653.0
+dev,B0: No-Retrieval (LLM thuần),q002,trượt môn thì đăng kí học lại như nào?,True,Sinh viên đăng ký học lại học phần bị điểm F ở các học kỳ tiếp theo hoặc học kỳ phụ cho đến khi đạt điểm D trở lên.,"Nếu bạn trượt môn trong kỳ thi tuyển sinh, bạn vẫn có thể đăng ký học lại môn đó thông qua các bước sau:
+
+1. Tham gia kỳ thi tuyển sinh tiếp theo: Bạn cần phải tham dự kỳ thi tuyển sinh để được xét vào trường và lớp.
+
+2. Đánh giá kết quả kỳ thi cũ: Trường sẽ xem xét kết quả kỳ thi trước để quyết định việc cho phép bạn học lại môn đã trượt.
+
+3. Đăng ký học lại: Nếu bạn đủ điều kiện, bạn sẽ được yêu cầu đăng ký học lại môn đó. Thông thường, bạn sẽ chọn giữa học lại trực tuyến hoặc trực tiếp tại trường.
+
+4. Học lại: Sau khi được chấp thuận, bạn bắt đầu quá trình học lại. Mức độ tự học và thời gian hoàn thành khóa học phụ thuộc vào từng trường và môn cụ thể.
+
+5. Kiểm tra cuối cùng: Khi bạn đã hoàn thành khóa học lại, bạn sẽ phải tham gia kỳ kiểm tra cuối cùng để chứng minh rằng bạn đã nắm vững kiến thức.
+
+Lưu ý rằng quy trình này có thể khác nhau tùy thuộc vào trường và chương trình đào tạo mà bạn đang theo đuổi. Vì vậy, tốt nhất nên liên hệ với bộ phận hỗ trợ học sinh hoặc thư viện trường để biết thêm chi tiết.",False,False,0.1818,0.0,False,21566.0
+dev,B0: No-Retrieval (LLM thuần),q003,đóng học phí được giảm khi đủ điều kiện gì?,True,Được giảm 70% đối với sinh viên dân tộc thiểu số ở vùng đặc biệt khó khăn; giảm 50% đối với sinh viên có cha mẹ bị tai nạn lao động hoặc bệnh nghề nghiệp.,"Đóng học phí có thể được giảm hoặc miễn phí theo nhiều trường hợp khác nhau, tùy thuộc vào từng trường và quy định cụ thể của nhà trường. Một số trường hợp phổ biến bao gồm:
+
+1. Học sinh, sinh viên có hoàn cảnh khó khăn về kinh tế.
+2. Học sinh, sinh viên có thành tích học tập xuất sắc.
+3. Học sinh, sinh viên có thành tích hoạt động ngoại khóa tốt.
+4. Học sinh, sinh viên có thành tích nghiên cứu khoa học.
+5. Học sinh, sinh viên có thành tích trong các cuộc thi học thuật.
+
+Tuy nhiên, để biết rõ hơn về điều kiện cụ thể cho trường bạn đang theo học, bạn nên liên hệ trực tiếp với Ban tuyển sinh hoặc Trung tâm hỗ trợ học sinh, sinh viên của trường.",False,False,0.2,0.0,False,11616.8
+dev,B1: BM25 -> LLM,q001,Điều kiện để sinh viên được công nhận tốt nghiệp là gì?,True,"Không bị truy cứu trách nhiệm hình sự, tích lũy đủ học phần, ĐTB tích lũy từ 2.0 trở lên, có chứng chỉ ngoại ngữ, tin học, GDQP-AN và GDTC.","Theo tài liệu, điều kiện để sinh viên được công nhận tốt nghiệp như sau:
+
+- Sau mỗi học kỳ, Hội đồng xét tốt nghiệp sẽ căn cứ vào các điều kiện công nhận tốt nghiệp quy định tại khoản 1 của Điều 24 để lập danh sách những sinh viên đủ điều kiện tốt nghiệp. 
+
+- Hội đồng xét tốt nghiệp do Hiệu trưởng hoặc Phó Hiệu trưởng được Hiệu trưởng ủy quyền làm chủ tịch, Trưởng Phòng đào tạo làm thư ký và có các thành viên là các Trưởng Khoa chuyên môn, Trưởng phòng Công tác sinh viên, Trưởng phòng Tài chính kế toán, Trưởng phòng Thanh tra - Pháp chế, Trưởng phòng Khảo thí - ĐBCL, Bí thư Đoàn Thanh niên, Chủ tịch Hội sinh viên.
+
+- Những sinh viên đủ điều kiện tốt nghiệp sẽ được Hiệu trưởng ra quyết định công nhận tốt nghiệp và cấp bằng tốt nghiệp trong thời hạn 03 tháng tính từ thời điểm sinh viên đáp ứng đầy đủ điều kiện tốt nghiệp và hoàn thành nghĩa vụ với Nhà trường.
+
+[Mô tả chi tiết về điều kiện tốt nghiệp đã được trích dẫn từ hai tài liệu [1] và [2]. Các điều kiện đều giống nhau.]
+
+Tôi không tìm thấy thông tin này trong tài liệu được cung cấp. 
+
+Mã nguồn trích dẫn: 
+[1] Nguồn: huong_dan_hoc_lai_tot_nghiep.txt - Quy định chung - Điều 24. Điều kiện xét tốt nghiệp và công nhận tốt nghiệp - Khoản 2 (tr. 1)
+[2] Nguồn: quy_che_dao_tao_qd392_uneti_dai_hoc_kinh_te_ky_thuat_cong_nghiep.pdf - Chương III ĐÁNH GIÁ KẾT QUẢ HỌC TẬP VÀ CẤP BẰNG TỐT NGHIỆP - Điều 24. Điều kiện xét tốt nghiệp và công nhận tốt nghiệp - Khoản 2 (tr. 22)
+
+[Mã nguồn trích dẫn cho cả hai đoạn tài liệu.]",False,False,0.0875,0.7519,True,31117.1
+dev,B1: BM25 -> LLM,q002,trượt môn thì đăng kí học lại như nào?,True,Sinh viên đăng ký học lại học phần bị điểm F ở các học kỳ tiếp theo hoặc học kỳ phụ cho đến khi đạt điểm D trở lên.,"Theo tài liệu, sinh viên trượt môn sẽ đăng ký học lại theo các bước sau:
+
+[1], [2]: Sinh viên chỉ được xét tốt nghiệp chương trình thứ hai nếu đã đăng ký muộn nhất 02 năm trước thời điểm xét tốt nghiệp chương trình thứ hai. 
+
+[3]: Sinh viên có lý do chính đáng và được sự đồng ý của Phòng Đào tạo và Khoa chuyên môn, được cho phép đăng ký thi lại, đánh giá lại một điểm thành phần để cải thiện điểm học phần từ không đạt thành đạt. Điểm học phần sau khi thi lại, đánh giá lại chỉ được giới hạn ở mức điểm D hoặc điểm C.
+
+[4]: Sinh viên bị buộc thôi học nếu số lần cảnh báo học tập hoặc mức cảnh báo học tập vượt quá giới hạn theo quy định của cơ sở đào tạo. Sinh viên cũng bị buộc thôi học nếu thời gian học tập vượt quá giới hạn theo quy định tại khoản 5 Điều 2 của Quy chế này.
+
+Vì vậy, sinh viên trượt môn vẫn có khả năng đăng ký học lại. Tuy nhiên, sinh viên cần đảm bảo rằng họ đã đăng ký đúng thời hạn và có lý do chính đáng để được chấp thuận đăng ký học lại. Ngoài ra, sinh viên cần tuân thủ các yêu cầu khác về điểm trung bình học kỳ và điểm trung bình tích lũy để tránh bị buộc thôi học. 
+
+Nhớ rằng, tất cả những quy định này đều phụ thuộc vào quy chế đào tạo của cơ sở giáo dục mà sinh viên đang theo học. Bạn nên kiểm tra kỹ quy chế đào tạo của trường mình để nắm rõ hơn.",False,False,0.2138,0.6739,True,24612.4
+dev,B1: BM25 -> LLM,q003,đóng học phí được giảm khi đủ điều kiện gì?,True,Được giảm 70% đối với sinh viên dân tộc thiểu số ở vùng đặc biệt khó khăn; giảm 50% đối với sinh viên có cha mẹ bị tai nạn lao động hoặc bệnh nghề nghiệp.,"Theo tài liệu, sinh viên sẽ được hưởng chế độ miễn, giảm học phí, hỗ trợ chi phí học tập và hỗ trợ học tập nếu họ:
+
+- Thân thuộc đối tượng được hưởng chế độ miễn, giảm học phí, hỗ trợ chi phí học tập và hỗ trợ học tập như sinh viên người dân tộc thiểu số ở vùng có điều kiện kinh tế - xã hội khó khăn hoặc đặc biệt khó khăn theo quy định hiện hành của cơ quan có thẩm quyền; 
+- Thân thuộc đối tượng được hưởng học phần được miễn, giảm học phí như thuộc chương trình tiêu chuẩn hoặc chương trình chất lượng cao;
+- Thân thuộc đối tượng được hưởng học phí miễn, giảm vì lý do khác theo quy định của nhà trường;
+- Thân thuộc đối tượng được hưởng học phí miễn, giảm vì lý do khác theo quy định của nhà trường và đã nộp đơn đề nghị và kèm theo đầy đủ các giấy tờ cần thiết theo quy định;
+- Thân thuộc đối tượng được hưởng học phí miễn, giảm vì lý do khác theo quy định của nhà trường và đã nộp đơn đề nghị và kèm theo đầy đủ các giấy tờ cần thiết theo quy định nhưng chưa được giải quyết truy lĩnh tiền miễn, giảm học phí, hỗ trợ chi phí học tập và hỗ trợ học tập đối với thời gian đã học từ trước thời điểm sinh viên gửi hồ sơ đề nghị kèm theo các giấy tờ cần thiết có liên quan.
+
+Tất cả những điều kiện này đều được quy định tại [1]. 
+
+Trường hợp không thuộc bất kỳ điều kiện nào trên, sinh viên sẽ không được hưởng chế độ miễn, giảm học phí, hỗ trợ chi phí học tập và hỗ trợ học tập.",False,False,0.2464,0.8257,True,25097.7
+dev,B2: Dense -> LLM,q001,Điều kiện để sinh viên được công nhận tốt nghiệp là gì?,True,"Không bị truy cứu trách nhiệm hình sự, tích lũy đủ học phần, ĐTB tích lũy từ 2.0 trở lên, có chứng chỉ ngoại ngữ, tin học, GDQP-AN và GDTC.","Để sinh viên được công nhận tốt nghiệp, họ cần đáp ứng các điều kiện sau:
+
+1. Theo [1]:
+- Tích lũy đủ học phần, số tín chỉ và hoàn thành các nội dung bắt buộc theo yêu cầu của chương trình đào tạo, đạt chuẩn đầu ra của chương trình đào tạo.
+- Điểm trung bình tích lũy của toàn khóa học đạt từ trung bình trở lên.
+- Tại thời điểm xét tốt nghiệp không bị truy cứu trách nhiệm hình sự hoặc không đang trong thời gian bị kỷ luật ở mức đình chỉ học tập.
+
+2. Theo [2]:
+- Cho đến thời điểm xét tốt nghiệp không bị truy cứu trách nhiệm hình sự hoặc không đang trong thời gian bị kỷ luật ở mức đình chỉ học tập.
+- Tích lũy đủ số học phần và khối lượng của chương trình đào tạo được quy định tại Điều 2 của Quy chế này.
+- Điểm trung bình chung tích lũy của toàn khóa học đạt từ 2,00 trở lên.
+- Có các chứng chỉ hoặc chứng nhận ngoại ngữ, tin học theo quy định của Nhà trường với từng đối tượng và thời điểm.
+- Có các chứng chỉ hoặc chứng nhận giáo dục quốc phòng - an ninh đối với các ngành đào tạo không chuyên về quân sự và hoàn thành học phần giáo dục thể chất đối với các ngành không chuyên về thể dục - thể thao.
+- Có đơn gửi Phòng đào tạo đề nghị được xét tốt nghiệp trong trường hợp đủ điều kiện tốt nghiệp sớm hoặc muộn so với thời gian thiết kế của khoá học.
+
+3. Theo [3] và [4]:
+- Cho đến thời điểm xét tốt nghiệp không bị truy cứu trách nhiệm hình sự hoặc không đang trong thời gian bị kỷ luật ở mức đình chỉ học tập.
+- Tích lũy đủ số học phần và khối lượng của chương trình đào tạo được quy định tại Điều 2 của Quy chế này.
+- Điểm trung bình chung tích lũy của toàn khóa học đạt từ 2,00 trở lên.
+- Có các chứng chỉ hoặc chứng nhận ngoại ngữ, tin học theo quy định của Nhà trường với từng đối tượng và thời điểm.
+- Có các chứng chỉ hoặc chứng nhận giáo dục quốc phòng - an ninh đối với các ngành đào tạo không chuyên về quân sự và hoàn thành học phần giáo dục thể chất đối với các ngành không chuyên về thể dục - thể thao.
+- Có đơn gửi Phòng đào tạo đề nghị được xét tốt nghiệp trong trường hợp đủ điều kiện tốt nghiệp sớm hoặc muộn so với thời gian thiết kế của khoá học.
+
+Như vậy, sinh viên sẽ được công nhận tốt nghiệp nếu họ đáp ứng đầy đủ các điều kiện như đã nêu trên. Mời người dùng kiểm tra lại thông tin để đảm bảo chính xác. [1], [2], [3].",False,False,0.2963,0.8519,True,45835.6
+dev,B2: Dense -> LLM,q002,trượt môn thì đăng kí học lại như nào?,True,Sinh viên đăng ký học lại học phần bị điểm F ở các học kỳ tiếp theo hoặc học kỳ phụ cho đến khi đạt điểm D trở lên.,"Theo tài liệu, sinh viên trượt môn có thể đăng ký học lại như sau:
+
+1. **Đăng ký học lại học phần bắt buộc:** 
+   - Sinh viên có học phần bắt buộc bị điểm F, F+ cần đăng ký học lại học phần đó ở một trong các học kỳ tiếp theo cho đến khi đạt điểm A, B+, B, C+, C, D+, D. 
+   - Mã nguồn trích dẫn: [1], [2]
+
+2. **Đăng ký học lại học phần tự chọn:**
+   - Sinh viên có học phần tự chọn bị điểm F, F+ cần đăng ký học lại học phần đó hoặc học đổi sang học phần tự chọn tương đương khác.
+   - Mã nguồn trích dẫn: [1], [2]
+
+3. **Đăng ký học lại trong học kỳ phụ:**
+   - Sinh viên chỉ được đăng ký học lại học phần trong học kỳ phụ nếu học phần đó đã được đăng ký ít nhất 1 lần trong học kỳ chính (trừ các trường hợp có lý do đặc biệt và có sự cho phép của CVHT, phòng CTSV và phòng Đào tạo).  
+   - Mã nguồn trích dẫn: [1], [2]
+
+Tóm lại, sinh viên trượt môn có thể đăng ký học lại học phần bắt buộc hoặc tự chọn, và có thể đăng ký học lại trong học kỳ phụ nếu thỏa mãn các điều kiện cụ thể. 
+
+Nếu có thêm câu hỏi chi tiết, tôi sẽ cố gắng hỗ trợ tốt hơn nữa.",False,False,0.3486,0.7386,True,23496.2
+dev,B2: Dense -> LLM,q003,đóng học phí được giảm khi đủ điều kiện gì?,True,Được giảm 70% đối với sinh viên dân tộc thiểu số ở vùng đặc biệt khó khăn; giảm 50% đối với sinh viên có cha mẹ bị tai nạn lao động hoặc bệnh nghề nghiệp.,"Theo tài liệu, học phí được giảm khi:
+
+- Đối tượng được giảm 70% học phí gồm: 
+  - Sinh viên là người dân tộc thiểu số (ngoại trừ đối tượng dân tộc thiểu số rất ít người), bản thân và cha hoặc mẹ có nơi thường trú tại thôn/bản đặc biệt khó khăn, xã khu vực III vùng đồng bào dân tộc thiểu số và miền núi, xã đặc biệt khó khăn vùng bãi ngang, ven biển và hải đảo theo quy định của cơ quan có thẩm quyền. 
+
+- Đối tượng được giảm 50% học phí gồm:
+  - Sinh viên có cha hoặc mẹ bị tai nạn lao động hoặc mắc bệnh nghề nghiệp được hưởng trợ cấp thường xuyên.
+
+Trong cả hai trường hợp trên, sinh viên cần chuẩn bị hồ sơ theo quy định và nộp lên nhà trường để được xét miễn, giảm học phí. 
+
+[Mô tả] Điều 5 và Điều 8 của Chương II Điều 13 của tài liệu quy định về đối tượng được giảm học phí và thủ tục thực hiện. 
+
+[1], [2], [3], [4]",False,False,0.4242,0.8641,True,18277.5
+dev,B3: Hybrid + Reranker (Đề xuất),q001,Điều kiện để sinh viên được công nhận tốt nghiệp là gì?,True,"Không bị truy cứu trách nhiệm hình sự, tích lũy đủ học phần, ĐTB tích lũy từ 2.0 trở lên, có chứng chỉ ngoại ngữ, tin học, GDQP-AN và GDTC.","Để sinh viên được công nhận tốt nghiệp, họ cần đáp ứng các điều kiện sau:
+- Theo [1] và [2]:
+1. Sinh viên phải tích lũy đủ số học phần và khối lượng chương trình đào tạo được quy định tại Điều 2 của Quy chế này.
+2. Điểm trung bình chung tích lũy của toàn khóa học đạt từ 2,00 trở lên.
+3. Tại thời điểm xét tốt nghiệp không bị truy cứu trách nhiệm hình sự hoặc không đang trong thời gian bị kỷ luật ở mức đình chỉ học tập.
+4. Có các chứng chỉ hoặc chứng nhận ngoại ngữ, tin học theo quy định của Nhà trường với từng đối tượng và thời điểm.
+5. Có các chứng chỉ hoặc chứng nhận giáo dục quốc phòng - an ninh đối với các ngành đào tạo không chuyên về quân sự và hoàn thành học phần giáo dục thể chất đối với các ngành không chuyên về thể dục - thể thao.
+6. Có đơn gửi Phòng đào tạo đề nghị được xét tốt nghiệp trong trường hợp đủ điều kiện tốt nghiệp sớm hoặc muộn so với thời gian thiết kế của khoá học.
+- Theo [3] và [4]:
+7. Căn cứ đề nghị của Hội đồng xét tốt nghiệp, Hiệu trưởng ký quyết định công nhận tốt nghiệp cho những sinh viên đủ điều kiện tốt nghiệp.",False,False,0.338,0.9739,True,30969.5
+dev,B3: Hybrid + Reranker (Đề xuất),q002,trượt môn thì đăng kí học lại như nào?,True,Sinh viên đăng ký học lại học phần bị điểm F ở các học kỳ tiếp theo hoặc học kỳ phụ cho đến khi đạt điểm D trở lên.,"Theo các quy định trong tài liệu, sinh viên trượt môn có thể đăng ký học lại như sau:
+
+1. **Đăng ký học lại học phần bắt buộc**: 
+   - Sinh viên cần đăng ký học lại học phần bắt buộc bị điểm F, F+ ở một trong các học kỳ tiếp theo cho đến khi đạt điểm A, B+, B, C+, C, D+, D. 
+   - Mã nguồn trích dẫn: [1], [2]
+
+2. **Đăng ký học lại học phần tự chọn**:
+   - Sinh viên có thể đăng ký học lại học phần tự chọn bị điểm F, F+. 
+   - Thay vì học lại, sinh viên cũng có thể học đổi sang học phần tự chọn tương đương khác.
+   - Mã nguồn trích dẫn: [1], [2]
+
+3. **Đăng ký học cải thiện điểm**:
+   - Ngoài các trường hợp quy định tại Khoản 1 và Khoản 2, sinh viên còn có quyền đăng ký học cải thiện hoặc học đổi sang học phần khác tương đương để cải thiện điểm trung bình chung tích lũy.
+   - Mã nguồn trích dẫn: [1], [2]
+
+4. **Đăng ký học lại trong học kỳ phụ**:
+   - Sinh viên chỉ được đăng ký học lại học phần trong học kỳ phụ nếu học phần đó đã được đăng ký ít nhất 1 lần trong học kỳ chính (trừ các trường hợp có lý do đặc biệt và có sự cho phép của CVHT, phòng CTSV và phòng Đào tạo). 
+   - Mã nguồn trích dẫn: [1], [2]
+
+Trên cơ sở các quy định này, sinh viên có nhiều lựa chọn để đăng ký học lại học phần mà họ đã trượt. Bạn nên nhớ rằng, tùy thuộc vào từng trường và quy định cụ thể, có thể có sự khác biệt nhỏ giữa các tài liệu.",False,False,0.3016,0.7619,True,38919.6
+dev,B3: Hybrid + Reranker (Đề xuất),q003,đóng học phí được giảm khi đủ điều kiện gì?,True,Được giảm 70% đối với sinh viên dân tộc thiểu số ở vùng đặc biệt khó khăn; giảm 50% đối với sinh viên có cha mẹ bị tai nạn lao động hoặc bệnh nghề nghiệp.,"Theo tài liệu, việc đóng học phí được giảm khi đủ một trong những điều kiện sau:
+[1] Đối tượng được giảm 70% học phí gồm:
+- Sinh viên là người dân tộc thiểu số (ngoại trừ đối tượng dân tộc thiểu số rất ít người).
+- Bản thân và cha hoặc mẹ có nơi thường trú tại thôn/bản đặc biệt khó khăn, xã khu vực III vùng đồng bào dân tộc thiểu số và miền núi, xã đặc biệt khó khăn vùng bãi ngang, ven biển và hải đảo theo quy định của cơ quan có thẩm quyền.
+[2] Đối tượng được giảm 50% học phí gồm:
+- Sinh viên có cha hoặc mẹ bị tai nạn lao động hoặc mắc bệnh nghề nghiệp được hưởng trợ cấp thường xuyên.
+Trong trường hợp này, nếu người dùng muốn biết thêm về học phần được miễn, giảm học phí thì có thể tham khảo Điều 10 của Chương II như sau:
+[2] Học phần được miễn, giảm học phí:
+- Học phần học lần thứ nhất thuộc chương trình tiêu chuẩn, chương trình chất lượng cao.
+- Các học phần không được miễn, giảm học phí:
+  a) Các học phần học tại học kỳ phụ;
+  b) Các học phần học lại;
+  c) Các học phần ngoài chương trình tiêu chuẩn, chương trình chất lượng cao.
+Tuy nhiên, cần lưu ý rằng việc miễn, giảm học phí còn tùy thuộc vào hồ sơ và quyết định của nhà trường theo quy định tại Điều 8 của Chương II và Điều 13 của Chương V. 
+Như vậy, để được giảm học phí, sinh viên cần đảm bảo điều kiện về đối tượng và học phần phù hợp. Ngoài ra, sinh viên cũng cần chuẩn bị đầy đủ hồ sơ theo quy định để nhà trường xét duyệt.",False,False,0.3256,0.7203,True,34303.9

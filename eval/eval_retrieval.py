@@ -15,6 +15,18 @@ import math
 # Đảm bảo import được module 'src' khi chạy trực tiếp từ thư mục eval
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+# Cấu hình UTF-8 cho Windows console để tránh UnicodeEncodeError
+if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+if sys.stderr.encoding and sys.stderr.encoding.lower() != "utf-8":
+    try:
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
 import numpy as np
 import pandas as pd
 from typing import List, Dict, Any, Tuple
@@ -106,12 +118,15 @@ def calculate_retrieval_metrics(
 
 
 def run_evaluation(
-    qa_file: str = "data/qa/dev.jsonl",
-    config_path: str = "config/config.yaml",
-    output_csv: str = "results/retrieval_ablation.csv"
+    split: str = "dev",
+    config_path: str = "config/config.yaml"
 ):
+    qa_file = f"data/qa/{split}.jsonl"
+    output_csv = f"results/retrieval_ablation_{split}.csv"
+    default_csv = "results/retrieval_ablation.csv"
+
     print("=" * 60)
-    print("🔬 CHẠY ĐÁNH GIÁ ĐỊNH LƯỢNG TẦNG TRUY HỒI (RETRIEVAL ABLATION)")
+    print(f"🔬 CHẠY ĐÁNH GIÁ ĐỊNH LƯỢNG TẦNG TRUY HỒI (SPLIT: {split.upper()})")
     print("=" * 60)
 
     qa_data = load_jsonl(qa_file)
@@ -164,8 +179,10 @@ def run_evaluation(
     cols = ["Method", "Recall@1", "Recall@3", "Recall@5", "Recall@10", "MRR", "nDCG@10"]
     df = df[cols]
 
-    os.makedirs(os.path.dirname(output_csv), exist_ok=True)
+    os.makedirs("results", exist_ok=True)
     df.to_csv(output_csv, index=False, encoding="utf-8-sig")
+    if split == "dev":
+        df.to_csv(default_csv, index=False, encoding="utf-8-sig")
 
     print("\n" + "=" * 60)
     print("📊 BẢNG KẾT QUẢ SO SÁNH PHƯƠNG PHÁP (ABLATION STUDY)")
@@ -175,4 +192,9 @@ def run_evaluation(
 
 
 if __name__ == "__main__":
-    run_evaluation()
+    import argparse
+    parser = argparse.ArgumentParser(description="Đánh giá tầng truy hồi RAG Tiếng Việt (NLP-21)")
+    parser.add_argument("--split", type=str, default="dev", choices=["dev", "test"], help="Tập dữ liệu cần đo (dev hoặc test)")
+    args = parser.parse_args()
+
+    run_evaluation(split=args.split)

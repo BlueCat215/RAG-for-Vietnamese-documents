@@ -172,6 +172,25 @@ class RAGPipeline:
                 "latency_ms": {}
             }
 
+        # Baseline B0: Không truy hồi (No Retrieval) - Đo năng lực thuần của LLM khi không có RAG
+        if method == "no_retrieval":
+            t0 = time.time()
+            gen_res = self.generator.generate_without_retrieval(question)
+            gen_ms = (time.time() - t0) * 1000
+            return {
+                "question": question,
+                "answer": gen_res["answer"],
+                "refused": gen_res["refused"],
+                "sources": [],
+                "contexts": [],
+                "latency_ms": {
+                    "retrieve_ms": 0.0,
+                    "rerank_ms": 0.0,
+                    "generate_ms": gen_ms,
+                    "total_ms": gen_ms
+                }
+            }
+
         # Bước 1: Truy xuất và xếp hạng
         contexts, timings = self.retrieve(question, method=method, top_k=top_k, use_rerank=use_rerank)
 
