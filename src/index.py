@@ -1,7 +1,4 @@
-"""
-Module xây dựng và nạp chỉ mục FAISS Vector Store.
-Đảm bảo giải phóng VRAM GPU ngay sau khi tạo embedding xong.
-"""
+"""Module xây dựng và quản lý chỉ mục FAISS Vector Store."""
 
 import os
 import gc
@@ -32,7 +29,6 @@ class VectorIndex:
         model = SentenceTransformer(self.model_name, device=self.device)
 
         print(f"[*] Bắt đầu tính toán vector cho {len(texts)} chunks (batch_size={batch_size})...")
-        # Chuẩn hóa normalize_embeddings=True để dùng tích vô hướng (Inner Product) thay cho Cosine
         embeddings = model.encode(
             texts,
             batch_size=batch_size,
@@ -46,14 +42,12 @@ class VectorIndex:
         self.index = faiss.IndexFlatIP(dim)
         self.index.add(embeddings.astype(np.float32))
 
-        # Giải phóng model và VRAM GPU
         del model
         gc.collect()
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
         print("[+] Đã giải phóng bộ nhớ GPU sau khi dựng Index.")
 
-        # Lưu index và metadata xuống đĩa
         self.save(output_dir)
 
     def save(self, output_dir: str):
@@ -82,14 +76,10 @@ class VectorIndex:
         print(f"[+] Đã tải chỉ mục gồm {len(self.chunks)} chunks từ {index_dir}")
 
     def search(self, query: str, model: SentenceTransformer, top_k: int = 5) -> List[Dict[str, Any]]:
-        """
-        Tìm kiếm ngữ nghĩa (Dense search) bằng vector embedding đa chiều của AITeamVN/Vietnamese_Embedding.
-        Lưu ý: Lúc truy vấn online, model SentenceTransformer chạy trên CPU để nhường trọn vẹn GPU cho LLM.
-        """
+        """Tìm kiếm ngữ nghĩa (Dense Search) bằng mô hình vector embedding."""
         if self.index is None:
             raise ValueError("Index chưa được nạp hoặc khởi tạo!")
 
-        # Chuẩn hóa L2 vector để bảo toàn quan hệ góc Cosine Similarity đa chiều
         q_vec = model.encode([query], normalize_embeddings=True, convert_to_numpy=True)
         scores, indices = self.index.search(q_vec.astype(np.float32), top_k)
 

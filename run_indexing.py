@@ -38,7 +38,7 @@ def run_pipeline_indexing(config_path: str = "config/config.yaml"):
     os.makedirs(index_dir, exist_ok=True)
 
     print("=" * 60)
-    print("🚀 BƯỚC 1: TRÍCH XUẤT VÀ LÀM SẠCH VĂN BẢN (EXTRACT & CLEAN)")
+    print("BƯỚC 1: TRÍCH XUẤT VÀ LÀM SẠCH VĂN BẢN")
     print("=" * 60)
 
     # Lấy toàn bộ file PDF, DOCX, TXT trong data/raw/
@@ -66,7 +66,7 @@ def run_pipeline_indexing(config_path: str = "config/config.yaml"):
             print(f"     [!] Lỗi khi xử lý {fname}: {e}")
 
     print("\n" + "=" * 60)
-    print("🚀 BƯỚC 2: PHÂN ĐOẠN THEO CẤU TRÚC ĐIỀU/KHOẢN (CHUNKING S3)")
+    print("BƯỚC 2: PHÂN ĐOẠN THEO CẤU TRÚC ĐIỀU/KHOẢN")
     print("=" * 60)
     t0 = time.time()
     chunks = chunk_structural(all_pages_data, max_tokens=chunk_cfg.get("max_tokens", 512))
@@ -78,7 +78,7 @@ def run_pipeline_indexing(config_path: str = "config/config.yaml"):
     print(f"[+] Đã lưu danh sách chunk vào: {chunks_output_path}")
 
     print("\n" + "=" * 60)
-    print("🚀 BƯỚC 3: TÍNH VECTOR EMBEDDING VÀ DỰNG FAISS INDEX")
+    print("BƯỚC 3: TÍNH VECTOR EMBEDDING VÀ DỰNG FAISS INDEX")
     print("=" * 60)
     idx = VectorIndex(model_name=emb_cfg["name"], device=emb_cfg.get("device", "cuda"))
     idx.build_index(

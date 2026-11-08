@@ -1,6 +1,7 @@
+"""Module làm sạch văn bản tiếng Việt: chuẩn hóa Unicode NFC, xử lý gãy dòng."""
+
 import re
 import unicodedata
-# Module làm sạch văn bản tiếng Việt: chuẩn hóa Unicode NFC, xử lý gãy dòng, giữ nguyên cấu trúc số/Điều
 def normalize_unicode_nfc(text: str) -> str:
     """
     Chuẩn hóa chuỗi văn bản về Unicode NFC (dựng sẵn).

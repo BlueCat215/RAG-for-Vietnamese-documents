@@ -1,17 +1,4 @@
-"""
-Module sinh câu trả lời (Generation) cho hệ thống RAG tiếng Việt (NLP-21).
-
-Tối ưu hóa:
-1. Ràng buộc phần cứng (VRAM 4GB RTX 3050):
-   - Hỗ trợ bitsandbytes 4-bit (NF4) để LLM 3B chỉ chiếm ~2.2GB VRAM.
-   - Hỗ trợ nạp trước (preload) để tránh trễ lần gọi đầu tiên.
-2. Hiểu ngữ nghĩa tự nhiên (Semantic Understanding):
-   - Cho phép LLM tự động liên kết ngữ nghĩa giữa khẩu ngữ tự nhiên của sinh viên với ngôn ngữ văn bản hành chính.
-3. Hậu xử lý chuẩn xác (Post-processing):
-   - Tự động cắt lọc các dòng sinh thừa máy móc (như tự in thêm 'Tôi không tìm thấy thông tin...') ở cuối câu trả lời nếu đã trả lời đủ ý.
-   - Kiểm tra mã trích dẫn [n], bắt lỗi mã trích dẫn bịa.
-   - Cắt tỉa các dòng gạch đầu dòng dang dở do chạm trần token.
-"""
+"""Module sinh câu trả lời (Generation) cho hệ thống RAG tiếng Việt (NLP-21)."""
 
 import re
 import os
@@ -19,6 +6,7 @@ import gc
 import torch
 from typing import List, Dict, Any, Tuple, Optional
 from transformers import AutoTokenizer, AutoModelForCausalLM
+from src import logger as rag_logger
 
 
 DEFAULT_SYSTEM_PROMPT = """Bạn là trợ lý hỏi đáp chuyên nghiệp về quy chế đào tạo, chính sách sinh viên và văn bản pháp lý.
@@ -37,19 +25,13 @@ CÁC QUY TẮC SUY LUẬN VÀ TRẢ LỜI:
 
 
 def clean_llm_response(raw_text: str) -> str:
-    """
-    Làm sạch phản hồi của LLM:
-    - Loại bỏ các dòng meta tự sinh như: [Mô tả từ tài liệu], [Mã nguồn trích dẫn: [1], [2]]
-    - Loại bỏ câu từ chối máy móc bị dính ở cuối đoạn nếu phía trên đã trả lời chi tiết.
-    - Cắt bỏ các dòng dang dở do chạm trần token (dangling incomplete bullet).
-    """
-    # Loại bỏ các khối meta có thể trải dài nhiều dòng
+    """Làm sạch phản hồi LLM: xóa thẻ meta tự sinh, câu từ chối thừa và dòng bị cụt."""
     raw_text = re.sub(r"\[Mã nguồn trích dẫn:[\s\S]*?\]", "", raw_text, flags=re.IGNORECASE)
     raw_text = re.sub(r"\[Tài liệu tham khảo:?[\s\S]*?\]", "", raw_text, flags=re.IGNORECASE)
 
     lines = raw_text.split("\n")
     cleaned_lines = []
-    
+
     meta_patterns = [
         r"^\[Mô tả từ tài liệu.*\]",
         r"^\[Mã nguồn trích dẫn:.*\]",
@@ -60,39 +42,26 @@ def clean_llm_response(raw_text: str) -> str:
 
     for line in lines:
         s = line.strip()
-        # Bỏ qua các dòng thẻ meta tự sinh
         if any(re.match(pat, s, re.IGNORECASE) for pat in meta_patterns):
             continue
         cleaned_lines.append(line)
 
     result = "\n".join(cleaned_lines).strip()
 
-    # Nếu câu trả lời đã có nội dung dài (> 120 ký tự) nhưng ở cuối lại có câu "Tôi không tìm thấy...", cắt bỏ dòng cuối đó
     res_lines = [l for l in result.split("\n") if l.strip()]
     if len(result) > 120 and len(res_lines) >= 2:
         if refusal_canonical in res_lines[-1].lower():
             res_lines.pop()
             result = "\n".join(res_lines).strip()
 
-    # Cắt bỏ dòng cuối nếu bị cụt chữ do chạm trần token
-    # Chỉ cắt khi dòng thực sự ngắn/cụt (<= 3 từ SAU ký hiệu đầu dòng)
-    # Tránh cắt nhầm các bullet hợp lệ như "• Điểm trung bình năm học đạt dưới 0.8"
     if res_lines:
         last = res_lines[-1].strip()
-        # Lấy phần nội dung sau ký hiệu gạch đầu dòng
-        content_after_bullet = re.sub(r"^[-*•]\s*", "", last).strip()
-        is_dangling_bullet = (
-            last.startswith(("-", "*", "•"))
-            and not last.endswith((".", "!", "?", ";", "..."))
-            and len(content_after_bullet.split()) <= 2  # Chỉ cắt khi cực ngắn (≤2 từ)
-        )
-        is_dangling_colon = last.endswith((":", ": ")) and not last.startswith(("["))
-        if is_dangling_bullet or is_dangling_colon:
-            res_lines.pop()
-            # Nếu dòng trước đó kết thúc bằng ":" và cũng sẽ trở nên lơ lửng, cắt luôn
-            if res_lines and res_lines[-1].strip().endswith(":") and not res_lines[-1].strip().startswith("["):
-                pass  # Giữ lại header ":" để người dùng biết danh sách bị cắt
-            result = "\n".join(res_lines).strip()
+        if (last.startswith(("-", "*", "•")) or last.endswith((": ", ":", "và", "hoặc", "nếu"))) and not last.endswith((".", "!", "?", ";", "...")):
+            if len(last.split()) <= 4:
+                res_lines.pop()
+                if res_lines and res_lines[-1].strip().endswith(":"):
+                    res_lines.pop()
+                result = "\n".join(res_lines).strip()
 
     return result
 
@@ -116,9 +85,7 @@ class VietnameseLLMGenerator:
         self.model = None
 
     def load_model(self):
-        """
-        Nạp model và tokenizer với xử lý lỗi linh hoạt (BitsAndBytes 4-bit NF4).
-        """
+        """Nạp model và tokenizer (BitsAndBytes 4-bit NF4 nếu khả dụng)."""
         if self.model is not None and self.tokenizer is not None:
             return
 
@@ -169,10 +136,7 @@ class VietnameseLLMGenerator:
         self.model.eval()
 
     def build_prompt(self, query: str, context_chunks: List[Dict[str, Any]]) -> str:
-        """
-        Xây dựng prompt theo format Chat Template chuẩn của Qwen2.5.
-        Đánh số [1], [2]... cho từng đoạn context kèm metadata rõ ràng.
-        """
+        """Xây dựng prompt theo Chat Template của Qwen2.5, đánh số [1],[2]... cho từng đoạn context."""
         context_parts = []
         for i, chunk in enumerate(context_chunks):
             doc_id = chunk.get("doc_id", "Tài liệu")
@@ -216,10 +180,8 @@ Hãy đọc hiểu các đoạn tài liệu trên và trả lời câu hỏi c�
 
     def parse_citations(self, answer_text: str, num_contexts: int) -> Tuple[List[int], List[int]]:
         """
-        Tìm tất cả các mã trích dẫn [n] trong câu trả lời.
-        Phân loại:
-        - valid_citations: n nằm trong phạm vi 1 đến num_contexts.
-        - hallucinated_citations: n vượt quá phạm vi context được cung cấp.
+        Tìm tất cả mã [n] trong câu trả lời.
+        Trả về (valid_citations, hallucinated_citations).
         """
         matches = re.findall(r"\[(\d+)\]", answer_text)
         valid = set()
@@ -240,9 +202,7 @@ Hãy đọc hiểu các đoạn tài liệu trên và trả lời câu hỏi c�
         context_chunks: List[Dict[str, Any]],
         max_context_length: int = 2500
     ) -> Dict[str, Any]:
-        """
-        Sinh câu trả lời từ query và danh sách context_chunks.
-        """
+        """Sinh câu trả lời từ query và danh sách context_chunks."""
         self.load_model()
 
         if not context_chunks:
@@ -255,6 +215,7 @@ Hãy đọc hiểu các đoạn tài liệu trên và trả lời câu hỏi c�
             }
 
         prompt = self.build_prompt(query, context_chunks)
+        rag_logger.log_prompt(prompt, len(prompt))
         inputs = self.tokenizer(prompt, return_tensors="pt")
 
         input_ids = inputs.input_ids.to(self.model.device)
@@ -279,10 +240,8 @@ Hãy đọc hiểu các đoạn tài liệu trên và trả lời câu hỏi c�
         generated_tokens = output_tokens[0][input_ids.shape[1]:]
         raw_answer = self.tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
 
-        # Làm sạch các mẫu sinh thừa và thẻ meta
         final_answer = clean_llm_response(raw_answer)
 
-        # Kiểm tra từ chối thực sự
         refusal_phrases = [
             "không tìm thấy thông tin",
             "không có thông tin",
@@ -291,8 +250,8 @@ Hãy đọc hiểu các đoạn tài liệu trên và trả lời câu hỏi c�
         ]
         is_refused = any(p in final_answer.lower() for p in refusal_phrases) and len(final_answer) < 150
 
-        # Trích xuất và kiểm tra mã trích dẫn
         valid_cites, fake_cites = self.parse_citations(final_answer, len(context_chunks))
+        rag_logger.log_llm_output(raw_answer, final_answer, valid_cites, fake_cites)
 
         return {
             "answer": final_answer,
@@ -303,10 +262,7 @@ Hãy đọc hiểu các đoạn tài liệu trên và trả lời câu hỏi c�
         }
 
     def generate_without_retrieval(self, query: str) -> Dict[str, Any]:
-        """
-        Sinh câu trả lời trực tiếp từ tri thức tham số nội tại của LLM (Baseline B0: No Retrieval).
-        Dùng để chứng minh sự cần thiết của RAG trong việc giảm thiểu ảo giác (hallucination).
-        """
+        """Sinh câu trả lời trực tiếp từ LLM không có RAG (Baseline B0: No Retrieval)."""
         self.load_model()
         messages = [
             {

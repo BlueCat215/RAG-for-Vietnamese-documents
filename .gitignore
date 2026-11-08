@@ -44,4 +44,6 @@ htmlcov/
 
 # docs
 docs/CHECKLIST.md
-docs/RAG.txt
+docs/RAG.md
+logs/
+*.log
