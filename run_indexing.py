@@ -88,7 +88,7 @@ def run_pipeline_indexing(config_path: str = "config/config.yaml"):
     )
 
     print("\n" + "=" * 60)
-    print("✅ HOÀN TẤT XÂY DỰNG INDEX THÀNH CÔNG!")
+    print("HOÀN TẤT XÂY DỰNG INDEX THÀNH CÔNG!")
     print(f"   Dữ liệu sẵn sàng tại: {index_dir}")
     print("=" * 60)
 

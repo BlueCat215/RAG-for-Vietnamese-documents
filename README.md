@@ -1,7 +1,5 @@
 # Hệ Thống Hỏi Đáp Dựa Trên Truy Hồi Tăng Cường Sinh (RAG) Cho Tài Liệu Tiếng Việt
 
-**Mã đề tài:** NLP-21  
-**Chuyên ngành:** Xử lý Ngôn ngữ Tự nhiên & Trí tuệ Nhân tạo  
 **Tập dữ liệu áp dụng:** Hệ thống văn bản quy chế đào tạo đại học, quy định học vụ, học phí, học bổng, nội quy ký túc xá và nghiên cứu khoa học sinh viên.
 
 ---
@@ -266,12 +264,12 @@ python plot_results.py
 
 Bảng so sánh cốt lõi chứng minh tính cần thiết của RAG trong việc giảm thiểu ảo giác (Hallucination) từ dữ liệu thực nghiệm `results/generation_summary_dev.csv`:
 
-| Kịch bản thử nghiệm | F1 Overlap (%) | Độ trung thực / Bằng chứng (Faithfulness) | Tỷ lệ trích dẫn (Citation Rate) | Hiện tượng & Nhận xét thực nghiệm |
-| :--- | :---: | :---: | :---: | :--- |
-| **B0: KHÔNG DÙNG RAG (LLM thuần)** | **16.49%** | **0.0%** | **0.0%** | **Ảo giác 100%:** LLM trả lời dựa vào tri thức tham số chung chung, sai các mốc số liệu (số tín chỉ nợ, điểm cảnh báo) và hoàn toàn không thể dẫn nguồn. |
-| **B1: RAG với BM25** | 18.26% | 75.05% | 100.0% | Bắt đầu có trích dẫn, nhưng F1 thấp do BM25 bỏ sót tài liệu khi gặp câu hỏi khẩu ngữ/paraphrase. |
-| **B2: RAG với Dense Vector** | 35.64% | 81.82% | 100.0% | Điểm F1 tăng vọt gấp đôi, hiểu ngữ nghĩa tốt. |
-| **B3: RAG Đề xuất (Hybrid + Reranker)** | **32.17%** | **81.87%** | **100.0%** | **Độ trung thực cao nhất (81.87%):** 100% câu trả lời gắn chính xác mã trích dẫn [n], bám sát văn bản pháp lý gốc. |
+| Kịch bản thử nghiệm                     | F1 Overlap (%) | Độ trung thực / Bằng chứng (Faithfulness) | Tỷ lệ trích dẫn (Citation Rate) | Hiện tượng & Nhận xét thực nghiệm                                                                                                                        |
+| :-------------------------------------- | :------------: | :---------------------------------------: | :-----------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **B0: KHÔNG DÙNG RAG (LLM thuần)**      |   **16.49%**   |                 **0.0%**                  |            **0.0%**             | **Ảo giác 100%:** LLM trả lời dựa vào tri thức tham số chung chung, sai các mốc số liệu (số tín chỉ nợ, điểm cảnh báo) và hoàn toàn không thể dẫn nguồn. |
+| **B1: RAG với BM25**                    |     18.26%     |                  75.05%                   |             100.0%              | Bắt đầu có trích dẫn, nhưng F1 thấp do BM25 bỏ sót tài liệu khi gặp câu hỏi khẩu ngữ/paraphrase.                                                         |
+| **B2: RAG với Dense Vector**            |     35.64%     |                  81.82%                   |             100.0%              | Điểm F1 tăng vọt gấp đôi, hiểu ngữ nghĩa tốt.                                                                                                            |
+| **B3: RAG Đề xuất (Hybrid + Reranker)** |   **32.17%**   |                **81.87%**                 |           **100.0%**            | **Độ trung thực cao nhất (81.87%):** 100% câu trả lời gắn chính xác mã trích dẫn [n], bám sát văn bản pháp lý gốc.                                       |
 
 ### 3. Phát hiện Thực nghiệm Đắt giá (Empirical Insights):
 
@@ -287,18 +285,20 @@ Bảng so sánh cốt lõi chứng minh tính cần thiết của RAG trong vi�
 Bộ 5 biểu đồ chất lượng cao (300 DPI) được tự động tạo bởi script `python plot_results.py` từ dữ liệu thực nghiệm trong `results/`:
 
 #### Biểu đồ 5: Đột phá khi CÓ DÙNG RAG (B1 - B3) so với KHÔNG DÙNG RAG (B0)
+
 Chứng minh thực nghiệm: LLM thuần (B0) hoàn toàn bị ảo giác (0.0% Faithfulness, 0.0% Citation Rate), trong khi RAG giúp độ trung thực tăng vọt lên **81.87%** và tỷ lệ trích dẫn đạt **100%**.
+
 <p align="center">
   <img src="results/figures/fig5_rag_vs_no_rag.png" alt="So sánh Không RAG vs Có RAG" width="85%" />
 </p>
 
-| Biểu đồ 1: Đường cong hội tụ Recall@K | Biểu đồ 2: So sánh Chất lượng Xếp hạng (MRR & nDCG@10) |
-| :---: | :---: |
-| <img src="results/figures/fig1_recall_curve.png" alt="Đường cong hội tụ Recall@K" width="100%" /> | <img src="results/figures/fig2_mrr_ndcg.png" alt="So sánh MRR và nDCG" width="100%" /> |
-| *Tốc độ tìm thấy tài liệu đúng theo K (1–10). Hybrid Weighted RRF đạt độ dốc lớn nhất từ K=1–3.* | *So sánh điểm phân cấp kèm khoảng tin cậy 95% Bootstrap CI qua 1.000 lần lấy mẫu lại.* |
-| **Biểu đồ 3: Phân tích Tách nhóm (Từ khóa vs Khẩu ngữ)** | **Biểu đồ 4: Đánh đổi giữa Độ trễ và Độ chính xác (Latency vs MRR)** |
-| <img src="results/figures/fig3_category_breakdown.png" alt="Phân tích tách nhóm" width="100%" /> | <img src="results/figures/fig4_latency_tradeoff.png" alt="Đánh đổi Latency và MRR" width="100%" /> |
-| *BM25 suy giảm mạnh ở câu hỏi khẩu ngữ; Dense và Hybrid bảo toàn năng lực hiểu ngữ nghĩa.* | *Điểm tối ưu thuộc về Hybrid: MRR cao nhất (0.822) với độ trễ 152ms (nhanh gấp 61 lần Reranker).* |
+|                               Biểu đồ 1: Đường cong hội tụ Recall@K                               |                       Biểu đồ 2: So sánh Chất lượng Xếp hạng (MRR & nDCG@10)                       |
+| :-----------------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------------------------: |
+| <img src="results/figures/fig1_recall_curve.png" alt="Đường cong hội tụ Recall@K" width="100%" /> |       <img src="results/figures/fig2_mrr_ndcg.png" alt="So sánh MRR và nDCG" width="100%" />       |
+| _Tốc độ tìm thấy tài liệu đúng theo K (1–10). Hybrid Weighted RRF đạt độ dốc lớn nhất từ K=1–3._  |       _So sánh điểm phân cấp kèm khoảng tin cậy 95% Bootstrap CI qua 1.000 lần lấy mẫu lại._       |
+|                     **Biểu đồ 3: Phân tích Tách nhóm (Từ khóa vs Khẩu ngữ)**                      |                **Biểu đồ 4: Đánh đổi giữa Độ trễ và Độ chính xác (Latency vs MRR)**                |
+| <img src="results/figures/fig3_category_breakdown.png" alt="Phân tích tách nhóm" width="100%" />  | <img src="results/figures/fig4_latency_tradeoff.png" alt="Đánh đổi Latency và MRR" width="100%" /> |
+|    _BM25 suy giảm mạnh ở câu hỏi khẩu ngữ; Dense và Hybrid bảo toàn năng lực hiểu ngữ nghĩa._     | _Điểm tối ưu thuộc về Hybrid: MRR cao nhất (0.822) với độ trễ 152ms (nhanh gấp 61 lần Reranker)._  |
 
 ---
 

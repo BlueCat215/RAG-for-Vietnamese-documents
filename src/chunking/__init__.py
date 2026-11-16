@@ -9,10 +9,10 @@ Cung cấp đầy đủ các chiến lược cắt đoạn:
 
 src/chunking/
 ├── __init__.py       # Package entry-point: xuất các hàm gọi chung (chunk_structural, chunk_fixed_size, v.v.)
-├── utils.py          # (~90 dòng) Các hàm tiện ích: NFC, sửa font Đ/Ð, bisect trang, clean header/footer
-├── fixed.py          # (~30 dòng) Chiến lược S1: Cắt cố định theo số từ (Fixed Token Baseline)
-├── recursive.py      # (~70 dòng) Chiến lược S2: Cắt đệ quy theo đoạn / câu
-└── structural.py     # (~120 dòng) Chiến lược S3: Cắt cấu trúc Chương / Điều / Khoản (Cốt lõi)
+├── utils.py          # Các hàm tiện ích: NFC, sửa font Đ/Ð, bisect trang, clean header/footer
+├── fixed.py          # Chiến lược S1: Cắt cố định theo số từ (Fixed Token Baseline)
+├── recursive.py      # Chiến lược S2: Cắt đệ quy theo đoạn / câu
+└── structural.py     # Chiến lược S3: Cắt cấu trúc Chương / Điều / Khoản (Cốt lõi)
 """
 
 import os
