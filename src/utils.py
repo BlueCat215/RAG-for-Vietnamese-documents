@@ -7,7 +7,8 @@ from typing import Dict, Any, List
 def load_config(config_path: str = "config/config.yaml") -> Dict[str, Any]:
     """Đọc file cấu hình YAML."""
     if not os.path.exists(config_path):
-        raise FileNotFoundError(f"Không tìm thấy file config tại {config_path}")
+        raise FileNotFoundError(
+            f"Không tìm thấy file config tại {config_path}")
     with open(config_path, "r", encoding="utf-8") as f:
         return yaml.safe_load(f)
 

@@ -49,7 +49,8 @@ def recursive_split_spans(src: str, lo: int = 0, hi: Optional[int] = None, max_c
             return
         s, e = group[0][0], group[-1][1]
         if e - s > max_chars:
-            spans.extend(recursive_split_spans(src, s, e, max_chars, overlap_chars, seps[1:]))
+            spans.extend(recursive_split_spans(
+                src, s, e, max_chars, overlap_chars, seps[1:]))
         elif src[s:e].strip():
             spans.append((s, e))
 
@@ -90,6 +91,7 @@ def chunk_recursive(pages_data: List[Dict[str, Any]], max_chars: int = 1200, ove
             p_start = get_page_number(s, page_starts, pages)
             p_end = get_page_number(e - 1, page_starts, pages)
             heading = f"Trang {p_start}" if p_start == p_end else f"Trang {p_start} - {p_end}"
-            all_chunks.append(make_chunk(doc_id, "s2", idx, full_text[s:e], p_start, p_end, heading, None, "recursive"))
+            all_chunks.append(make_chunk(
+                doc_id, "s2", idx, full_text[s:e], p_start, p_end, heading, None, "recursive"))
             idx += 1
     return all_chunks

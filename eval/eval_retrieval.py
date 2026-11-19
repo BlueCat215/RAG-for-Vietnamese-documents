@@ -13,6 +13,10 @@ Các tính năng học thuật nâng cao:
 - So sánh cặp (Paired Bootstrap Test): Đo mức độ cải thiện delta và p-value có ý nghĩa thống kê.
 """
 
+from src.pipeline import RAGPipeline
+from src.utils import load_config, load_jsonl
+import pandas as pd
+import numpy as np
 import os
 import sys
 import math
@@ -21,7 +25,8 @@ import argparse
 from typing import List, Dict, Any, Tuple
 
 # Đảm bảo import được module 'src' khi chạy trực tiếp từ thư mục eval
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..")))
 
 # Cấu hình UTF-8 cho Windows console để tránh UnicodeEncodeError
 if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
@@ -34,11 +39,6 @@ if sys.stderr.encoding and sys.stderr.encoding.lower() != "utf-8":
         sys.stderr.reconfigure(encoding="utf-8")
     except Exception:
         pass
-
-import numpy as np
-import pandas as pd
-from src.utils import load_config, load_jsonl
-from src.pipeline import RAGPipeline
 
 
 def is_hit(chunk: Dict[str, Any], evidences: List[Dict[str, Any]]) -> bool:
@@ -85,7 +85,8 @@ def calculate_per_query_metrics(
 
     q_metrics = {}
     for k in k_list:
-        q_metrics[f"Recall@{k}"] = 1.0 if any(r <= k for r in hit_ranks) else 0.0
+        q_metrics[f"Recall@{k}"] = 1.0 if any(r <=
+                                              k for r in hit_ranks) else 0.0
 
     q_metrics["MRR"] = (1.0 / min(hit_ranks)) if hit_ranks else 0.0
 
@@ -149,7 +150,8 @@ def run_evaluation(
     breakdown_csv = f"results/retrieval_breakdown_{split}.csv"
 
     print("=" * 75)
-    print(f"🔬 ĐÁNH GIÁ ĐỊNH LƯỢNG TẦNG TRUY HỒI & SO SÁNH PHƯƠNG PHÁP ({split.upper()})")
+    print(
+        f"🔬 ĐÁNH GIÁ ĐỊNH LƯỢNG TẦNG TRUY HỒI & SO SÁNH PHƯƠNG PHÁP ({split.upper()})")
     print("=" * 75)
 
     qa_data = load_jsonl(qa_file)
@@ -158,7 +160,8 @@ def run_evaluation(
         return
 
     # Lọc câu hỏi có đáp án
-    eval_samples = [q for q in qa_data if q.get("answerable", True) and q.get("evidence")]
+    eval_samples = [q for q in qa_data if q.get(
+        "answerable", True) and q.get("evidence")]
     print(f"[*] Tổng số câu hỏi kiểm thử có đáp án: {len(eval_samples)} câu")
 
     pipeline = RAGPipeline(config_path=config_path)
@@ -167,8 +170,10 @@ def run_evaluation(
     experiments = [
         {"name": "BM25 (Baseline)", "method": "bm25", "use_rerank": False},
         {"name": "Dense Vector", "method": "dense", "use_rerank": False},
-        {"name": "Hybrid (Weighted RRF)", "method": "hybrid", "use_rerank": False},
-        {"name": "Hybrid + Reranker (Đề xuất)", "method": "hybrid", "use_rerank": True},
+        {"name": "Hybrid (Weighted RRF)", "method": "hybrid",
+         "use_rerank": False},
+        {"name": "Hybrid + Reranker (Đề xuất)",
+         "method": "hybrid", "use_rerank": True},
     ]
 
     k_list = [1, 2, 3, 5, 10]
@@ -217,7 +222,8 @@ def run_evaluation(
 
         row = {"Method": name}
         for k in k_list:
-            row[f"Recall@{k}"] = round(float(np.mean([x[f"Recall@{k}"] for x in pq])), 4)
+            row[f"Recall@{k}"] = round(float(np.mean([x[f"Recall@{k}"]
+                                       for x in pq])), 4)
         mrr_val = float(np.mean([x["MRR"] for x in pq]))
         row["MRR"] = round(mrr_val, 4)
         mrr_ci_low, mrr_ci_high = bootstrap_ci([x["MRR"] for x in pq])
@@ -235,7 +241,8 @@ def run_evaluation(
     print("\n" + "=" * 75)
     print("📊 BẢNG 1: TỔNG HỢP SO SÁNH PHƯƠNG PHÁP (OVERALL RETRIEVAL ABLATION)")
     print("=" * 75)
-    cols_display = ["Method", "Recall@1", "Recall@2", "Recall@3", "Recall@5", "Recall@10", "MRR", "MRR (95% CI)", "nDCG@10", "Latency_mean_ms", "Latency_p95_ms"]
+    cols_display = ["Method", "Recall@1", "Recall@2", "Recall@3", "Recall@5",
+                    "Recall@10", "MRR", "MRR (95% CI)", "nDCG@10", "Latency_mean_ms", "Latency_p95_ms"]
     print(df_summary[cols_display].to_string(index=False))
     print(f"[+] Đã lưu vào: {output_csv}")
 
@@ -251,7 +258,8 @@ def run_evaluation(
     for cat_key, cat_name in categories:
         for exp in experiments:
             name = exp["name"]
-            pq_cat = [x for x in exp_results[name]["per_query"] if x["paraphrase_level"] == cat_key]
+            pq_cat = [x for x in exp_results[name]["per_query"]
+                      if x["paraphrase_level"] == cat_key]
             if not pq_cat:
                 continue
             b_row = {
@@ -289,12 +297,15 @@ def run_evaluation(
         delta, p_val, ci_diff = paired_bootstrap_test(target_mrrs, base_mrrs)
         signif = "***" if p_val < 0.01 else ("**" if p_val < 0.05 else "ns")
         print(f"[*] {target_exp} vs {base_exp}:")
-        print(f"    -> Δ MRR: +{delta:.4f} | 95% CI of Δ: [{ci_diff[0]:.4f}, {ci_diff[1]:.4f}] | p-value: {p_val:.4f} ({signif})")
+        print(
+            f"    -> Δ MRR: +{delta:.4f} | 95% CI of Δ: [{ci_diff[0]:.4f}, {ci_diff[1]:.4f}] | p-value: {p_val:.4f} ({signif})")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Đánh giá tầng truy hồi RAG Tiếng Việt (NLP-21)")
-    parser.add_argument("--split", type=str, default="dev", choices=["dev", "test"], help="Tập dữ liệu cần đo (dev hoặc test)")
+    parser = argparse.ArgumentParser(
+        description="Đánh giá tầng truy hồi RAG Tiếng Việt (NLP-21)")
+    parser.add_argument("--split", type=str, default="dev",
+                        choices=["dev", "test"], help="Tập dữ liệu cần đo (dev hoặc test)")
     args = parser.parse_args()
 
     run_evaluation(split=args.split)

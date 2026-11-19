@@ -62,7 +62,8 @@ def plot_fig1_recall_curve(df: pd.DataFrame, out_dir: str):
     for i, row in df.iterrows():
         method_name = row["Method"]
         # Đơn giản hóa tên hiển thị
-        label = method_name.replace(" (Baseline)", "").replace(" (Đề xuất)", "")
+        label = method_name.replace(
+            " (Baseline)", "").replace(" (Đề xuất)", "")
         recalls = [row[c] * 100 for c in k_cols]
 
         ax.plot(
@@ -76,12 +77,15 @@ def plot_fig1_recall_curve(df: pd.DataFrame, out_dir: str):
             label=f"{label} (R@1={row['Recall@1']*100:.1f}%)"
         )
 
-    ax.set_title("Đường cong hội tụ Recall@K trên tập Kiểm thử (Test Set - 84 câu)", fontsize=13, fontweight="bold", pad=12)
+    ax.set_title("Đường cong hội tụ Recall@K trên tập Kiểm thử (Test Set - 84 câu)",
+                 fontsize=13, fontweight="bold", pad=12)
     ax.set_xlabel("Ngưỡng K (Số đoạn văn bản lấy ra)", fontsize=11, labelpad=8)
-    ax.set_ylabel("Tỷ lệ tìm thấy bằng chứng - Recall@K (%)", fontsize=11, labelpad=8)
+    ax.set_ylabel("Tỷ lệ tìm thấy bằng chứng - Recall@K (%)",
+                  fontsize=11, labelpad=8)
     ax.set_xticks(k_vals)
     ax.set_ylim(55, 100)
-    ax.legend(title="Phương pháp", fontsize=9.5, title_fontsize=10, loc="lower right", framealpha=0.95)
+    ax.legend(title="Phương pháp", fontsize=9.5, title_fontsize=10,
+              loc="lower right", framealpha=0.95)
 
     out_path = os.path.join(out_dir, "fig1_recall_curve.png")
     plt.savefig(out_path, dpi=300)
@@ -93,7 +97,8 @@ def plot_fig2_mrr_ndcg(df: pd.DataFrame, out_dir: str):
     """Biểu đồ 2: So sánh MRR (có Error Bar 95% CI) và nDCG@10."""
     fig, ax = plt.subplots(figsize=(8.5, 5.2))
 
-    methods = [m.replace(" (Baseline)", "").replace(" (Đề xuất)", "") for m in df["Method"]]
+    methods = [m.replace(" (Baseline)", "").replace(
+        " (Đề xuất)", "") for m in df["Method"]]
     x = np.arange(len(methods))
     width = 0.35
 
@@ -148,7 +153,8 @@ def plot_fig2_mrr_ndcg(df: pd.DataFrame, out_dir: str):
         ax.annotate(f"{h:.3f}", xy=(rect.get_x() + rect.get_width() / 2, h),
                     xytext=(0, 3), textcoords="offset points", ha="center", va="bottom", fontsize=8.5)
 
-    ax.set_title("So sánh Chất lượng Xếp hạng: MRR và nDCG@10 (Tập Test)", fontsize=13, fontweight="bold", pad=12)
+    ax.set_title("So sánh Chất lượng Xếp hạng: MRR và nDCG@10 (Tập Test)",
+                 fontsize=13, fontweight="bold", pad=12)
     ax.set_ylabel("Điểm số [0.0 - 1.0]", fontsize=11, labelpad=8)
     ax.set_xticks(x)
     ax.set_xticklabels(methods, fontsize=10)
@@ -167,10 +173,13 @@ def plot_fig3_category_breakdown(df_bd: pd.DataFrame, out_dir: str):
 
     # Tách 2 nhóm
     categories = df_bd["Category"].unique()
-    lex_df = df_bd[df_bd["Category"].str.contains("Lexical|Từ khóa", case=False, na=False)]
-    para_df = df_bd[df_bd["Category"].str.contains("Paraphrase|Khẩu ngữ", case=False, na=False)]
+    lex_df = df_bd[df_bd["Category"].str.contains(
+        "Lexical|Từ khóa", case=False, na=False)]
+    para_df = df_bd[df_bd["Category"].str.contains(
+        "Paraphrase|Khẩu ngữ", case=False, na=False)]
 
-    methods = [m.replace(" (Baseline)", "").replace(" (Đề xuất)", "") for m in lex_df["Method"]]
+    methods = [m.replace(" (Baseline)", "").replace(
+        " (Đề xuất)", "") for m in lex_df["Method"]]
     x = np.arange(len(methods))
     width = 0.35
 
@@ -209,7 +218,8 @@ def plot_fig3_category_breakdown(df_bd: pd.DataFrame, out_dir: str):
         ax.annotate(f"{h:.3f}", xy=(rect.get_x() + rect.get_width() / 2, h),
                     xytext=(0, 3), textcoords="offset points", ha="center", va="bottom", fontsize=8.5)
 
-    ax.set_title("Năng lực Truy hồi theo Loại câu hỏi: Từ khóa chuẩn vs Khẩu ngữ", fontsize=13, fontweight="bold", pad=12)
+    ax.set_title("Năng lực Truy hồi theo Loại câu hỏi: Từ khóa chuẩn vs Khẩu ngữ",
+                 fontsize=13, fontweight="bold", pad=12)
     ax.set_ylabel("Điểm MRR", fontsize=11, labelpad=8)
     ax.set_xticks(x)
     ax.set_xticklabels(methods, fontsize=10)
@@ -226,7 +236,8 @@ def plot_fig4_latency_tradeoff(df: pd.DataFrame, out_dir: str):
     """Biểu đồ 4: Đánh đổi Chất lượng (MRR) và Độ trễ (Latency ms) trên thang Log."""
     fig, ax = plt.subplots(figsize=(8.2, 5.2))
 
-    methods = [m.replace(" (Baseline)", "").replace(" (Đề xuất)", "") for m in df["Method"]]
+    methods = [m.replace(" (Baseline)", "").replace(
+        " (Đề xuất)", "") for m in df["Method"]]
     latencies = df["Latency_mean_ms"].values
     mrrs = df["MRR"].values
 
@@ -258,7 +269,8 @@ def plot_fig4_latency_tradeoff(df: pd.DataFrame, out_dir: str):
                 f"{m}\n(Điểm tối ưu: Nhanh hơn 61x)",
                 xy=(x_val, y_val),
                 xytext=(x_val * 0.45, y_val + 0.022),
-                arrowprops=dict(facecolor="#2ca02c", shrink=0.08, width=1.5, headwidth=6),
+                arrowprops=dict(facecolor="#2ca02c",
+                                shrink=0.08, width=1.5, headwidth=6),
                 fontsize=9,
                 fontweight="bold",
                 color="#1b5e20",
@@ -269,15 +281,18 @@ def plot_fig4_latency_tradeoff(df: pd.DataFrame, out_dir: str):
                 f"{m}\n(9,320ms - Nặng CPU)",
                 xy=(x_val, y_val),
                 xytext=(x_val * 0.4, y_val - 0.03),
-                arrowprops=dict(facecolor="#d62728", shrink=0.08, width=1.5, headwidth=6),
+                arrowprops=dict(facecolor="#d62728",
+                                shrink=0.08, width=1.5, headwidth=6),
                 fontsize=8.5,
                 color="#b71c1c",
                 ha="center"
             )
 
     ax.set_xscale("log")
-    ax.set_title("Đánh đổi giữa Độ trễ (Latency ms) và Độ chính xác (MRR)", fontsize=13, fontweight="bold", pad=12)
-    ax.set_xlabel("Thời gian phản hồi trung bình (ms, Thang log)", fontsize=11, labelpad=8)
+    ax.set_title("Đánh đổi giữa Độ trễ (Latency ms) và Độ chính xác (MRR)",
+                 fontsize=13, fontweight="bold", pad=12)
+    ax.set_xlabel("Thời gian phản hồi trung bình (ms, Thang log)",
+                  fontsize=11, labelpad=8)
     ax.set_ylabel("Mean Reciprocal Rank (MRR)", fontsize=11, labelpad=8)
     ax.set_ylim(0.70, 0.88)
     ax.grid(True, which="both", linestyle="--", alpha=0.5)
@@ -360,7 +375,8 @@ def plot_fig5_rag_vs_no_rag(df_gen: pd.DataFrame, out_dir: str):
         "B0 (Không RAG):\n0% Bằng chứng\n(Ảo giác 100%)",
         xy=(0, 17),
         xytext=(0.15, 45),
-        arrowprops=dict(facecolor="#d62728", shrink=0.08, width=1.5, headwidth=6),
+        arrowprops=dict(facecolor="#d62728", shrink=0.08,
+                        width=1.5, headwidth=6),
         fontsize=9,
         fontweight="bold",
         color="#b71c1c",
@@ -368,7 +384,8 @@ def plot_fig5_rag_vs_no_rag(df_gen: pd.DataFrame, out_dir: str):
         bbox=dict(boxstyle="round,pad=0.4", fc="#ffebee", ec="#ef9a9a", lw=1)
     )
 
-    ax.set_title("So sánh Đột phá: Khi KHÔNG DÙNG RAG (B0) vs CÓ DÙNG RAG (B1 - B3)", fontsize=13, fontweight="bold", pad=14)
+    ax.set_title("So sánh Đột phá: Khi KHÔNG DÙNG RAG (B0) vs CÓ DÙNG RAG (B1 - B3)",
+                 fontsize=13, fontweight="bold", pad=14)
     ax.set_ylabel("Tỷ lệ phần trăm (%)", fontsize=11, labelpad=8)
     ax.set_xticks(x)
     ax.set_xticklabels(methods, fontsize=10)

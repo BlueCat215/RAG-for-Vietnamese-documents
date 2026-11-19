@@ -2,6 +2,8 @@
 
 import re
 import unicodedata
+
+
 def normalize_unicode_nfc(text: str) -> str:
     """
     Chuẩn hóa chuỗi văn bản về Unicode NFC (dựng sẵn).

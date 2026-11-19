@@ -59,8 +59,10 @@ def wait_for_log(log_dir: str = "logs", timeout: float = 30.0) -> str | None:
 
 def main():
     parser = argparse.ArgumentParser(description="RAG Pipeline Debug Terminal")
-    parser.add_argument("--log-dir", default="logs", help="Thư mục chứa file log")
-    parser.add_argument("--file", default=None, help="Đường dẫn file log cụ thể")
+    parser.add_argument("--log-dir", default="logs",
+                        help="Thư mục chứa file log")
+    parser.add_argument("--file", default=None,
+                        help="Đường dẫn file log cụ thể")
     args = parser.parse_args()
 
     if args.file and os.path.exists(args.file):

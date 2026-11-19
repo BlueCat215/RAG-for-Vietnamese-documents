@@ -8,7 +8,8 @@ import os
 # Ep stdout ho tro UTF-8 tren Windows console
 if sys.platform == "win32":
     import io
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stdout = io.TextIOWrapper(
+        sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 
 def run_smoke_test():
@@ -28,15 +29,18 @@ def run_smoke_test():
 
         if cuda_available:
             gpu_name = torch.cuda.get_device_name(0)
-            total_vram = torch.cuda.get_device_properties(0).total_memory / (1024 ** 3)
+            total_vram = torch.cuda.get_device_properties(
+                0).total_memory / (1024 ** 3)
             print(f"[+] GPU Name: {gpu_name}")
             print(f"[+] Tong dung luong VRAM: {total_vram:.2f} GB")
 
             if total_vram <= 4.5:
                 print("    -> Phat hien GPU ~4GB VRAM (RTX 3050 hoac tuong duong).")
-                print("    -> He thong se tu dong kich hoat Quantization 4-bit cho LLM va Reranker CPU.")
+                print(
+                    "    -> He thong se tu dong kich hoat Quantization 4-bit cho LLM va Reranker CPU.")
         else:
-            print("    [!] Canh bao: PyTorch dang chay tren CPU (chua nhan GPU CUDA).")
+            print(
+                "    [!] Canh bao: PyTorch dang chay tren CPU (chua nhan GPU CUDA).")
     except ImportError:
         print("    [!] PyTorch chua duoc cai dat.")
 
@@ -47,14 +51,16 @@ def run_smoke_test():
         import bitsandbytes as bnb
         print("[+] bitsandbytes: Da cai dat thanh cong!")
     except ImportError:
-        print("    [!] Chua co bitsandbytes. Tren Windows co the cai qua: pip install bitsandbytes")
+        print(
+            "    [!] Chua co bitsandbytes. Tren Windows co the cai qua: pip install bitsandbytes")
 
     # 4. Sentence-Transformers & FAISS
     print("-" * 60)
     print("[*] Kiem tra Sentence-Transformers & FAISS...")
     try:
         import sentence_transformers
-        print(f"[+] sentence-transformers: {sentence_transformers.__version__}")
+        print(
+            f"[+] sentence-transformers: {sentence_transformers.__version__}")
     except ImportError:
         print("    [!] Chua cai dat sentence-transformers.")
 

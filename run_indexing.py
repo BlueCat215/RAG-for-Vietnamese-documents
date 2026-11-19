@@ -69,8 +69,10 @@ def run_pipeline_indexing(config_path: str = "config/config.yaml"):
     print("BƯỚC 2: PHÂN ĐOẠN THEO CẤU TRÚC ĐIỀU/KHOẢN")
     print("=" * 60)
     t0 = time.time()
-    chunks = chunk_structural(all_pages_data, max_tokens=chunk_cfg.get("max_tokens", 512))
-    print(f"[+] Đã tạo ra tổng cộng {len(chunks)} chunks (Thời gian: {time.time() - t0:.2f}s).")
+    chunks = chunk_structural(
+        all_pages_data, max_tokens=chunk_cfg.get("max_tokens", 512))
+    print(
+        f"[+] Đã tạo ra tổng cộng {len(chunks)} chunks (Thời gian: {time.time() - t0:.2f}s).")
 
     # Lưu chunks ra data/processed/
     chunks_output_path = os.path.join(processed_dir, "chunks_structural.jsonl")
@@ -80,7 +82,8 @@ def run_pipeline_indexing(config_path: str = "config/config.yaml"):
     print("\n" + "=" * 60)
     print("BƯỚC 3: TÍNH VECTOR EMBEDDING VÀ DỰNG FAISS INDEX")
     print("=" * 60)
-    idx = VectorIndex(model_name=emb_cfg["name"], device=emb_cfg.get("device", "cuda"))
+    idx = VectorIndex(
+        model_name=emb_cfg["name"], device=emb_cfg.get("device", "cuda"))
     idx.build_index(
         chunks=chunks,
         batch_size=emb_cfg.get("batch_size", 8),

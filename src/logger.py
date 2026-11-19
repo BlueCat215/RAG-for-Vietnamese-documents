@@ -93,7 +93,8 @@ def log_query_start(query: str, method: str, top_k: int, use_rerank: bool):
     sep = "=" * 60
     logger.info(f"\n{sep}")
     logger.info(f"QUERY MỚI: {query!r}")
-    logger.info(f"Cấu hình: method={method}, top_k={top_k}, use_rerank={use_rerank}")
+    logger.info(
+        f"Cấu hình: method={method}, top_k={top_k}, use_rerank={use_rerank}")
     logger.info(sep)
 
 
@@ -130,7 +131,8 @@ def log_hybrid_results(candidates: List[Dict[str, Any]]):
 
 def log_rerank_results(candidates: List[Dict[str, Any]]):
     logger = get_logger()
-    logger.debug(f"[Reranker] Sau xếp hạng lại: {len(candidates)} chunk cuối cùng:")
+    logger.debug(
+        f"[Reranker] Sau xếp hạng lại: {len(candidates)} chunk cuối cùng:")
     for c in candidates:
         logger.debug(
             f"  Rank {c.get('rank','-')} | soft={c.get('rerank_score',0):.4f} "
@@ -151,13 +153,15 @@ def log_prompt(prompt: str, token_estimate: int):
     logger = get_logger()
     logger.debug(f"[Prompt → LLM] ~{token_estimate} ký tự")
     # Chỉ in 500 ký tự đầu để tránh spam log
-    preview = prompt[:500].replace("\n", "↵") + ("..." if len(prompt) > 500 else "")
+    preview = prompt[:500].replace(
+        "\n", "↵") + ("..." if len(prompt) > 500 else "")
     logger.debug(f"  Preview: {preview}")
 
 
 def log_llm_output(raw: str, cleaned: str, citations: List[int], hallucinated: List[int]):
     logger = get_logger()
-    logger.debug(f"[LLM Output Raw] ({len(raw)} ký tự): {raw[:300].replace(chr(10), '↵')}...")
+    logger.debug(
+        f"[LLM Output Raw] ({len(raw)} ký tự): {raw[:300].replace(chr(10), '↵')}...")
     logger.debug(f"[LLM Output Cleaned] ({len(cleaned)} ký tự)")
     logger.debug(f"[Citations] Hợp lệ: {citations} | Bịa đặt: {hallucinated}")
 

@@ -13,8 +13,10 @@ if sys.platform == "win32":
         sys.stdin.reconfigure(encoding="utf-8", errors="replace")
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     except Exception:
-        sys.stdin = io.TextIOWrapper(sys.stdin.buffer, encoding="utf-8", errors="replace")
-        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+        sys.stdin = io.TextIOWrapper(
+            sys.stdin.buffer, encoding="utf-8", errors="replace")
+        sys.stdout = io.TextIOWrapper(
+            sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 from src.pipeline import RAGPipeline
 from src import logger as rag_logger
@@ -30,7 +32,8 @@ def annotate_answer(answer_text: str, sources: list) -> str:
         cid = s.get("citation_id")
         if cid is None:
             continue
-        doc = s.get("doc_id", "Tài liệu").replace(".txt", "").replace(".docx", "").replace(".pdf", "")
+        doc = s.get("doc_id", "Tài liệu").replace(
+            ".txt", "").replace(".docx", "").replace(".pdf", "")
         clause = s.get("clause", "")
         heading = s.get("heading", "")
         p_start = s.get("page_start", 1)
@@ -55,7 +58,8 @@ def annotate_answer(answer_text: str, sources: list) -> str:
 
     annotated = re.sub(r"\[(\d+)\]", replacer, answer_text)
     if not re.search(r"\[\d+\]", answer_text) and sources:
-        refs = [cmap[s["citation_id"]] for s in sources[:3] if s.get("citation_id") in cmap]
+        refs = [cmap[s["citation_id"]]
+                for s in sources[:3] if s.get("citation_id") in cmap]
         if refs:
             annotated += "\n\n(Căn cứ tham chiếu: " + " • ".join(refs) + ")"
 
@@ -93,22 +97,27 @@ def main():
                 break
 
             print("[*] Đang truy xuất dữ liệu & sinh câu trả lời...")
-            res = pipeline.query(query, method="hybrid", top_k=5, use_rerank=True)
+            res = pipeline.query(query, method="hybrid",
+                                 top_k=5, use_rerank=True)
 
             print("\n(•‿•) Trợ lý trả lời:")
-            display_text = annotate_answer(res["answer"], res.get("sources", []))
+            display_text = annotate_answer(
+                res["answer"], res.get("sources", []))
             print(display_text)
 
             lat = res["latency_ms"]
-            print(f"\n⏱️ Thời gian phản hồi: {lat.get('total_ms', 0):.0f}ms (Retrieve: {lat.get('retrieve_ms', 0):.0f}ms, Rerank: {lat.get('rerank_ms', 0):.0f}ms, LLM: {lat.get('generate_ms', 0):.0f}ms)")
+            print(
+                f"\n⏱️ Thời gian phản hồi: {lat.get('total_ms', 0):.0f}ms (Retrieve: {lat.get('retrieve_ms', 0):.0f}ms, Rerank: {lat.get('rerank_ms', 0):.0f}ms, LLM: {lat.get('generate_ms', 0):.0f}ms)")
 
             if res.get("sources"):
                 print("\n📚 Nguồn trích dẫn chi tiết:")
                 for s in res["sources"]:
                     loc = s.get("clause") or s.get("heading") or ""
-                    print(f"  [{s['citation_id']}] {s['doc_id']} - {loc} (Trang {s.get('page_start', 1)}, Điểm: {s.get('score', 0):.3f})")
+                    print(
+                        f"  [{s['citation_id']}] {s['doc_id']} - {loc} (Trang {s.get('page_start', 1)}, Điểm: {s.get('score', 0):.3f})")
             elif res.get("refused"):
-                print(f"  ℹ️ Lý do từ chối: {res.get('refusal_reason', 'Không đủ dữ liệu trong context')}")
+                print(
+                    f"  ℹ️ Lý do từ chối: {res.get('refusal_reason', 'Không đủ dữ liệu trong context')}")
 
             print("-" * 60)
 

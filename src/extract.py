@@ -5,6 +5,7 @@ from typing import List, Dict, Any
 from src.clean import clean_vietnamese_text
 # Module trích xuất tài liệu từ file PDF, DOCX, TXT kèm metadata trang và cảnh báo file scan
 
+
 def extract_from_pdf(file_path: str) -> List[Dict[str, Any]]:
     """
     Trích xuất văn bản từ tệp PDF theo từng trang bằng PyMuPDF.
@@ -94,4 +95,5 @@ def extract_document(file_path: str) -> List[Dict[str, Any]]:
     elif ext == ".txt":
         return extract_from_txt(file_path)
     else:
-        raise ValueError(f"Định dạng {ext} chưa được hỗ trợ. Chỉ hỗ trợ .pdf, .docx, .txt")
+        raise ValueError(
+            f"Định dạng {ext} chưa được hỗ trợ. Chỉ hỗ trợ .pdf, .docx, .txt")

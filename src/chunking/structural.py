@@ -15,7 +15,8 @@ from src.chunking.utils import (
 )
 from src.chunking.recursive import chunk_recursive, recursive_split_spans
 
-_ARTICLE_RE = re.compile(r"^[ \t]*(Điều[ \t]+\d+[a-zđ]*\.[ \t]*[^\n]*)", re.MULTILINE)
+_ARTICLE_RE = re.compile(
+    r"^[ \t]*(Điều[ \t]+\d+[a-zđ]*\.[ \t]*[^\n]*)", re.MULTILINE)
 _CHAPTER_RE = re.compile(
     r"^[ \t]*(Chương[ \t]+(?:[IVXLCDM]+|\d+)\b[^\n]{0,100})(?:\n[ \t]*([^\n\.\:0-9]{3,100}))?[ \t]*$",
     re.MULTILINE,
@@ -81,7 +82,8 @@ def _chunk_structural_doc(doc_id: str, doc_pages: List[Dict[str, Any]], max_toke
 
     def emit(text: str, p_start: int, p_end: int, heading: str, clause: Optional[str], strategy: str) -> None:
         nonlocal counter
-        chunks.append(make_chunk(doc_id, "s3", counter, text, p_start, p_end, heading, clause, strategy))
+        chunks.append(make_chunk(doc_id, "s3", counter, text,
+                      p_start, p_end, heading, clause, strategy))
         counter += 1
 
     def emit_pieces(prefix: str, lo: int, hi: int, heading: str, clause: Optional[str], strategy: str) -> None:
@@ -92,7 +94,8 @@ def _chunk_structural_doc(doc_id: str, doc_pages: List[Dict[str, Any]], max_toke
                 continue
             ps, pe = span_pages(s, e)
             body = full_text[s:e]
-            emit(f"{prefix}\n{body}" if prefix else body, ps, pe, heading, clause, strategy)
+            emit(f"{prefix}\n{body}" if prefix else body,
+                 ps, pe, heading, clause, strategy)
 
     # 1. Phần mở đầu trước Điều 1
     pre_s, pre_e = trim_span(full_text, 0, articles[0].start(1))
@@ -109,7 +112,8 @@ def _chunk_structural_doc(doc_id: str, doc_pages: List[Dict[str, Any]], max_toke
     for i, m in enumerate(articles):
         art_start = m.start(1)
         title_end = m.end(1)
-        next_art_start = articles[i + 1].start(1) if i + 1 < len(articles) else len(full_text)
+        next_art_start = articles[i +
+                                  1].start(1) if i + 1 < len(articles) else len(full_text)
         art_end = next_art_start
 
         ch_idx = bisect.bisect_right(chapter_starts, art_start)
@@ -121,7 +125,8 @@ def _chunk_structural_doc(doc_id: str, doc_pages: List[Dict[str, Any]], max_toke
                 art_end = rm.start()
 
         article_title = m.group(1).strip()
-        current_chapter = chapters[ch_idx - 1][1] if ch_idx - 1 >= 0 else "Quy định chung"
+        current_chapter = chapters[ch_idx -
+                                   1][1] if ch_idx - 1 >= 0 else "Quy định chung"
         parent_header = f"{current_chapter} - {article_title}"
 
         art_s, art_e = trim_span(full_text, art_start, art_end)
@@ -139,7 +144,8 @@ def _chunk_structural_doc(doc_id: str, doc_pages: List[Dict[str, Any]], max_toke
         if clause_matches:
             for c_i, cm in enumerate(clause_matches):
                 c_start = title_end if c_i == 0 else cm.start(1)
-                c_end = clause_matches[c_i + 1].start(1) if c_i + 1 < len(clause_matches) else art_end
+                c_end = clause_matches[c_i + 1].start(
+                    1) if c_i + 1 < len(clause_matches) else art_end
                 s, e = trim_span(full_text, c_start, c_end)
                 if s >= e:
                     continue
@@ -148,11 +154,14 @@ def _chunk_structural_doc(doc_id: str, doc_pages: List[Dict[str, Any]], max_toke
                 candidate = f"{prefix}\n{full_text[s:e]}"
                 if estimate_token_count(candidate) <= max_tokens:
                     ps, pe = span_pages(s, e)
-                    emit(candidate, ps, pe, parent_header, clause_label, "structural_clause")
+                    emit(candidate, ps, pe, parent_header,
+                         clause_label, "structural_clause")
                 else:
-                    emit_pieces(prefix, s, e, parent_header, clause_label, "structural_clause_split")
+                    emit_pieces(prefix, s, e, parent_header,
+                                clause_label, "structural_clause_split")
         else:
-            emit_pieces(parent_header, title_end, art_end, parent_header, None, "structural_split")
+            emit_pieces(parent_header, title_end, art_end,
+                        parent_header, None, "structural_split")
 
     return chunks
 
@@ -162,5 +171,6 @@ def chunk_structural(pages_data: List[Dict[str, Any]], max_tokens: int = 512,
     """Cắt văn bản theo cấu trúc Chương / Điều / Khoản."""
     all_chunks: List[Dict[str, Any]] = []
     for doc_id, doc_pages in group_by_doc(pages_data).items():
-        all_chunks.extend(_chunk_structural_doc(doc_id, doc_pages, max_tokens, split_chars, split_overlap))
+        all_chunks.extend(_chunk_structural_doc(
+            doc_id, doc_pages, max_tokens, split_chars, split_overlap))
     return all_chunks

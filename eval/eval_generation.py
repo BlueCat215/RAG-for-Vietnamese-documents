@@ -16,6 +16,8 @@ Các chỉ số đo lường học thuật:
 - Latency (ms): Thời gian phản hồi chi tiết (truy hồi, rerank, sinh văn bản).
 """
 
+from src.pipeline import RAGPipeline
+from src.utils import load_config, load_jsonl
 import os
 import sys
 import re
@@ -26,7 +28,8 @@ import pandas as pd
 from typing import List, Dict, Any, Tuple
 
 # Đảm bảo import được module 'src'
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..")))
 
 # Cấu hình UTF-8 cho Windows console để tránh UnicodeEncodeError
 if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
@@ -39,9 +42,6 @@ if sys.stderr.encoding and sys.stderr.encoding.lower() != "utf-8":
         sys.stderr.reconfigure(encoding="utf-8")
     except Exception:
         pass
-
-from src.utils import load_config, load_jsonl
-from src.pipeline import RAGPipeline
 
 
 def normalize_vietnamese_text(text: str) -> List[str]:
@@ -108,7 +108,8 @@ def run_generation_evaluation(
 ):
     qa_file = f"data/qa/{split}.jsonl"
     print("=" * 70)
-    print(f"🤖 ĐÁNH GIÁ ĐỊNH LƯỢNG TẦNG SINH & SO SÁNH BASELINE (SPLIT: {split.upper()})")
+    print(
+        f"🤖 ĐÁNH GIÁ ĐỊNH LƯỢNG TẦNG SINH & SO SÁNH BASELINE (SPLIT: {split.upper()})")
     print("=" * 70)
 
     qa_data = load_jsonl(qa_file)
@@ -127,10 +128,12 @@ def run_generation_evaluation(
     pipeline.initialize(preload_llm=True)
 
     experiments = [
-        {"name": "B0: No-Retrieval (LLM thuần)", "method": "no_retrieval", "use_rerank": False},
+        {"name": "B0: No-Retrieval (LLM thuần)",
+         "method": "no_retrieval", "use_rerank": False},
         {"name": "B1: BM25 -> LLM", "method": "bm25", "use_rerank": False},
         {"name": "B2: Dense -> LLM", "method": "dense", "use_rerank": False},
-        {"name": "B3: Hybrid + Reranker (Đề xuất)", "method": "hybrid", "use_rerank": True},
+        {"name": "B3: Hybrid + Reranker (Đề xuất)",
+         "method": "hybrid", "use_rerank": True},
     ]
 
     all_predictions = []
@@ -191,7 +194,8 @@ def run_generation_evaluation(
                     is_over_refusal = False
                     over_refusal_flags.append(0.0)
                     f1 = compute_token_f1(answer, ground_truth)
-                    g_score = compute_groundedness(answer, contexts) if contexts else 0.0
+                    g_score = compute_groundedness(
+                        answer, contexts) if contexts else 0.0
                     has_cite = bool(re.search(r"\[\d+\]", answer))
 
                 f1_scores.append(f1)
@@ -216,10 +220,14 @@ def run_generation_evaluation(
 
         # Tổng kết chỉ số cho phương pháp
         avg_f1 = np.mean(f1_scores) * 100 if f1_scores else 0.0
-        avg_groundedness = np.mean(groundedness_scores) * 100 if groundedness_scores else 0.0
-        citation_rate = np.mean(citation_flags) * 100 if citation_flags else 0.0
-        refusal_acc = np.mean(refusal_true_positives) * 100 if refusal_true_positives else 0.0
-        over_refusal_rate = np.mean(over_refusal_flags) * 100 if over_refusal_flags else 0.0
+        avg_groundedness = np.mean(
+            groundedness_scores) * 100 if groundedness_scores else 0.0
+        citation_rate = np.mean(citation_flags) * \
+            100 if citation_flags else 0.0
+        refusal_acc = np.mean(refusal_true_positives) * \
+            100 if refusal_true_positives else 0.0
+        over_refusal_rate = np.mean(
+            over_refusal_flags) * 100 if over_refusal_flags else 0.0
         avg_lat = np.mean(latencies) if latencies else 0.0
 
         summary_records.append({
@@ -254,9 +262,12 @@ def run_generation_evaluation(
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Đánh giá tầng sinh RAG Tiếng Việt (NLP-21)")
-    parser.add_argument("--split", type=str, default="dev", choices=["dev", "test"], help="Tập dữ liệu cần đo (dev hoặc test)")
-    parser.add_argument("--max_samples", type=int, default=None, help="Giới hạn số câu hỏi (để chạy smoke test nhanh)")
+    parser = argparse.ArgumentParser(
+        description="Đánh giá tầng sinh RAG Tiếng Việt (NLP-21)")
+    parser.add_argument("--split", type=str, default="dev",
+                        choices=["dev", "test"], help="Tập dữ liệu cần đo (dev hoặc test)")
+    parser.add_argument("--max_samples", type=int, default=None,
+                        help="Giới hạn số câu hỏi (để chạy smoke test nhanh)")
     args = parser.parse_args()
 
     run_generation_evaluation(split=args.split, max_samples=args.max_samples)

@@ -50,7 +50,8 @@ def get_pipeline():
 
 # ── Giao diện chính ──────────────────────────────────────────────────────────
 st.title("🎓 Trợ Lý Hỏi Đáp Quy Chế Đào Tạo Đại Học")
-st.caption("Hệ thống RAG tiếng Việt hỗ trợ sinh viên tra cứu quy chế, học phí, học lại và tốt nghiệp")
+st.caption(
+    "Hệ thống RAG tiếng Việt hỗ trợ sinh viên tra cứu quy chế, học phí, học lại và tốt nghiệp")
 
 with st.sidebar:
     st.header("⚙️ Cấu hình truy xuất")
@@ -64,14 +65,16 @@ with st.sidebar:
         }[x]
     )
     use_rerank = st.checkbox("Bật Reranker (Cross-Encoder)", value=True)
-    top_k = st.slider("Số lượng đoạn trích dẫn (Top-K):", min_value=1, max_value=8, value=4)
+    top_k = st.slider("Số lượng đoạn trích dẫn (Top-K):",
+                      min_value=1, max_value=8, value=4)
 
     st.divider()
     st.header("📁 Tài liệu trong hệ thống")
     cfg = load_config()
     raw_dir = cfg["paths"]["raw_dir"]
     if os.path.exists(raw_dir):
-        files = [f for f in os.listdir(raw_dir) if f.endswith(('.pdf', '.docx', '.txt'))]
+        files = [f for f in os.listdir(
+            raw_dir) if f.endswith(('.pdf', '.docx', '.txt'))]
         for f in files:
             st.text(f"📄 {f}")
     else:
@@ -86,7 +89,8 @@ try:
     with st.spinner("Đang nạp mô hình và chỉ mục..."):
         pipeline = get_pipeline()
 except Exception as e:
-    st.error(f"Lỗi khởi tạo Pipeline: {e}. Vui lòng kiểm tra xem bạn đã chạy 'python run_indexing.py' chưa.")
+    st.error(
+        f"Lỗi khởi tạo Pipeline: {e}. Vui lòng kiểm tra xem bạn đã chạy 'python run_indexing.py' chưa.")
     st.stop()
 
 if "messages" not in st.session_state:
@@ -103,7 +107,8 @@ def _build_citation_map(sources: list) -> dict:
         cid = s.get("citation_id")
         if cid is None:
             continue
-        doc = s.get("doc_id", "Tài liệu").replace(".txt", "").replace(".docx", "").replace(".pdf", "")
+        doc = s.get("doc_id", "Tài liệu").replace(
+            ".txt", "").replace(".docx", "").replace(".pdf", "")
         clause = s.get("clause", "")
         heading = s.get("heading", "")
         p_start = s.get("page_start", 1)
@@ -225,7 +230,8 @@ if prompt := st.chat_input("Nhập câu hỏi của bạn (ví dụ: điều ki�
             )
 
             # Hiển thị câu trả lời với inline citation được làm giàu
-            display_text = render_answer_with_inline_citations(answer_text, sources)
+            display_text = render_answer_with_inline_citations(
+                answer_text, sources)
             st.markdown(display_text)
 
             st.caption(

@@ -25,10 +25,12 @@ class VectorIndex:
         self.chunks = chunks
         texts = [c["text"] for c in chunks]
 
-        print(f"[*] Đang tải Embedding Model: {self.model_name} trên thiết bị: {self.device}...")
+        print(
+            f"[*] Đang tải Embedding Model: {self.model_name} trên thiết bị: {self.device}...")
         model = SentenceTransformer(self.model_name, device=self.device)
 
-        print(f"[*] Bắt đầu tính toán vector cho {len(texts)} chunks (batch_size={batch_size})...")
+        print(
+            f"[*] Bắt đầu tính toán vector cho {len(texts)} chunks (batch_size={batch_size})...")
         embeddings = model.encode(
             texts,
             batch_size=batch_size,
@@ -68,19 +70,22 @@ class VectorIndex:
         meta_file = os.path.join(index_dir, "chunks_metadata.json")
 
         if not os.path.exists(index_file) or not os.path.exists(meta_file):
-            raise FileNotFoundError(f"Không tìm thấy dữ liệu index trong {index_dir}")
+            raise FileNotFoundError(
+                f"Không tìm thấy dữ liệu index trong {index_dir}")
 
         self.index = faiss.read_index(index_file)
         with open(meta_file, "r", encoding="utf-8") as f:
             self.chunks = json.load(f)
-        print(f"[+] Đã tải chỉ mục gồm {len(self.chunks)} chunks từ {index_dir}")
+        print(
+            f"[+] Đã tải chỉ mục gồm {len(self.chunks)} chunks từ {index_dir}")
 
     def search(self, query: str, model: SentenceTransformer, top_k: int = 5) -> List[Dict[str, Any]]:
         """Tìm kiếm ngữ nghĩa (Dense Search) bằng mô hình vector embedding."""
         if self.index is None:
             raise ValueError("Index chưa được nạp hoặc khởi tạo!")
 
-        q_vec = model.encode([query], normalize_embeddings=True, convert_to_numpy=True)
+        q_vec = model.encode(
+            [query], normalize_embeddings=True, convert_to_numpy=True)
         scores, indices = self.index.search(q_vec.astype(np.float32), top_k)
 
         results = []

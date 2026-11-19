@@ -74,7 +74,8 @@ def group_by_doc(pages_data: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, A
     return docs
 
 
-_PAGE_NUM_RE = re.compile(r"^(?:Trang\s+)?\d{1,4}(?:\s*/\s*\d{1,4})?$", re.IGNORECASE)
+_PAGE_NUM_RE = re.compile(
+    r"^(?:Trang\s+)?\d{1,4}(?:\s*/\s*\d{1,4})?$", re.IGNORECASE)
 _STRUCT_LINE_RE = re.compile(r"^(?:Điều|Chương|Mục)\b")
 
 
@@ -108,7 +109,8 @@ def clean_page_texts(doc_pages: List[Dict[str, Any]], min_pages: int = 4,
 def build_doc_text(doc_pages: List[Dict[str, Any]], clean: bool = True) -> Tuple[str, List[int], List[int]]:
     """Ghép các trang thành một chuỗi liên tục kèm mảng offset trang."""
     doc_pages = sorted(doc_pages, key=lambda x: x["page"])
-    texts = clean_page_texts(doc_pages) if clean else [normalize_legal_text(p.get("text")) for p in doc_pages]
+    texts = clean_page_texts(doc_pages) if clean else [
+        normalize_legal_text(p.get("text")) for p in doc_pages]
 
     parts, page_starts, pages = [], [], []
     pos = 0

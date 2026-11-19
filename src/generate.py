@@ -26,8 +26,10 @@ CÁC QUY TẮC SUY LUẬN VÀ TRẢ LỜI:
 
 def clean_llm_response(raw_text: str) -> str:
     """Làm sạch phản hồi LLM: xóa thẻ meta tự sinh, câu từ chối thừa và dòng bị cụt."""
-    raw_text = re.sub(r"\[Mã nguồn trích dẫn:[\s\S]*?\]", "", raw_text, flags=re.IGNORECASE)
-    raw_text = re.sub(r"\[Tài liệu tham khảo:?[\s\S]*?\]", "", raw_text, flags=re.IGNORECASE)
+    raw_text = re.sub(r"\[Mã nguồn trích dẫn:[\s\S]*?\]",
+                      "", raw_text, flags=re.IGNORECASE)
+    raw_text = re.sub(r"\[Tài liệu tham khảo:?[\s\S]*?\]",
+                      "", raw_text, flags=re.IGNORECASE)
 
     lines = raw_text.split("\n")
     cleaned_lines = []
@@ -96,7 +98,8 @@ class VietnameseLLMGenerator:
             use_fast=True
         )
 
-        print(f"[*] Đang tải LLM Model: {self.model_name} (chế độ: {self.quantization}, thiết bị: {self.device})...")
+        print(
+            f"[*] Đang tải LLM Model: {self.model_name} (chế độ: {self.quantization}, thiết bị: {self.device})...")
 
         if self.device == "cuda" and self.quantization == "4bit":
             try:
@@ -117,7 +120,8 @@ class VietnameseLLMGenerator:
                 )
                 print("[+] Đã nạp LLM thành công với BitsAndBytes 4-bit NF4!")
             except Exception as e:
-                print(f"[!] Không thể nạp BitsAndBytes 4-bit ({e}). Fallback sang float16...")
+                print(
+                    f"[!] Không thể nạp BitsAndBytes 4-bit ({e}). Fallback sang float16...")
                 self.model = AutoModelForCausalLM.from_pretrained(
                     self.model_name,
                     device_map="auto",
@@ -144,7 +148,7 @@ class VietnameseLLMGenerator:
             clause = chunk.get("clause", "")
             page_start = chunk.get("page_start", 1)
             page_end = chunk.get("page_end", 1)
-            
+
             loc_str = f"{doc_id}"
             if heading:
                 loc_str += f" - {heading}"
@@ -153,7 +157,8 @@ class VietnameseLLMGenerator:
             loc_str += f" (tr. {page_start})" if page_start == page_end else f" (tr. {page_start}-{page_end})"
 
             body = chunk.get("text", "").strip()
-            context_parts.append(f"[{i + 1}] Nguồn: {loc_str}\nNội dung: {body}")
+            context_parts.append(
+                f"[{i + 1}] Nguồn: {loc_str}\nNội dung: {body}")
 
         full_context_str = "\n\n".join(context_parts)
 
@@ -238,7 +243,8 @@ Hãy đọc hiểu các đoạn tài liệu trên và trả lời câu hỏi c�
             )
 
         generated_tokens = output_tokens[0][input_ids.shape[1]:]
-        raw_answer = self.tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
+        raw_answer = self.tokenizer.decode(
+            generated_tokens, skip_special_tokens=True).strip()
 
         final_answer = clean_llm_response(raw_answer)
 
@@ -248,10 +254,13 @@ Hãy đọc hiểu các đoạn tài liệu trên và trả lời câu hỏi c�
             "tài liệu không đề cập",
             "tài liệu không cung cấp"
         ]
-        is_refused = any(p in final_answer.lower() for p in refusal_phrases) and len(final_answer) < 150
+        is_refused = any(p in final_answer.lower()
+                         for p in refusal_phrases) and len(final_answer) < 150
 
-        valid_cites, fake_cites = self.parse_citations(final_answer, len(context_chunks))
-        rag_logger.log_llm_output(raw_answer, final_answer, valid_cites, fake_cites)
+        valid_cites, fake_cites = self.parse_citations(
+            final_answer, len(context_chunks))
+        rag_logger.log_llm_output(
+            raw_answer, final_answer, valid_cites, fake_cites)
 
         return {
             "answer": final_answer,
@@ -298,7 +307,8 @@ Hãy đọc hiểu các đoạn tài liệu trên và trả lời câu hỏi c�
             )
 
         generated_tokens = output_tokens[0][input_ids.shape[1]:]
-        raw_answer = self.tokenizer.decode(generated_tokens, skip_special_tokens=True).strip()
+        raw_answer = self.tokenizer.decode(
+            generated_tokens, skip_special_tokens=True).strip()
         final_answer = clean_llm_response(raw_answer)
 
         refusal_phrases = [
@@ -307,7 +317,8 @@ Hãy đọc hiểu các đoạn tài liệu trên và trả lời câu hỏi c�
             "tôi không biết",
             "không thể trả lời"
         ]
-        is_refused = any(p in final_answer.lower() for p in refusal_phrases) and len(final_answer) < 150
+        is_refused = any(p in final_answer.lower()
+                         for p in refusal_phrases) and len(final_answer) < 150
 
         return {
             "answer": final_answer,

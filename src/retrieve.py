@@ -30,13 +30,15 @@ def tokenize_vietnamese(text: str, mode: str = "dual") -> List[str]:
     try:
         from pyvi import ViTokenizer
         segmented = ViTokenizer.tokenize(text)
-        word_tokens = [w.strip(".,;:?!\"'()[]{}«»/\\-") for w in segmented.split()]
+        word_tokens = [w.strip(".,;:?!\"'()[]{}«»/\\-")
+                       for w in segmented.split()]
         word_tokens = [w for w in word_tokens if w]
     except ImportError:
         try:
             from underthesea import word_tokenize
             segmented = word_tokenize(text, format="text")
-            word_tokens = [w.strip(".,;:?!\"'()[]{}«»/\\-") for w in segmented.split()]
+            word_tokens = [w.strip(".,;:?!\"'()[]{}«»/\\-")
+                           for w in segmented.split()]
             word_tokens = [w for w in word_tokens if w]
         except ImportError:
             return syllable_tokens
@@ -121,10 +123,12 @@ def reciprocal_rank_fusion(
             elif "bm25_score" not in chunk_map[c_id] and "bm25_score" in item:
                 chunk_map[c_id]["bm25_score"] = float(item["bm25_score"])
 
-            rrf_scores[c_id] = rrf_scores.get(c_id, 0.0) + (w / (k + (rank + 1)))
+            rrf_scores[c_id] = rrf_scores.get(
+                c_id, 0.0) + (w / (k + (rank + 1)))
 
     # Sắp xếp theo điểm RRF giảm dần
-    sorted_items = sorted(rrf_scores.items(), key=lambda x: x[1], reverse=True)[:top_k]
+    sorted_items = sorted(rrf_scores.items(),
+                          key=lambda x: x[1], reverse=True)[:top_k]
 
     final_results = []
     for rank, (c_id, score) in enumerate(sorted_items):

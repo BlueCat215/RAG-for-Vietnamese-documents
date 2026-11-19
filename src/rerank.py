@@ -35,7 +35,8 @@ class VietnameseReranker:
             r_score = float(score)
             d_score = float(chunk.get("dense_score", 0.0))
 
-            soft_score = alpha * r_score + (1.0 - alpha) * d_score if d_score > 0.0 else r_score
+            soft_score = alpha * r_score + \
+                (1.0 - alpha) * d_score if d_score > 0.0 else r_score
 
             c_copy["rerank_raw"] = r_score
             c_copy["dense_score"] = d_score

@@ -21,7 +21,8 @@ class RAGPipeline:
         self.retrieval_cfg = self.config["retrieval"]
 
         emb_cfg = self.models_cfg["embedding"]
-        self.vector_index = VectorIndex(model_name=emb_cfg["name"], device=emb_cfg.get("device", "cuda"))
+        self.vector_index = VectorIndex(
+            model_name=emb_cfg["name"], device=emb_cfg.get("device", "cuda"))
         self.query_encoder = None
         self.emb_model_name = emb_cfg["name"]
         self.bm25_retriever = None
@@ -43,7 +44,8 @@ class RAGPipeline:
             temperature=llm_cfg.get("temperature", 0.1)
         )
 
-        self.refusal_threshold = float(self.retrieval_cfg.get("refusal_threshold", 0.05))
+        self.refusal_threshold = float(
+            self.retrieval_cfg.get("refusal_threshold", 0.05))
         self.is_ready = False
 
     def initialize(self, index_dir: Optional[str] = None, preload_llm: bool = True):
@@ -53,11 +55,13 @@ class RAGPipeline:
         self.vector_index.load(idx_dir)
 
         print(f"[*] Nạp Query Encoder ({self.emb_model_name}) trên CPU...")
-        self.query_encoder = SentenceTransformer(self.emb_model_name, device="cpu")
+        self.query_encoder = SentenceTransformer(
+            self.emb_model_name, device="cpu")
 
         bm25_cfg = self.retrieval_cfg.get("bm25", {})
         bm25_mode = bm25_cfg.get("mode", "dual")
-        print(f"[*] Khởi tạo BM25 (chế độ: {bm25_mode}) trên {len(self.vector_index.chunks)} chunks...")
+        print(
+            f"[*] Khởi tạo BM25 (chế độ: {bm25_mode}) trên {len(self.vector_index.chunks)} chunks...")
         self.bm25_retriever = BM25Retriever(
             self.vector_index.chunks,
             k1=bm25_cfg.get("k1", 1.5),
@@ -66,7 +70,8 @@ class RAGPipeline:
         )
 
         if preload_llm:
-            print(f"[*] Đang nạp trước LLM Generator vào thiết bị: {self.generator.device}...")
+            print(
+                f"[*] Đang nạp trước LLM Generator vào thiết bị: {self.generator.device}...")
             self.generator.load_model()
             print("[+] LLM đã nạp sẵn trong VRAM GPU!")
 
@@ -92,14 +97,17 @@ class RAGPipeline:
             candidates = self.bm25_retriever.search(query, top_k=n_candidates)
             rag_logger.log_bm25_results(candidates)
         elif method == "dense":
-            candidates = self.vector_index.search(query, self.query_encoder, top_k=n_candidates)
+            candidates = self.vector_index.search(
+                query, self.query_encoder, top_k=n_candidates)
             rag_logger.log_dense_results(candidates)
         elif method == "hybrid":
             rrf_cfg = self.retrieval_cfg.get("rrf", {})
-            bm25_top_n = min(n_candidates, rrf_cfg.get("bm25_top_candidates", 10))
+            bm25_top_n = min(n_candidates, rrf_cfg.get(
+                "bm25_top_candidates", 10))
             bm25_results = self.bm25_retriever.search(query, top_k=bm25_top_n)
             rag_logger.log_bm25_results(bm25_results)
-            dense_results = self.vector_index.search(query, self.query_encoder, top_k=n_candidates)
+            dense_results = self.vector_index.search(
+                query, self.query_encoder, top_k=n_candidates)
             rag_logger.log_dense_results(dense_results)
             w_dense = rrf_cfg.get("weight_dense", 0.7)
             w_bm25 = rrf_cfg.get("weight_bm25", 0.3)
@@ -167,14 +175,17 @@ class RAGPipeline:
             }
 
         # Bước 1: Truy xuất và xếp hạng
-        contexts, timings = self.retrieve(question, method=method, top_k=top_k, use_rerank=use_rerank)
+        contexts, timings = self.retrieve(
+            question, method=method, top_k=top_k, use_rerank=use_rerank)
 
         # Bước 2: Kiểm tra ngưỡng từ chối Lớp 1 (Refusal Gate)
         max_score = 0.0
         if contexts:
-            max_score = contexts[0].get("rerank_score", contexts[0].get("score", 0.0))
+            max_score = contexts[0].get(
+                "rerank_score", contexts[0].get("score", 0.0))
 
-        rag_logger.log_refusal_check(max_score, self.refusal_threshold, not contexts or max_score < self.refusal_threshold)
+        rag_logger.log_refusal_check(
+            max_score, self.refusal_threshold, not contexts or max_score < self.refusal_threshold)
         if not contexts or max_score < self.refusal_threshold:
             return {
                 "question": question,
