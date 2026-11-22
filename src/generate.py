@@ -166,8 +166,8 @@ class VietnameseLLMGenerator:
 
 ĐOẠN TÀI LIỆU THAM KHẢO:
 {full_context_str}
-
-Hãy đọc hiểu các đoạn tài liệu trên và trả lời câu hỏi của người dùng. Nếu câu hỏi dùng khẩu ngữ đời sống, hãy chủ động liên kết ngữ nghĩa với các quy định, Điều/Khoản tương ứng trong tài liệu để trả lời trọn vẹn và ghi rõ mã nguồn trích dẫn [n] sau mỗi ý."""
+Hãy đọc hiểu các đoạn tài liệu trên và trả lời câu hỏi của người dùng. Nếu câu hỏi dùng khẩu ngữ đời sống, 
+hãy chủ động liên kết ngữ nghĩa với các quy định, Điều/Khoản tương ứng trong tài liệu để trả lời trọn vẹn và ghi rõ mã nguồn trích dẫn [n] sau mỗi ý."""
 
         messages = [
             {"role": "system", "content": DEFAULT_SYSTEM_PROMPT},

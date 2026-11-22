@@ -10,7 +10,6 @@ from src.index import VectorIndex
 from src.rerank import VietnameseReranker
 from src.generate import VietnameseLLMGenerator
 from src import logger as rag_logger
-from src import logger as rag_logger
 
 
 class RAGPipeline:
