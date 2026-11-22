@@ -60,11 +60,13 @@ def fix_broken_linebreaks(text: str) -> str:
         if not buffer:
             buffer = line_str
         else:
-            # Kiểm tra xem buffer có kết thúc bằng dấu chấm câu không
+            # Không nối các dòng bảng biểu Markdown hoặc các gạch đầu dòng danh sách
+            is_table = buffer.startswith("|") or line_str.startswith("|")
+            is_bullet = buffer.startswith(("-", "*", "•")) or line_str.startswith(("-", "*", "•"))
             ends_with_punct = buffer[-1] in ".:;?!"
             is_new_section = bool(header_pattern.match(line_str))
 
-            if not ends_with_punct and not is_new_section:
+            if not ends_with_punct and not is_new_section and not is_table and not is_bullet:
                 # Nối dòng
                 buffer = f"{buffer} {line_str}"
             else:

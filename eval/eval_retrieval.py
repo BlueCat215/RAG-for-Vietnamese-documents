@@ -13,20 +13,23 @@ Các tính năng học thuật nâng cao:
 - So sánh cặp (Paired Bootstrap Test): Đo mức độ cải thiện delta và p-value có ý nghĩa thống kê.
 """
 
-from src.pipeline import RAGPipeline
-from src.utils import load_config, load_jsonl
-import pandas as pd
-import numpy as np
 import os
 import sys
+
+# Đảm bảo import được module 'src' bất kể script được gọi từ đâu
+sys.path.insert(0, os.path.abspath(
+    os.path.join(os.path.dirname(__file__), "..")))
+
 import math
 import time
 import argparse
 from typing import List, Dict, Any, Tuple
+import pandas as pd
+import numpy as np
 
-# Đảm bảo import được module 'src' khi chạy trực tiếp từ thư mục eval
-sys.path.insert(0, os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "..")))
+from src.pipeline import RAGPipeline
+from src.utils import load_config, load_jsonl
+
 
 # Cấu hình UTF-8 cho Windows console để tránh UnicodeEncodeError
 if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
@@ -298,7 +301,7 @@ def run_evaluation(
         signif = "***" if p_val < 0.01 else ("**" if p_val < 0.05 else "ns")
         print(f"[*] {target_exp} vs {base_exp}:")
         print(
-            f"    -> Δ MRR: +{delta:.4f} | 95% CI of Δ: [{ci_diff[0]:.4f}, {ci_diff[1]:.4f}] | p-value: {p_val:.4f} ({signif})")
+            f"    -> Δ MRR: {delta:+.4f} | 95% CI of Δ: [{ci_diff[0]:.4f}, {ci_diff[1]:.4f}] | p-value: {p_val:.4f} ({signif})")
 
 
 if __name__ == "__main__":

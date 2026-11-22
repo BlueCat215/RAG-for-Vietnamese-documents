@@ -20,6 +20,8 @@ if sys.stderr.encoding and sys.stderr.encoding.lower() != "utf-8":
     except Exception:
         pass
 
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
 from src.utils import load_config
 from src.extract import extract_document
 from src.chunking import chunk_structural, save_chunks_to_jsonl

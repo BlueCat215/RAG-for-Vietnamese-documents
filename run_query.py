@@ -1,6 +1,6 @@
 """
 Script chạy thử nghiệm hỏi đáp dòng lệnh (CLI Interactive Test)
-Dùng để kiểm tra nhanh RAG Pipeline sau khi đã build index xong.
+Dùng để kiểm tra nhanh RAG Pipeline sau khi đã build index xong (Hỗ trợ Multi-turn Conversation).
 """
 
 import sys
@@ -18,6 +18,9 @@ if sys.platform == "win32":
         sys.stdout = io.TextIOWrapper(
             sys.stdout.buffer, encoding="utf-8", errors="replace")
 
+import os
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
 from src.pipeline import RAGPipeline
 from src import logger as rag_logger
 
@@ -33,7 +36,7 @@ def annotate_answer(answer_text: str, sources: list) -> str:
         if cid is None:
             continue
         doc = s.get("doc_id", "Tài liệu").replace(
-            ".txt", "").replace(".docx", "").replace(".pdf", "")
+            ".txt", "").replace(".docx", "").replace(".doc", "").replace(".pdf", "")
         clause = s.get("clause", "")
         heading = s.get("heading", "")
         p_start = s.get("page_start", 1)
@@ -70,6 +73,7 @@ def main():
     rag_logger.setup_logger(log_dir="logs")
     print("=" * 60)
     print("💬 HỆ THỐNG HỎI ĐÁP QUY CHẾ ĐÀO TẠO ĐẠI HỌC (CLI TEST)")
+    print("   (Đã kích hoạt bộ nhớ ngữ cảnh hội thoại đa lượt - Multi-turn)")
     print("=" * 60)
 
     pipeline = RAGPipeline(config_path="config/config.yaml")
@@ -80,8 +84,10 @@ def main():
         print("    => Bạn đã chạy lệnh 'python run_indexing.py' để dựng chỉ mục chưa?")
         return
 
-    print("\n[+] Sẵn sàng! Gõ câu hỏi của bạn (hoặc gõ 'q' để thoát):")
+    print("\n[+] Sẵn sàng! Gõ câu hỏi của bạn (hoặc gõ 'q' để thoát, 'clear' để xóa ngữ cảnh):")
     print("-" * 60)
+
+    chat_history = []
 
     while True:
         try:
@@ -96,9 +102,19 @@ def main():
                 print("Tạm biệt!")
                 break
 
+            if query.lower() in ["clear", "reset"]:
+                chat_history = []
+                print("[+] Đã xóa lịch sử hội thoại. Bắt đầu phiên hỏi đáp mới.")
+                continue
+
             print("[*] Đang truy xuất dữ liệu & sinh câu trả lời...")
-            res = pipeline.query(query, method="hybrid",
-                                 top_k=5, use_rerank=True)
+            res = pipeline.query(
+                query,
+                method="hybrid",
+                top_k=5,
+                use_rerank=True,
+                chat_history=chat_history
+            )
 
             print("\n(•‿•) Trợ lý trả lời:")
             display_text = annotate_answer(
@@ -118,6 +134,10 @@ def main():
             elif res.get("refused"):
                 print(
                     f"  ℹ️ Lý do từ chối: {res.get('refusal_reason', 'Không đủ dữ liệu trong context')}")
+
+            # Lưu lại lịch sử hội thoại để phục vụ câu hỏi tiếp theo
+            chat_history.append({"role": "user", "content": query})
+            chat_history.append({"role": "assistant", "content": res["answer"]})
 
             print("-" * 60)
 

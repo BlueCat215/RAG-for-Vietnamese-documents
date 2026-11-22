@@ -92,7 +92,7 @@ class RAGPipeline:
         timings = {}
         t0 = time.time()
 
-        n_candidates = self.top_n_rerank if use_rerank else top_k
+        n_candidates = max(self.top_n_rerank, top_k) if use_rerank else top_k
         if method == "bm25":
             candidates = self.bm25_retriever.search(query, top_k=n_candidates)
             rag_logger.log_bm25_results(candidates)

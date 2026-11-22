@@ -6,6 +6,8 @@ import sys
 import re
 import time
 import streamlit as st
+sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))
+
 from src.pipeline import RAGPipeline
 from src.utils import load_config
 from src import logger as rag_logger

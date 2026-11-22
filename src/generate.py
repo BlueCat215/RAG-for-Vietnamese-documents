@@ -174,6 +174,7 @@ Nhiệm vụ: Hãy viết lại câu hỏi mới thành một câu hỏi độc 
                 pad_token_id=self.tokenizer.eos_token_id
             )
         rewritten = self.tokenizer.decode(out[0][inputs.input_ids.shape[1]:], skip_special_tokens=True).strip()
+        rewritten = re.sub(r"^(câu hỏi(?: đã)? viết lại|câu hỏi độc lập|câu hỏi)\s*:\s*", "", rewritten, flags=re.IGNORECASE).strip()
         rewritten = rewritten.strip('"').strip("'").strip()
         return rewritten if len(rewritten) > 3 else query
 
