@@ -15,8 +15,8 @@ models:
   embedding:
     name: "AITeamVN/Vietnamese_Embedding" # Model bge-m3 fine-tuned riêng cho tiếng Việt
     dim: 1024 # Kích thước vector output
-    max_seq_length: 2048 # Độ dài tối đa mô hình nhận vào (tokens)
-    batch_size: 8 # Số đoạn văn xử lý cùng lúc
+    max_seq_length: 512 # Cố định 512 tokens để tối ưu tốc độ và khớp với kích thước chunk
+    batch_size: 16 # Tăng batch size để lập chỉ mục nhanh hơn
     normalize: true # Chuẩn hóa L2 vector để dùng Cosine Similarity / Inner Product
     query_prefix: "" # Prefix cho câu hỏi (bản này không dùng)
     passage_prefix: "" # Prefix cho đoạn văn (bản này không dùng)

@@ -1,0 +1,455 @@
+TÀI LIỆU HƯỚNG DẪN SỬ DỤNG
+CỔNG THÔNG TIN SINH VIÊN
+Đối tượng người dùng: Sinh viên
+
+(Ghi chú về bản chuyển đổi: toàn bộ hình ảnh trong tài liệu gốc đã được thay bằng các đoạn mô tả bằng chữ, đặt trong dấu ngoặc vuông và bắt đầu bằng "MÔ TẢ HÌNH". Các thông tin cá nhân cụ thể xuất hiện trong ảnh chụp màn hình mẫu như số căn cước, số điện thoại, số tài khoản ngân hàng không được chép lại, chỉ mô tả loại thông tin được hiển thị.)
+
+
+==================================================
+MỤC LỤC
+==================================================
+
+I. GIỚI THIỆU CƠ BẢN (trang 1)
+  1.1 Đăng nhập (trang 1)
+  1.2 Đổi mật khẩu (trang 2)
+  1.3 Các công cụ thường gặp (trang 4)
+    1.3.1 Thuật ngữ và viết tắt (trang 4)
+    1.3.2 Biểu tượng (trang 4)
+
+II. DANH SÁCH CÁC CHỨC NĂNG CỔNG THÔNG TIN DÀNH CHO SINH VIÊN (trang 5)
+  2.1 Xem thông tin sinh viên (trang 5)
+  2.2 Đề xuất cập nhật thông tin sinh viên (trang 6)
+  2.3 Xem thông báo – Nhắc nhở từ nhà trường (trang 8)
+  2.4 Kết quả học tập (trang 8)
+  2.5 Lịch theo tuần (trang 9)
+  2.6 Lịch theo tiến độ (trang 11)
+  2.7 Lịch toàn trường (trang 11)
+  2.8 Thông tin điểm danh (trang 12)
+  2.9 Kết quả rèn luyện (trang 13)
+  2.10 Xem chương trình khung (trang 14)
+  2.11 Đăng ký học phần (trang 14)
+  2.12 Đăng ký môn học điều kiện (trang 16)
+  2.13 Đăng ký thi lại (trang 17)
+  2.14 Tra cứu công nợ (trang 18)
+  2.15 Phiếu thu tổng hợp (trang 19)
+
+
+==================================================
+I. GIỚI THIỆU CƠ BẢN
+==================================================
+
+Tài liệu này được xây dựng nhằm mục đích phục vụ cho công việc hướng dẫn sử dụng chi tiết thao tác các chức năng quản trị Cổng thông tin sinh viên.
+
+
+--------------------------------------------------
+1.1 Đăng nhập
+--------------------------------------------------
+
+Cách vào màn hình: NSD (người sử dụng) dùng trình duyệt website như Google Chrome, Cốc Cốc, v.v.
+
+Truy cập vào đường dẫn: https://sinhvien.ascvn.com.vn/
+
+Các bước thực hiện:
+
+[MÔ TẢ HÌNH 1 – Hình minh họa màn hình đăng nhập hệ thống (trang chủ cổng thông tin)]
+Đây là ảnh chụp trang chủ của Cổng thông tin sinh viên Trường Đại học Kinh tế - Kỹ thuật Công nghiệp. Phía trên cùng là thanh tiêu đề màu xanh đậm, bên trái có logo tròn của trường kèm dòng chữ "Trường Đại học Kinh tế - Kỹ thuật Công nghiệp" và tên "Cổng thông tin sinh viên". Ở giữa thanh có ô tìm kiếm với gợi ý "Nhập nội dung tìm kiếm". Ở bên phải có hai nút: nút "Sinh viên đăng nhập" màu đỏ được khoanh bằng khung đỏ và chỉ bằng một mũi tên đỏ để người dùng biết cần bấm vào đó, và bên dưới là nút "Dành cho phụ huynh". Bên dưới thanh tiêu đề là hàng menu gồm: Thông báo, Quy định, Chương trình đào tạo, Sổ tay sinh viên, Tuyển sinh, Tra cứu văn bằng. Phần giữa trang là một ảnh bìa lớn chụp nhóm sinh viên mặc áo xanh tình nguyện, cầm các tấm biển có chữ "We choose UNETI", "I choose UNETI" trước một cổng sắt. Phía dưới ảnh bìa là ba tab: Đào tạo đại học, Đào tạo sau đại học, Đào tạo từ xa, và hai cột tin tức: bên trái là "Kế hoạch đào tạo đại học chính quy" và bên phải là "Tin tức đào tạo đại học chính quy". Mỗi cột liệt kê vài thông báo kèm ngày tháng (các thông báo mẫu thuộc tháng 9 năm 2024, ví dụ kế hoạch học tập học kỳ I năm học 2024-2025, kế hoạch xét tốt nghiệp, quyết định công nhận chuẩn đầu ra tiếng Anh và tin học). Chân trang có tên trường và địa chỉ các cơ sở tại Nam Định và Hà Nội.
+
+[MÔ TẢ HÌNH 2 – Hình minh họa màn hình đăng nhập hệ thống (form đăng nhập)]
+Đây là ảnh chụp trang đăng nhập. Phía trên là thanh màu xanh có logo và tên "Cổng thông tin sinh viên". Ở giữa trang là một khung đăng nhập màu trắng có tiêu đề "Cổng thông tin sinh viên – Đăng nhập hệ thống". Trong khung có hai ô nhập: ô thứ nhất để nhập mã sinh viên, ô thứ hai để nhập mật khẩu; bên phải ô mật khẩu có hộp chọn nhỏ "Ghi nhớ đăng nhập" (hoặc tương tự). Tiếp theo là ô nhập mã xác nhận (captcha) kèm hình chữ cong méo màu xanh/đỏ. Bên dưới là nút lớn màu cam "Đăng nhập". Dưới nút là một nút nhỏ màu xanh ngọc "Dành cho phụ huynh", phần "Tải App Mobile sinh viên" gồm mã QR ở bên trái và hai nút tải ứng dụng từ App Store và Google Play ở bên phải, cuối cùng là một thanh xanh ngọc "Hướng dẫn sử dụng App SinhViên".
+
+- Bước 1: NSD bấm vào nút "Sinh viên đăng nhập" (nút màu đỏ chữ trắng).
+- Bước 2: NSD nhập thông tin Username – tương ứng là mã sinh viên.
+- Bước 3: NSD nhập mật khẩu.
+- Bước 4: NSD bấm nút "Đăng nhập" (nút màu cam) để đăng nhập vào hệ thống.
+
+[MÔ TẢ HÌNH 3 – Màn hình hiển thị sau khi đăng nhập thành công]
+Đây là màn hình tổng quan (Dashboard) sau khi đăng nhập. Thanh trên cùng có logo, ô "Tìm kiếm", các liên kết "Trang chủ", "Tin tức" (kèm biểu tượng chuông có số thông báo màu đỏ) và ảnh đại diện cùng họ tên người dùng ở góc phải. Phần bên trái phía trên là khối "Thông tin sinh viên" gồm ảnh chân dung và các dòng: mã sinh viên, họ tên, giới tính, ngày sinh, nơi sinh, lớp học, khóa học, bậc đào tạo, loại hình đào tạo, ngành (trong ảnh mẫu là sinh viên ngành Kế toán, khóa 2021-2025, bậc Đại học, hệ Chính quy); dưới ảnh có liên kết "Xem chi tiết". Bên phải phía trên có ba ô thống kê: "Nhắc nhớ mới, chưa xem" (hiển thị số 0), "Lịch học trong tuần" (nền xanh nhạt, hiển thị số 8) và "Lịch thi trong tuần" (nền cam nhạt, hiển thị số 0), mỗi ô có liên kết "Xem chi tiết". Ở giữa là một hàng 8 biểu tượng lối tắt: Đề xuất biểu mẫu, Nhắc nhở, Kết quả học tập, Lịch theo tuần, Lịch theo tiến độ, Tra cứu công nợ, Thanh toán trực tuyến, Phiếu thu tổng hợp. Phía dưới là ba khối: "Kết quả học tập" (biểu đồ cột có hộp chọn học kỳ, ví dụ 1 (2024 - 2025), hiển thị thông báo "Chưa có dữ liệu hiển thị"), "Tiến độ học tập" (biểu đồ vòng tròn xanh dương và xanh lá, bên dưới ghi số tín chỉ đã hoàn thành trên tổng số, ví dụ 118/138) và "Lớp học phần" (danh sách mã môn học, tên môn và số tín chỉ).
+
+
+--------------------------------------------------
+1.2 Đổi mật khẩu
+--------------------------------------------------
+
+Chức năng hỗ trợ NSD đổi mật khẩu tài khoản.
+
+Các bước thực hiện:
+
+[MÔ TẢ HÌNH 4 – Hình minh họa thao tác thay đổi mật khẩu]
+Ảnh chụp màn hình Dashboard với ba điểm được đánh số màu đỏ. Điểm số 1 nằm ở họ tên người dùng ở góc trên bên phải; khi bấm vào sẽ xổ ra một menu nhỏ gồm ba mục: "Thông tin cá nhân", "Đổi mật khẩu" và "Đăng xuất". Điểm số 2 đánh dấu mục "Đổi mật khẩu" trong menu đó, có mũi tên đỏ chỉ sang hộp thoại. Điểm số 3 là hộp thoại (popup) hiện ra ở giữa màn hình, có viền đỏ, gồm ba ô nhập liệu bắt buộc (đánh dấu sao đỏ): "Mật khẩu cũ" (gợi ý: Nhập mật khẩu cũ), "Mật khẩu mới" (gợi ý: Nhập mật khẩu mới) và "Xác nhận mật khẩu" (gợi ý: Xác nhận lại mật khẩu), cuối hộp thoại có nút xanh "Lưu" ở góc phải dưới và nút đóng (dấu X) ở góc phải trên. Nền phía sau là các khối của Dashboard bị hộp thoại che một phần.
+
+- Bước 1: NSD bấm vào biểu tượng Họ và tên.
+- Bước 2: NSD bấm nút "Đổi mật khẩu" (nút có biểu tượng ổ khóa nhỏ).
+- Bước 3: Tại popup đổi mật khẩu, NSD nhập các thông tin:
+  + Mật khẩu cũ: là mật khẩu đang sử dụng. Yêu cầu này nhằm nâng cao tính bảo mật, đề phòng trường hợp không phải người dùng thực hiện yêu cầu đổi mật khẩu.
+  + Mật khẩu mới: nhập mật khẩu mới – mật khẩu mà NSD muốn đổi thành.
+  + Nhập lại mật khẩu: xác nhận lại mật khẩu mới vừa nhập để đảm bảo tính chính xác của mật khẩu sắp thay đổi. Yêu cầu này để đề phòng trường hợp NSD có sai sót trong quá trình nhập liệu.
+- Bước 4: NSD bấm nút "Lưu" (màu xanh) để lưu thông tin.
+
+
+--------------------------------------------------
+1.3 Các công cụ thường gặp
+--------------------------------------------------
+
+1.3.1 Thuật ngữ và viết tắt
+
+Bảng 1. Bảng thuật ngữ
+
+1. Click: Ấn phím chuột
+2. Link: Liên kết
+3. Textbox: Khung cho phép người dùng nhập dữ liệu
+4. Button: Nút để người dùng click chuột
+5. Website: Trang web
+6. Popup: Hộp thoại
+7. NQT: Người quản trị
+8. NSD: Người sử dụng
+9. ASC: Công ty Cổ phần Tiến Bộ Sài Gòn
+10. HDSD: Hướng dẫn sử dụng
+
+1.3.2 Biểu tượng
+
+Bảng 2. Bảng biểu tượng nút hệ thống (trong tài liệu gốc, cột "Biểu tượng" là hình ảnh nút; ở đây mô tả bằng chữ)
+
+- Nút màu đỏ hồng, có dấu cộng và chữ "Đề xuất": Thêm đề xuất.
+- Nút màu xanh ngọc, chữ "Lưu đề xuất": Lưu dữ liệu.
+- Nút vuông màu xanh dương, có hình kính lúp màu trắng: Tìm kiếm dữ liệu.
+- Nút nhỏ màu đỏ hồng, chữ "Xóa": Xóa.
+- Nút nhỏ màu xanh dương, chữ "Xem": Xem nội dung.
+- Nút màu xám nhạt, có biểu tượng ổ khóa và chữ "Đổi mật khẩu": Button Đổi mật khẩu.
+- Nút vuông màu xanh đen đậm, có biểu tượng ba gạch ngang (menu): Button mở rộng nội dung.
+- Nút màu xanh ngọc, chữ "Xuất excel": Xuất dữ liệu trên màn hình ra file Excel.
+- Biểu tượng đám mây màu xanh đen có mũi tên đi xuống: Tải file đính kèm.
+(Cột "Ghi chú" của cả hai bảng để trống.)
+
+
+==================================================
+II. DANH SÁCH CÁC CHỨC NĂNG CỔNG THÔNG TIN DÀNH CHO SINH VIÊN
+==================================================
+
+--------------------------------------------------
+2.1 Xem thông tin sinh viên
+--------------------------------------------------
+
+Chức năng hỗ trợ sinh viên xem thông tin cá nhân đã được khai báo trên hệ thống phần mềm của nhà trường.
+
+Cách vào màn hình: Màn hình Dashboard → Thông tin chung → Thông tin sinh viên.
+
+[MÔ TẢ HÌNH 5 – Hình minh họa thao tác vào chức năng]
+Ảnh chụp một phần màn hình, bên trái là menu dọc gồm "Trang chủ", mục "Thông tin chung" đã được mở rộng với hai mục con "Thông tin sinh viên" và "Đề xuất cập nhật thông tin". Bên phải là khối "Thông tin sinh viên" với ảnh chân dung tròn, họ tên, mã số sinh viên, giới tính, ngày sinh, nơi sinh, lớp học, khóa học, bậc đào tạo, loại hình đào tạo và ngành, kèm liên kết "Xem chi tiết".
+
+Các bước thực hiện:
+
+[MÔ TẢ HÌNH 6 – Hình minh họa thao tác xem thông tin sinh viên]
+Ảnh chụp màn hình có hai điểm được đánh số đỏ ở menu bên trái. Điểm số 1 là mục "Thông tin chung" (có biểu tượng màn hình máy tính), điểm số 2 là mục con "Thông tin sinh viên". Menu bên trái cũng liệt kê các mục khác: Trang chủ, Đề xuất cập nhật thông tin, Đề xuất biểu mẫu, Ghi chú nhắc nhở, Cập nhật thông tin BHYT, Danh sách hồ sơ cá nhân, và các nhóm Học tập, Đăng ký học phần. Phần nội dung bên phải hiển thị ảnh chân dung, mã sinh viên, họ tên, giới tính, cùng khối "Thông tin học vấn" (trạng thái đang học, mã hồ sơ, ngày vào trường, lớp học, cơ sở, bậc đào tạo, loại hình đào tạo, khoa, ngành, chuyên ngành, khóa học) và khối "Thông tin cá nhân" bắt đầu bằng ngày sinh, dân tộc, tôn giáo, khu vực, số căn cước, ngày cấp, nơi cấp.
+
+- Bước 1: NSD bấm nút "Thông tin chung" (nút có viền xanh, biểu tượng màn hình máy tính).
+- Bước 2: NSD bấm nút "Thông tin sinh viên" để xem thông tin sinh viên.
+- Màn hình thông tin sinh viên hiển thị như sau:
+
+[MÔ TẢ HÌNH 7 – Hình minh họa thông tin sinh viên]
+Ảnh chụp toàn màn hình trang thông tin sinh viên, gồm ba khối chính xếp từ trên xuống. Khối đầu là "Thông tin học vấn": ảnh chân dung, mã sinh viên, họ tên, giới tính, trạng thái học tập (đang học), mã hồ sơ, ngày vào trường, lớp học, cơ sở (Hà Nội), bậc đào tạo, loại hình đào tạo, khoa, ngành, chuyên ngành và khóa học. Khối thứ hai là "Thông tin cá nhân": ngày sinh, dân tộc, tôn giáo, khu vực, số căn cước công dân kèm ngày cấp và nơi cấp, đối tượng, diện chính sách, ngày vào Đoàn, ngày vào Đảng, số điện thoại, email, địa chỉ liên hệ, nơi sinh, hộ khẩu thường trú, và thông tin tài khoản ngân hàng (tên ngân hàng, tên chi nhánh, tên chủ tài khoản, số tài khoản). Khối thứ ba là "Quan hệ gia đình": họ tên cha, năm sinh, nghề nghiệp, quốc tịch, dân tộc, tôn giáo, cơ quan công tác, chức vụ, số điện thoại. Menu dọc bên trái vẫn hiển thị các nhóm Thông tin chung, Học tập, Đăng ký học phần, Học phí, Khác.
+
+- Lưu ý: Thông tin học sinh/sinh viên là do nhà trường cập nhật. Nếu thông tin có sai sót hay thiếu thì sinh viên liên hệ Phòng Công tác HSSV để được hỗ trợ cập nhật.
+
+
+--------------------------------------------------
+2.2 Đề xuất cập nhật thông tin sinh viên
+--------------------------------------------------
+
+Trường hợp có sai sót về thông tin cá nhân, sinh viên có thể sử dụng chức năng này để đề xuất cập nhật, chỉnh sửa.
+
+Cách vào màn hình: Màn hình Dashboard → Thông tin chung → Đề xuất cập nhật thông tin.
+
+[MÔ TẢ HÌNH 8 – Hình minh họa thao tác vào màn hình]
+Ảnh chụp màn hình với menu bên trái, trong đó mục "Đề xuất cập nhật thông tin" thuộc nhóm "Thông tin chung" được khoanh khung đỏ và có mũi tên đỏ chỉ vào. Bên phải là phần thông tin học vấn và thông tin cá nhân của sinh viên như ở màn hình xem thông tin.
+
+Các bước thực hiện:
+
+[MÔ TẢ HÌNH 9 – Hình minh họa thao tác đề xuất cập nhật thông tin cá nhân]
+Ảnh chụp biểu mẫu "Cập nhật thông tin sinh viên". Phía trên biểu mẫu có ba tab: "Thông tin cá nhân" (đang chọn), "Bằng cấp" và "Quan hệ gia đình". Toàn bộ vùng biểu mẫu được khoanh khung đỏ đánh số 1; nút xanh "Lưu" ở góc phải trên được khoanh đỏ đánh số 2. Các trường trong biểu mẫu gồm: họ đệm và tên (hiển thị mờ, không sửa được), dân tộc (danh sách chọn), giới tính (chọn Nam hoặc Nữ), ngày sinh (có biểu tượng lịch), tôn giáo, nơi sinh theo huyện/quận, tỉnh/thành phố, xã/phường, ngày cấp, nơi cấp và số của giấy tờ căn cước (các trường bắt buộc có dấu sao đỏ), quốc tịch, địa chỉ email, số điện thoại di động hoặc số điện thoại cơ quan, số điện thoại, mã BHYT/BHXH, địa chỉ nơi thường trú, nguyên quán, địa chỉ cơ quan và địa chỉ nơi đang cư ngụ.
+
+- Bước 1: Tại màn hình Cập nhật sinh viên, sinh viên chỉnh sửa hoặc cập nhật thêm những thông tin bị sai sót.
+- Bước 2: NSD bấm nút "Lưu" (màu xanh) để thực hiện lưu dữ liệu.
+
+
+--------------------------------------------------
+2.3 Xem thông báo – Nhắc nhở từ nhà trường
+--------------------------------------------------
+
+Chức năng hỗ trợ sinh viên xem thông báo, nhắc nhở từ nhà trường.
+
+Cách vào màn hình: Màn hình Dashboard → Thông tin chung → Ghi chú nhắc nhở.
+
+[MÔ TẢ HÌNH 10 – Hình minh họa thao tác vào chức năng]
+Ảnh chụp màn hình "Ghi chú nhắc nhở". Menu bên trái có mục "Thông tin chung" và mục con "Ghi chú nhắc nhở" được khoanh đỏ (các mục con khác: Thông tin sinh viên, Đề xuất cập nhật thông tin, Đề xuất biểu mẫu, Cập nhật thông tin BHYT, Đề xuất cập nhật thông tin ngân hàng). Bên phải là danh sách thông báo, phía trên có hộp lọc "Lọc bản tin" với giá trị "Tất cả". Các thông báo mẫu gồm: một nhắc nhở sinh viên có khoảng thời gian 17/12/2021 đến 16/01/2022, nội dung nhắc tuân thủ quy định phòng dịch khi đến trường và quét mã QR; và ba thông báo của hệ thống quản lý đào tạo về lịch học thay đổi (ngày 20/06/2020 và 31/05/2020) và lịch học tạm ngưng (ngày 15/01/2020), mỗi thông báo có liên kết "Xem chi tiết" màu đỏ ở bên phải.
+
+Các bước thực hiện:
+
+[MÔ TẢ HÌNH 11 – Hình minh họa thao tác xem thông báo từ nhà trường]
+Ảnh giống hình 10 nhưng có thêm ba điểm đánh số đỏ: điểm 1 ở nhóm "Thông tin chung", điểm 2 ở mục "Ghi chú nhắc nhở", điểm 3 khoanh bản tin nhắc nhở sinh viên đầu tiên trong danh sách.
+
+- Bước 1: Tại màn hình Dashboard, NSD bấm nút "Thông tin chung".
+- Bước 2: NSD bấm nút "Ghi chú nhắc nhở" để hiển thị danh sách thông báo, nhắc nhở.
+- Bước 3: NSD bấm vào tiêu đề các thông báo để xem nội dung chi tiết.
+
+
+--------------------------------------------------
+2.4 Kết quả học tập
+--------------------------------------------------
+
+Chức năng hỗ trợ sinh viên xem điểm của từng môn học.
+
+Cách vào chức năng: Màn hình Dashboard → Học tập → Kết quả học tập.
+
+[MÔ TẢ HÌNH 12 – Hình minh họa thao tác vào chức năng]
+Ảnh chụp màn hình với menu bên trái đã mở rộng nhóm "Học tập", gồm các mục: Kết quả học tập (được khoanh khung đỏ), Lịch theo tuần, Lịch theo tiến độ, Lịch toàn trường, Thông tin điểm danh, Kết quả rèn luyện, Kế hoạch tổ chức thi, Khen thưởng sinh viên. Vùng nội dung bên phải đang hiển thị trang "Ghi chú nhắc nhở" với bộ lọc "Mới & chưa xem" và dòng chữ "Không tìm thấy thông tin nhắc nhở".
+
+Các bước thực hiện:
+
+[MÔ TẢ HÌNH 13 – Hình minh họa thao tác xem kết quả]
+Ảnh chụp bảng kết quả học tập. Bảng có các cột: STT, mã lớp học phần, tên môn học/học phần, số tín chỉ, nhóm điểm "Thường xuyên" (gồm điểm lý thuyết hệ số 1 với các cột 1 đến 5), điểm giữa kỳ, nhóm điểm "Thực hành" (các cột 1 đến 5), điểm cuối kỳ, điểm tổng kết, thang điểm 4, điểm chữ, xếp loại và ghi chú. Dữ liệu mẫu thuộc học kỳ 1 năm học 2019-2020, gồm 5 môn (ví dụ: Những nguyên lý cơ bản của chủ nghĩa Mác – Lênin, Ngữ âm thực hành, Giáo dục quốc phòng và an ninh 1, Giáo dục thể chất 1, Ngữ pháp), mỗi môn có điểm số, điểm chữ (C+, A+, B, C+, B+) và xếp loại (Trung bình, Xuất sắc, Khá, Trung bình, Khá). Phía dưới bảng là các dòng tổng hợp: điểm trung bình học kỳ hệ 10 và hệ 4, điểm trung bình tích lũy hệ 10 và hệ 4, tổng số tín chỉ đã đăng ký, tổng số tín chỉ tích lũy, tổng số tín chỉ đạt, số tín chỉ nợ tính đến hiện tại, xếp loại học lực tích lũy và xếp loại học lực học kỳ (Khá).
+
+- Bước 1: NSD bấm nút "Kết quả học tập".
+- Bước 2: Kết quả học tập của sinh viên sẽ được hiển thị bên phải màn hình. Trường hợp cần phóng to màn hình hiển thị, NSD bấm nút phóng to (nút vuông màu xanh dương có biểu tượng hai mũi tên chéo).
+
+
+--------------------------------------------------
+2.5 Lịch theo tuần
+--------------------------------------------------
+
+Chức năng hỗ trợ sinh viên xem lịch học, lịch thi theo tuần và lịch đã tạm ngưng của giảng viên.
+
+Cách vào chức năng: Màn hình Dashboard → Học tập → Lịch theo tuần.
+
+Các bước thực hiện:
+
+[MÔ TẢ HÌNH 14 – Hình minh họa thao tác (chú thích gốc ghi là "thao tác xóa đề xuất dạy bù", có vẻ là chú thích bị sao chép nhầm; nội dung ảnh thực tế là màn hình lịch theo tuần)]
+Ảnh chụp màn hình "Lịch học, lịch thi theo tuần" với ba điểm đánh số đỏ. Điểm 1 là nhóm "Học tập" ở menu bên trái; điểm 2 là mục "Lịch theo tuần"; điểm 3 là thanh công cụ phía trên bên phải của lịch, gồm: nhóm chọn loại lịch (Tất cả, Lịch học, Lịch thi), ô chọn ngày kèm biểu tượng lịch, và các nút "Hiện tại", "In lịch", "Trở về", "Tiếp", cùng nút phóng to. Phần lịch là một bảng với các cột là các thứ trong tuần (từ Thứ 2 ngày 18/11/2024 đến Thứ 5 ngày 21/11/2024 và tiếp tục sang phải) và các hàng là ca học: Sáng, Chiều, Tối. Mỗi tiết học là một ô màu chứa tên môn, mã lớp học phần, tiết học, phòng học (nhiều lớp học trực tuyến nên phòng là đường dẫn Google Meet) và tên giảng viên. Ví dụ: sáng thứ 2 học Kế toán máy (tiết 3-6); sáng thứ 3 học Lịch sử Đảng cộng sản Việt Nam (tiết 4-6); chiều thứ 3 học Thực hành thuế và Kế toán thuế (tiết 7-9) và Thực hành phân tích báo cáo tài chính (tiết 10-12); chiều thứ 4 học Tiểu luận 2 chuyên ngành Kế toán doanh nghiệp (tiết 7-9); sáng thứ 5 học Thực hành phân tích báo cáo tài chính (tiết 1-6). Phía dưới bảng là chú giải màu: xám là lịch học lý thuyết, xanh lá là lịch học thực hành, xanh dương nhạt là lịch học trực tuyến, vàng là lịch thi, đỏ là lịch tạm ngưng.
+
+- Bước 1: Tại màn hình Dashboard, NSD bấm nút "Học tập", chọn tính năng "Lịch theo tuần".
+- Bước 2:
+  + Tại màn hình lịch theo tuần, hệ thống sẽ mặc định hiển thị theo thời điểm hiện tại. Ví dụ: thời điểm NSD bấm xem lịch là ngày 23/07/2020 thì hệ thống sẽ mặc định tải lịch tuần từ 20/07/2020 đến 26/07/2020.
+  + Trường hợp NSD cần chọn thời điểm để xem lịch, NSD bấm vào biểu tượng lịch để hiển thị lịch, sau đó bấm chọn ngày chính xác để xem như hình trên.
+  + NSD bấm nút "Trở về" để hiển thị lịch ở tuần trước.
+  + NSD bấm nút "Tiếp" để hiển thị lịch ở tuần kế tiếp.
+  + NSD bấm nút "Hiện tại" để hiển thị lịch ở tuần hiện tại.
+
+
+--------------------------------------------------
+2.6 Lịch theo tiến độ
+--------------------------------------------------
+
+Chức năng hỗ trợ sinh viên xem lịch học, lịch theo tiến độ học tập.
+
+Cách vào chức năng: Màn hình Dashboard → Học tập → Lịch theo tiến độ.
+
+Các bước thực hiện:
+
+[MÔ TẢ HÌNH 15 – Hình minh họa thao tác xem lịch theo tiến độ]
+Ảnh chụp màn hình "Lịch học, lịch thi theo tiến độ" với bốn điểm đánh số đỏ. Điểm 1 là nhóm "Học tập" ở menu bên trái; điểm 2 là mục "Lịch theo tiến độ" (menu còn có: Kết quả học tập, Lịch theo tuần, Tự đánh giá kết quả rèn luyện, Lịch toàn trường, Thông tin điểm danh, Lịch học lớp danh nghĩa, rồi các nhóm Đăng ký học phần, Học phí, Ký túc xá). Điểm 3 khoanh nhóm chọn "Tất cả / Lịch học / Lịch thi" và hộp chọn đợt học (ví dụ HK1 (2021-2022)). Điểm 4 là nút xanh "Xem lịch" bên cạnh nút "In lịch" và nút phóng to. Bảng bên dưới có các cột: STT, mã học phần, tên môn học/học phần, số tín chỉ, thông tin lịch (thứ, tiết, loại lịch, phòng, nhóm, giờ), thời gian (ngày bắt đầu, ngày kết thúc), mã giảng viên và giảng viên. Dữ liệu mẫu là các buổi học môn Đường lối cách mạng của Đảng Cộng sản Việt Nam, Giao tiếp kinh doanh, Kế toán cơ bản, học trực tuyến hoặc ở các phòng như A3.01, B4.05.
+
+- Bước 1: Tại màn hình Dashboard, NSD bấm nút "Học tập".
+- Bước 2: NSD bấm nút "Lịch theo tiến độ".
+- Bước 3: NSD chọn:
+  + Lịch: NSD chọn loại lịch cần xem.
+  + Đợt: NSD chọn tiến độ học kỳ cần xem.
+- Bước 4: NSD bấm nút "Xem lịch".
+
+
+--------------------------------------------------
+2.7 Lịch toàn trường
+--------------------------------------------------
+
+Chức năng hỗ trợ sinh viên xem lịch theo LHP (lớp học phần) của toàn trường.
+
+Cách vào chức năng: Màn hình Dashboard → Học tập → Lịch toàn trường.
+
+Các bước thực hiện:
+
+[MÔ TẢ HÌNH 16 – Hình minh họa thao tác xem lịch toàn trường]
+Ảnh chụp màn hình "Lịch toàn trường" với bốn điểm đánh số đỏ. Điểm 1 là nhóm "Học tập"; điểm 2 là mục "Lịch toàn trường"; điểm 3 khoanh khu vực bộ lọc phía trên gồm ba hộp chọn (bậc đào tạo: Đại học; đợt: HK1 (2021-2022); khoa: Khoa Công nghệ Điện), ô nhập lớp học, ô nhập mã môn hoặc tên môn và nhóm chọn "Lịch học / Lịch thi"; điểm 4 là nút xanh "Xem lịch". Bảng kết quả bên dưới có các cột: STT, mã lớp học phần, tên môn học/học phần, lớp học, khoa, lịch học (thứ, tiết, số tín chỉ, nhóm), thời gian học (bắt đầu, kết thúc), tên phòng và giảng viên. Dữ liệu mẫu có 3 dòng của môn CAD trong điều khiển tự động, ở các phòng A1.01 và A1.02, kèm phân trang "Trước 1 Sau".
+
+- Bước 1: NSD nhập thông tin để tìm lịch: Bậc, Đợt, Lớp, Mã môn/Tên môn.
+- Bước 2: NSD bấm nút "Xem" (nút màu xanh dương).
+
+
+--------------------------------------------------
+2.8 Thông tin điểm danh
+--------------------------------------------------
+
+Chức năng hỗ trợ sinh viên xem thống kê điểm danh theo lớp học phần, tổng số tiết nghỉ có phép/không phép.
+
+Cách vào chức năng: Màn hình Dashboard → Học tập → Thông tin điểm danh.
+
+Các bước thực hiện:
+
+[MÔ TẢ HÌNH 17 – Hình minh họa thao tác vào chức năng]
+Ảnh chụp màn hình "Thông tin điểm danh" với hai điểm đánh số đỏ: điểm 1 là nhóm "Học tập" và điểm 2 là mục "Thông tin điểm danh" ở menu bên trái. Bảng bên phải có các cột: STT, mã lớp học phần, tên môn học/học phần, số tín chỉ (TC), số tiết nghỉ có phép và số tiết nghỉ không phép. Dữ liệu được nhóm theo học kỳ: HK1 (2019-2020) liệt kê 6 môn (như Những nguyên lý cơ bản của chủ nghĩa Mác – Lênin, Ngữ âm thực hành, Ngữ pháp, Giáo dục quốc phòng và an ninh 1, Giáo dục thể chất 1, Sinh hoạt chủ nhiệm) đều có số tiết nghỉ là 0; các học kỳ HK2 (2019-2020), HK1 (2020-2021), HK1 (2021-2022) hiển thị dạng dòng thu gọn. Dòng "Tổng" ở cuối hiển thị 0 và 0 (màu đỏ). Góc trên bên phải có hai nút nhỏ.
+
+- Tại màn hình xem Thông tin điểm danh, NSD bấm vào học kỳ để xem thông tin điểm danh.
+
+
+--------------------------------------------------
+2.9 Kết quả rèn luyện
+--------------------------------------------------
+
+Chức năng hỗ trợ sinh viên xem kết quả rèn luyện theo từng học kỳ.
+
+Cách vào chức năng: Màn hình Dashboard → Học tập → Kết quả rèn luyện.
+
+Các bước thực hiện:
+
+[MÔ TẢ HÌNH 18 – Hình minh họa thao tác xem kết quả rèn luyện]
+Ảnh chụp màn hình "Kết quả rèn luyện" với ba điểm đánh số đỏ: điểm 1 là nhóm "Học tập", điểm 2 là mục "Kết quả rèn luyện" ở menu bên trái (menu có Kết quả học tập, Lịch theo tuần, Lịch theo tiến độ, Kết quả rèn luyện, Lịch toàn trường, Thông tin điểm danh), điểm 3 khoanh toàn bộ bảng kết quả. Bảng có các cột: STT, ngày vi phạm, nội dung, hình thức, ghi chú và điểm cộng/trừ. Dữ liệu mẫu gồm hai học kỳ: HKI (2019-2020) với điểm rèn luyện 78,00 xếp loại Khá, và HKII (2019-2020) với điểm rèn luyện 76,00 xếp loại Khá.
+
+- Tại màn hình xem Kết quả rèn luyện, NSD bấm chọn học kỳ để xem điểm theo từng học kỳ.
+
+
+--------------------------------------------------
+2.10 Xem chương trình khung
+--------------------------------------------------
+
+Chức năng hỗ trợ sinh viên xem chương trình khung trong suốt quá trình học tập. Sinh viên phải hoàn thành các môn trong chương trình khung để đạt điều kiện xét tốt nghiệp.
+
+Cách vào chức năng: Màn hình Dashboard → Đăng ký học phần → Chương trình khung.
+
+2.10.1 Các bước thực hiện:
+
+[MÔ TẢ HÌNH 19 – Hình minh họa thao tác xem chương trình khung]
+Ảnh chụp màn hình "Chương trình khung". Menu bên trái có nhóm "Đăng ký học phần" được khoanh đỏ, với mục con "Chương trình khung" cũng được khoanh đỏ (các mục con khác: Đăng ký học phần, Đăng ký thi lại), bên dưới còn các nhóm Học phí và Ký túc xá. Bảng bên phải có các cột: STT, tên môn học/học phần, mã học phần, học phần, số tín chỉ, số tiết lý thuyết, số tiết thực hành, nhóm tự chọn, số tín chỉ bắt buộc của nhóm, và cột "Đạt". Ở góc phải trên có ba nút được khoanh đỏ (nút In, nút hiển thị tất cả và nút phóng to). Dữ liệu mẫu bắt đầu bằng "Học kỳ 1" (11 tín chỉ), mục "Học phần bắt buộc" (11 tín chỉ) liệt kê các môn như Chứng chỉ tin học, Những nguyên lý cơ bản của Chủ nghĩa Mác – Lênin (5 tín chỉ), Ngữ âm thực hành (3), Giáo dục Quốc phòng và An ninh 1 (4), Giáo dục thể chất 1 (2), Ngữ pháp (3), Chứng chỉ C Ngoại ngữ 2; các môn đã hoàn thành được đánh dấu bằng chấm tròn màu xanh lá ở cột "Đạt".
+
+- Tại màn hình xem chương trình khung:
+  + NSD bấm nút "In" để in chương trình khung từ web sang bản cứng.
+  + NSD bấm nút hiển thị tất cả (nút vuông có biểu tượng ô nhỏ) để hiển thị tất cả chương trình khung.
+
+
+--------------------------------------------------
+2.11 Đăng ký học phần
+--------------------------------------------------
+
+Chức năng hỗ trợ sinh viên đăng ký mới học phần, hoặc xem lại danh sách môn học đã đăng ký.
+
+Cách vào chức năng: Màn hình Dashboard → Đăng ký học phần → Đăng ký học phần.
+
+[MÔ TẢ HÌNH 20 – Hình minh họa thao tác vào chức năng]
+Ảnh chụp màn hình "Đăng ký học phần". Menu bên trái có nhóm "Đăng ký học phần" và mục con "Đăng ký học phần" được khoanh đỏ (mục con còn lại là Chương trình khung). Phía trên vùng nội dung có hộp chọn học kỳ (ví dụ "Năm 2020-2021 Học kỳ 1") và ba lựa chọn dạng nút tròn: Học mới (đang chọn), Học lại, Học cải thiện. Bên dưới là khối "Môn học phần đang chờ đăng ký" với bảng có các cột STT, mã học phần, tên môn học, ĐVHT (đơn vị học trình), bắt buộc, và học phần học trước (a), tiên quyết (b), song hành (c). Bảng đang trống với dòng thông báo "Không tìm thấy môn học phần đang chờ đăng ký".
+
+Các bước thực hiện:
+
+[MÔ TẢ HÌNH 21 – Hình minh họa thao tác đăng ký học phần]
+Ảnh chụp màn hình đăng ký học phần với bốn điểm đánh số đỏ. Điểm 1 khoanh hộp chọn tiến độ (ví dụ "1 (2020 - 2021)") và các lựa chọn Học mới, Học lại, Học cải thiện. Điểm 2 khoanh một dòng môn học trong bảng "Môn học phần đang chờ đăng ký" (môn "Phân tích hoạt động kinh doanh trong DNTM", 3 ĐVHT, không bắt buộc; hai môn khác trong danh sách là Đồ án tốt nghiệp 10 ĐVHT và Tiếng Anh cơ bản 1 – 3 ĐVHT, đều bắt buộc, đánh dấu tích xanh). Điểm 3 khoanh một lớp học phần trong khối "Lớp học phần chờ đăng ký" (có ô chọn "Hiển thị lớp học phần không trùng lịch"; mỗi lớp có tên môn, trạng thái như "Đang lên kế hoạch" hoặc "Mở lớp", mã lớp học phần và sĩ số đã đăng ký trên tổng số, ví dụ 0/59). Điểm 4 khoanh nút xanh "Đăng ký" nằm dưới khối "Chi tiết lớp học phần", khối này hiển thị trạng thái lớp, sĩ số tối đa, lịch học (lý thuyết, thứ, tiết), cơ sở, dãy nhà, phòng, giảng viên và thời gian học từ ngày bắt đầu đến ngày kết thúc; ngoài ra có nút cam "Xem lịch trùng".
+
+- Bước 1: Tại màn hình đăng ký học phần, NSD chọn:
+  + Tiến độ: NSD chọn tiến độ để đăng ký học phần.
+  + Hình thức đăng ký học: Học mới, Học lại hoặc Học cải thiện để đăng ký học phần.
+- Màn hình "Môn học phần đang chờ đăng ký": hiển thị danh sách môn học được mở trong học kỳ để đăng ký, NSD bấm vào môn học để thực hiện đăng ký.
+- Màn hình "Lớp học phần đã đăng ký": hiển thị danh sách môn học đã đăng ký trong học kỳ.
+  + NSD bấm nút "Xem" để xem chi tiết môn học.
+  + NSD bấm nút "Hủy" để thực hiện hủy môn học đã đăng ký.
+- Bước 2: NSD chọn môn học theo chương trình khung.
+- Bước 3: NSD chọn lớp học phần.
+- Bước 4: Tại cột "Chi tiết học phần", NSD xem thông tin lớp học phần (LHP) đã chọn, sau đó bấm nút "Đăng ký".
+- Sau khi đăng ký thành công, NSD có thể xem danh sách những LHP đã đăng ký.
+
+[MÔ TẢ HÌNH 22 – Hình minh họa danh sách lớp học phần đã đăng ký]
+Ảnh chụp bảng "Lớp học phần đã đăng ký trong học kỳ này", góc phải trên có nút in màu xanh. Bảng có các cột: STT, mã LHP, tên môn học, lớp học dự kiến, ĐVHT, nhóm TH, học phí, hạn nộp, thu (biểu tượng dấu X đỏ nghĩa là chưa thu), trạng thái đăng ký, ngày đăng ký, trạng thái LHP, và hai cột nút "Xem" (xanh dương) và "Hủy" (viền xanh) ở bên phải, được khoanh khung đỏ. Dữ liệu mẫu gồm 10 môn (như Đọc 2, Giáo dục thể chất 3, Kinh tế chính trị Mác - Lênin, Kỹ năng giao tiếp - văn hóa ứng xử và truyền thông, Nghe - Nói 4, Nghe - Nói 5, Ngoại ngữ 2 học phần 1, Tâm lý khách du lịch và kỹ năng giao tiếp, Tổ chức lễ hội và sự kiện, Viết 2) với học phí từ 560.000 đến 1.680.000 đồng, trạng thái đăng ký "Đăng ký mới" và trạng thái LHP "Đang lên kế hoạch".
+
+- NSD bấm nút "Xem" để xem chi tiết thông tin LHP.
+- NSD bấm nút "Hủy" để hủy LHP.
+- NSD bấm nút "In" (biểu tượng máy in) để in danh sách các LHP.
+
+
+--------------------------------------------------
+2.12 Đăng ký môn học điều kiện
+--------------------------------------------------
+
+Chức năng hỗ trợ NSD tự đăng ký môn học nằm ngoài chương trình khung.
+
+Cách vào chức năng: Màn hình Dashboard → Đăng ký học phần → Đăng ký môn học điều kiện.
+
+[MÔ TẢ HÌNH 23 – Hình minh họa cách vào chức năng]
+Ảnh chụp màn hình Dashboard của một sinh viên mẫu khác. Menu bên trái có nhóm "Đăng ký học phần" được mở rộng với các mục: Chương trình khung, Đăng ký học phần, Đăng ký môn học điều kiện (được khoanh khung đỏ), Đăng ký thi lại. Vùng nội dung có khối thông tin sinh viên (mã sinh viên, họ tên, giới tính, ngày sinh, nơi sinh, lớp học, khóa học, bậc đào tạo, loại hình đào tạo, ngành), ba ô thống kê (nhắc nhớ mới, lịch học trong tuần, lịch thi trong tuần), hàng biểu tượng lối tắt (Kết quả học tập, Lịch theo tuần, Lịch theo tiến độ, Đăng ký học phần, Lịch toàn trường, Đề xuất biểu mẫu, Nhắc nhở) và các khối Kết quả học tập, Tiến độ học tập, Lớp học phần ở phía dưới.
+
+Các bước thực hiện:
+
+[MÔ TẢ HÌNH 24 – Hình minh họa đăng ký môn học điều kiện]
+Ảnh chụp màn hình "Đăng ký môn học điều kiện" với bốn điểm đánh số đỏ. Điểm 1 khoanh hộp chọn đợt đăng ký (ví dụ "Hockyphu (2019 - 2020)") bên cạnh hai lựa chọn Học mới và Học lại. Điểm 2 khoanh một môn trong bảng "Môn học/học phần đang chờ đăng ký" (các cột: STT, mã học phần, tên môn học/học phần, điểm tổng kết, tín chỉ, bắt buộc, học phần học trước/tiên quyết/song hành; môn được chọn là Kinh tế vi mô với điểm tổng kết 4,10; các môn khác gồm Giáo dục thể chất 1, Kinh tế vĩ mô, Kỹ năng giải quyết vấn đề và làm việc nhóm, Nguyên lý cơ bản của chủ nghĩa Mác-Lênin 1 và 2, Nhập môn tin học, Tài chính - Tiền tệ, Xác suất thống kê). Điểm 3 khoanh lớp được mở trong khối "Lớp học phần chờ đăng ký" (một lớp có trạng thái "Đã khóa" với sĩ số 88/101, một lớp trạng thái "Mở lớp" với sĩ số 0/101); bên phải là khối "Chi tiết lớp học phần" với lịch học, cơ sở, dãy nhà, phòng, giảng viên, thời gian học và nút cam "Xem lịch trùng". Điểm 4 khoanh nút xanh "Đăng ký" ở dưới cùng.
+
+- Bước 1: NSD chọn đợt đăng ký môn học.
+- Bước 2: NSD chọn môn học phần để đăng ký học phần.
+- Bước 3: NSD chọn lớp được mở.
+- Bước 4: NSD bấm nút "Đăng ký" để thực hiện đăng ký.
+(Trong tài liệu gốc, hai bước đầu sau đều đánh số "Bước 2" và bước cuối đánh số "Bước 3"; ở đây đã đánh lại số cho liên tục.)
+
+
+--------------------------------------------------
+2.13 Đăng ký thi lại
+--------------------------------------------------
+
+Chức năng hỗ trợ NSD tự đăng ký thi lại.
+
+Cách vào chức năng: Màn hình Dashboard → Đăng ký học phần → Đăng ký thi lại.
+
+[MÔ TẢ HÌNH 25 – Hình minh họa cách vào chức năng]
+Ảnh chụp màn hình Dashboard của sinh viên mẫu, trong đó menu bên trái mở nhóm "Đăng ký học phần" với các mục Chương trình khung, Đăng ký học phần, Đăng ký môn học điều kiện và "Đăng ký thi lại" (mục này được khoanh khung đỏ). Phần nội dung giống hình 23: thông tin sinh viên, các ô thống kê và hàng biểu tượng lối tắt.
+
+Các bước thực hiện:
+
+[MÔ TẢ HÌNH 26 – Hình minh họa thao tác đăng ký thi lại]
+Ảnh chụp màn hình "Đăng ký thi" với ba điểm đánh số đỏ. Phía trên có hộp chọn học kỳ (ví dụ "1 (2019 - 2020)") và lựa chọn "Thi lại". Điểm 1 khoanh một dòng trong bảng "Học phần được phép đăng ký thi" (các cột: STT, mã học phần, mã lớp học phần, tên môn học/học phần, tín chỉ, kết quả lần 1, ghi chú; môn được chọn là Pháp luật đại cương, 2 tín chỉ, kết quả lần 1 là 3,00, ghi chú "Thi lại"; môn còn lại là Đại số tuyến tính). Điểm 2 khoanh một lớp trong bảng "Lớp thi chờ đăng ký" (các cột: mã lớp học phần, lớp dự kiến, đã đăng ký, trạng thái; một lớp "Đã khóa" với 63/701, lớp được chọn "Mở lớp" với 0/75). Bên phải là khối "Chi tiết lớp học phần chờ đăng ký thi" với các cột lịch thi, phòng, ngày thi, ghi chú, hiện ghi "Chưa có lịch thi". Điểm 3 khoanh nút xanh "Đăng ký". Phía dưới cùng là bảng "Học phần đã đăng ký thi trong học kỳ này" (các cột: STT, mã lớp học phần, tên môn học, tín chỉ, lệ phí, thu, ngày đăng ký, lịch thi, kèm nút "Hủy"); dữ liệu mẫu là một môn có lệ phí 30.000 đồng, đã thu (dấu tích xanh), ngày đăng ký 17/02/2020, kèm lịch thi hai buổi vào tháng 6/2020.
+
+- Bước 1: NSD chọn môn học phần để đăng ký thi lại.
+- Bước 2: NSD chọn lớp được mở.
+- Bước 3: NSD bấm nút "Đăng ký" để thực hiện đăng ký.
+
+
+--------------------------------------------------
+2.14 Tra cứu công nợ
+--------------------------------------------------
+
+Tính năng hỗ trợ sinh viên tra cứu công nợ trong quá trình học.
+
+Cách vào chức năng: Màn hình Dashboard → Học phí → Tra cứu công nợ.
+
+[MÔ TẢ HÌNH 27 – Hình minh họa thao tác vào chức năng]
+Ảnh chụp màn hình "Tra cứu công nợ". Menu bên trái có các nhóm Trang chủ, Thông tin chung, Học tập, Đăng ký học phần và "Học phí" (được khoanh đỏ), với mục con "Tra cứu công nợ" cũng được khoanh đỏ. Bảng bên phải có các cột: STT, mã, nội dung thu, số tín chỉ, trạng thái đăng ký, số tiền (VNĐ), đã nộp (VNĐ), khấu trừ (VNĐ), công nợ (VNĐ) và trạng thái. Hộp chọn phía trên đang là "Tất cả", cạnh đó có nút "In công nợ" và nút phóng to. Các dòng mẫu gồm Tin học cơ bản, Nghe - Nói 1, Ngữ pháp 1, Ngữ pháp 2, Sinh hoạt lớp HK1; đều ở trạng thái "Đăng ký mới" và "Đã nộp" với số tiền bằng 0.
+
+Các bước thực hiện:
+
+[MÔ TẢ HÌNH 28 – Màn hình minh họa thao tác tra cứu công nợ]
+Ảnh chụp đầy đủ hơn của màn hình tra cứu công nợ, liệt kê 13 dòng (như Giáo dục thể chất 2, Soạn thảo văn bản hành chính, Cơ sở văn hóa Việt Nam, Pháp luật đại cương, Triết học Mác - Lênin, Nghe - Nói 2, Nghe - Nói 3, Ngữ âm – Âm vị học, Đọc 1, Sinh hoạt lớp HK2, Viết 1, Tin học cơ bản, Giáo dục quốc phòng 1), trạng thái đăng ký là "Đăng ký mới" hoặc "Đăng ký học lại", tất cả đều "Đã nộp" với số tiền, đã nộp, khấu trừ và công nợ bằng 0. Phía trên bảng có hộp chọn học kỳ ("Tất cả"), nút "In công nợ" và nút phóng to.
+
+- Tại màn hình tra cứu công nợ, NSD chọn:
+  + Học kỳ: NSD chọn học kỳ để tra cứu.
+  + Tất cả: hiển thị tất cả công nợ của sinh viên từ khi bắt đầu học cho đến thời điểm hiện tại.
+- NSD bấm nút "In công nợ" để in công nợ từ web sang bản cứng.
+
+
+--------------------------------------------------
+2.15 Phiếu thu tổng hợp
+--------------------------------------------------
+
+Chức năng hỗ trợ NSD tra cứu các phiếu thu đã nộp.
+
+Cách vào chức năng: Màn hình Dashboard → Học phí → Phiếu thu tổng hợp.
+
+[MÔ TẢ HÌNH 29 – Hình minh họa thao tác vào chức năng]
+Ảnh chụp màn hình "Phiếu thu tổng hợp". Menu bên trái có nhóm "Học phí" (được khoanh đỏ) với hai mục con: "Tra cứu công nợ" và "Phiếu thu tổng hợp" (mục sau được khoanh đỏ). Bảng bên phải có các cột: STT, số phiếu, mã hóa đơn, ngày thu, số tiền, đơn vị thu, HĐĐT (hóa đơn điện tử) và một cột liên kết "Chi tiết". Dữ liệu mẫu có hai phiếu thu cùng mã hóa đơn, thu ngày 04/07/2020 lúc 16:09, với số tiền 889.800 đồng và 5.634.000 đồng.
+
+Các bước thực hiện:
+
+[MÔ TẢ HÌNH 30 – Hình minh họa thao tác xem và in phiếu thu]
+Ảnh chụp màn hình sau khi bấm "Chi tiết" ở dòng phiếu thu đầu tiên (liên kết "Chi tiết" được khoanh đỏ, có mũi tên đỏ chỉ xuống phần chi tiết). Phần chi tiết hiển thị số phiếu, mã hóa đơn, ngày thu và một bảng các khoản thu gồm các cột: STT, mã, nội dung thu, học kỳ, số tiền (VNĐ). Có 7 khoản thu của năm học 2020-2021: Bảo hiểm tai nạn (25.000), Khám sức khỏe (30.000), Bảo hiểm y tế từ 01/01/2021 đến 31/12/2021 (604.800), Thư viện HK1/2020-2021 (50.000), Giấy thi, giấy nháp HK1/2020-2021 (40.000), Thẻ sinh viên (40.000) và Tài liệu học tập đầu khóa năm học 2020-2021 (100.000), tổng cộng 889.800 đồng (hiển thị màu đỏ). Phía dưới bảng có nút "In phiếu thu" được khoanh đỏ.
+
+- Bước 1: NSD bấm nút "Chi tiết" để xem chi tiết phiếu thu. (Tài liệu gốc ghi là "Tại màn hình Nhập điểm cuối kỳ", có vẻ là ghi nhầm; thực tế đây là màn hình Phiếu thu tổng hợp.)
+- Bước 2: NSD bấm nút "In phiếu thu" để thực hiện in phiếu.
+
+
+==================================================
+GHI CHÚ CỦA NGƯỜI CHUYỂN ĐỔI
+==================================================
+
+Một số chỗ trong tài liệu gốc có vẻ bị nhầm lẫn và được giữ nguyên nội dung, chỉ chú thích lại ở vị trí tương ứng:
+- Chú thích của Hình 14 ghi "thao tác xóa đề xuất dạy bù" nhưng nội dung ảnh là màn hình lịch theo tuần.
+- Mục 2.12 đánh số bước bị lặp "Bước 2".
+- Mục 2.15 nhắc "màn hình Nhập điểm cuối kỳ" trong khi đang nói về Phiếu thu tổng hợp.
+- Các ảnh chụp mẫu lấy từ nhiều sinh viên và nhiều năm học khác nhau, nên số liệu giữa các hình không đồng nhất.

@@ -1,23 +1,21 @@
 """
-Module đánh giá định lượng tầng sinh (Generation Evaluation) - NLP-21.
+Module đánh giá định lượng tầng sinh (Generation Evaluation) - NLP-21 đã cập nhật Lấy mẫu phân tầng (Stratified Sampling).
 
 So sánh 4 nhánh cốt lõi (Ablation Study theo chuẩn học thuật RAG):
 - B0: No-Retrieval (LLM thuần) - Không đưa ngữ cảnh tài liệu vào prompt.
 - B1: BM25 -> LLM - Truy hồi bằng từ khóa chính xác BM25.
 - B2: Dense -> LLM - Truy hồi bằng vector embedding ngữ nghĩa (Vietnamese_Embedding).
-- B3: Hybrid + Soft Reranker -> LLM (Phương pháp đề xuất) - Kết hợp BM25 + Dense RRF + Reranker.
+- B3: Hybrid + Soft Reranker -> LLM (Phương pháp đề xuất) - Kết hợp BM25 + Dense RRF + Reranker Sigmoid.
 
 Các chỉ số đo lường học thuật:
 - Accuracy / F1 Overlap: Độ trùng khớp nội dung trả lời với đáp án chuẩn.
-- Groundedness / Faithfulness: Tỷ lệ các mệnh đề/từ vựng có căn cứ trích dẫn từ tài liệu.
+- Groundedness / Lexical Faithfulness: Tỷ lệ từ ngữ có căn cứ trích dẫn từ tài liệu.
 - Citation Rate: Tỷ lệ câu trả lời có gắn mã trích dẫn [n] chính xác.
 - Refusal Accuracy: Tỷ lệ từ chối đúng đối với câu hỏi ngoài phạm vi (answerable = False).
 - Over-Refusal Rate: Tỷ lệ từ chối nhầm đối với câu hỏi có trong tài liệu (answerable = True).
-- Latency (ms): Thời gian phản hồi chi tiết (truy hồi, rerank, sinh văn bản).
+- Latency (ms): Thời gian phản hồi chi tiết.
 """
 
-from src.pipeline import RAGPipeline
-from src.utils import load_config, load_jsonl
 import os
 import sys
 import re
@@ -30,6 +28,9 @@ from typing import List, Dict, Any, Tuple
 # Đảm bảo import được module 'src'
 sys.path.insert(0, os.path.abspath(
     os.path.join(os.path.dirname(__file__), "..")))
+
+from src.pipeline import RAGPipeline
+from src.utils import load_config, load_jsonl
 
 # Cấu hình UTF-8 cho Windows console để tránh UnicodeEncodeError
 if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
@@ -117,11 +118,19 @@ def run_generation_evaluation(
         print(f"[!] Không tìm thấy tập câu hỏi tại: {qa_file}")
         return
 
+    # Áp dụng lấy mẫu phân tầng (Stratified Sampling) để luôn cân bằng giữa câu có đáp án và câu từ chối
     if max_samples and max_samples < len(qa_data):
-        qa_data = qa_data[:max_samples]
-        print(f"[*] Chế độ rút gọn: Đánh giá trên {max_samples} câu đầu tiên.")
+        ans_list = [s for s in qa_data if s.get("answerable", True)]
+        unans_list = [s for s in qa_data if not s.get("answerable", True)]
+        ratio = len(unans_list) / len(qa_data) if qa_data else 0.2
+        n_unans = max(1, int(round(max_samples * ratio)))
+        n_ans = max_samples - n_unans
+        qa_data = ans_list[:n_ans] + unans_list[:n_unans]
+        print(f"[*] Chế độ phân tầng: Đánh giá {len(qa_data)} câu ({len(ans_list[:n_ans])} có bằng chứng, {len(unans_list[:n_unans])} ngoài phạm vi).")
     else:
-        print(f"[*] Tổng số câu hỏi kiểm thử: {len(qa_data)} câu.")
+        ans_cnt = sum(1 for s in qa_data if s.get("answerable", True))
+        unans_cnt = len(qa_data) - ans_cnt
+        print(f"[*] Đánh giá toàn bộ: {len(qa_data)} câu ({ans_cnt} có bằng chứng, {unans_cnt} ngoài phạm vi).")
 
     # Khởi tạo Pipeline hoàn chỉnh (bao gồm nạp LLM vào GPU)
     pipeline = RAGPipeline(config_path=config_path)
@@ -247,27 +256,34 @@ def run_generation_evaluation(
     pred_df = pd.DataFrame(all_predictions)
     pred_path = f"results/generation_predictions_{split}.csv"
     pred_df.to_csv(pred_path, index=False, encoding="utf-8-sig")
+    print(f"\n[+] Đã lưu chi tiết dự đoán từng câu tại: {pred_path}")
 
-    # Lưu bảng tóm tắt
-    sum_df = pd.DataFrame(summary_records)
-    sum_path = f"results/generation_summary_{split}.csv"
-    sum_df.to_csv(sum_path, index=False, encoding="utf-8-sig")
+    # Lưu bảng tổng kết
+    summary_df = pd.DataFrame(summary_records)
+    summary_path = f"results/generation_summary_{split}.csv"
+    summary_df.to_csv(summary_path, index=False, encoding="utf-8-sig")
+    print(f"[+] Đã lưu bảng tổng kết Ablation tại: {summary_path}")
 
     print("\n" + "=" * 70)
-    print("📊 BẢNG TỔNG HỢP SO SÁNH CHẤT LƯỢNG TẦNG SINH & BASELINES")
+    print("📊 BẢNG TỔNG KẾT ABLATION STUDY TẦNG SINH:")
     print("=" * 70)
-    print(sum_df.to_string(index=False))
-    print(f"\n[+] Đã lưu chi tiết dự đoán từng câu vào: {pred_path}")
-    print(f"[+] Đã lưu bảng tổng hợp báo cáo vào:     {sum_path}")
+    print(summary_df.to_string(index=False))
+    print("=" * 70)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Đánh giá tầng sinh RAG Tiếng Việt (NLP-21)")
+        description="Đánh giá định lượng tầng sinh RAG.")
     parser.add_argument("--split", type=str, default="dev",
-                        choices=["dev", "test"], help="Tập dữ liệu cần đo (dev hoặc test)")
-    parser.add_argument("--max_samples", type=int, default=None,
-                        help="Giới hạn số câu hỏi (để chạy smoke test nhanh)")
+                        choices=["dev", "test"], help="Tập dữ liệu (dev hoặc test)")
+    parser.add_argument("--samples", type=int, default=None,
+                        help="Số lượng mẫu kiểm thử (mặc định toàn bộ)")
+    parser.add_argument("--config", type=str,
+                        default="config/config.yaml", help="Đường dẫn file cấu hình")
     args = parser.parse_args()
 
-    run_generation_evaluation(split=args.split, max_samples=args.max_samples)
+    run_generation_evaluation(
+        split=args.split,
+        max_samples=args.samples,
+        config_path=args.config
+    )

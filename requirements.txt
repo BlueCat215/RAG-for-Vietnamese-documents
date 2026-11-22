@@ -1,5 +1,6 @@
 # --- Document Processing (Xử lý định dạng tài liệu PDF, Word) ---
 pymupdf>=1.23.0
+pymupdf4llm>=0.0.17
 python-docx>=1.1.0
 
 # --- NLP & Tokenization (Xử lý ngôn ngữ tự nhiên, tách từ tiếng Việt) ---

@@ -1,9 +1,10 @@
-"""Giao diện Web Hỏi Đáp Quy Chế Đào Tạo Đại Học (RAG Tiếng Việt - NLP-21)."""
+"""Giao diện Web Hỏi Đáp Quy Chế Đào Tạo Đại Học (RAG Tiếng Việt - NLP-21) đã nâng cấp Streaming và Multi-turn QA."""
 
 import os
 import subprocess
 import sys
 import re
+import time
 import streamlit as st
 from src.pipeline import RAGPipeline
 from src.utils import load_config
@@ -51,7 +52,7 @@ def get_pipeline():
 # ── Giao diện chính ──────────────────────────────────────────────────────────
 st.title("🎓 Trợ Lý Hỏi Đáp Quy Chế Đào Tạo Đại Học")
 st.caption(
-    "Hệ thống RAG tiếng Việt hỗ trợ sinh viên tra cứu quy chế, học phí, học lại và tốt nghiệp")
+    "Hệ thống RAG tiếng Việt hỗ trợ sinh viên tra cứu quy chế, học phí, học lại và tốt nghiệp (Hỗ trợ Streaming & Hội thoại đa lượt)")
 
 with st.sidebar:
     st.header("⚙️ Cấu hình truy xuất")
@@ -65,6 +66,7 @@ with st.sidebar:
         }[x]
     )
     use_rerank = st.checkbox("Bật Reranker (Cross-Encoder)", value=True)
+    use_stream = st.checkbox("Bật trả lời trực tiếp dạng Stream", value=True)
     top_k = st.slider("Số lượng đoạn trích dẫn (Top-K):",
                       min_value=1, max_value=8, value=4)
 
@@ -74,7 +76,7 @@ with st.sidebar:
     raw_dir = cfg["paths"]["raw_dir"]
     if os.path.exists(raw_dir):
         files = [f for f in os.listdir(
-            raw_dir) if f.endswith(('.pdf', '.docx', '.txt'))]
+            raw_dir) if f.endswith(('.pdf', '.docx', '.doc', '.txt'))]
         for f in files:
             st.text(f"📄 {f}")
     else:
@@ -84,6 +86,7 @@ with st.sidebar:
     log_path = rag_logger.get_log_file_path()
     if log_path and os.path.exists(log_path):
         st.caption(f"📋 Log: `{os.path.basename(log_path)}`")
+
 
 try:
     with st.spinner("Đang nạp mô hình và chỉ mục..."):
@@ -108,7 +111,7 @@ def _build_citation_map(sources: list) -> dict:
         if cid is None:
             continue
         doc = s.get("doc_id", "Tài liệu").replace(
-            ".txt", "").replace(".docx", "").replace(".pdf", "")
+            ".txt", "").replace(".docx", "").replace(".doc", "").replace(".pdf", "")
         clause = s.get("clause", "")
         heading = s.get("heading", "")
         p_start = s.get("page_start", 1)
@@ -150,7 +153,6 @@ def render_answer_with_inline_citations(answer_text: str, sources: list) -> str:
 
     annotated = re.sub(r"\[(\d+)\]", replacer, answer_text)
 
-    # Nếu câu trả lời không chứa mã [n] nào nhưng có sources hợp lệ, bổ sung chú giải căn cứ ở cuối
     if not re.search(r"\[\d+\]", answer_text) and "📌" not in annotated and sources:
         notes = []
         for s in sources[:3]:
@@ -205,47 +207,71 @@ for msg in st.session_state.messages:
 
 
 # ── Xử lý câu hỏi mới ───────────────────────────────────────────────────────
-if prompt := st.chat_input("Nhập câu hỏi của bạn (ví dụ: điều kiện tốt nghiệp, thủ tục học lại, miễn giảm học phí...):"):
+if prompt := st.chat_input("Nhập câu hỏi của bạn (ví dụ: điểm chuẩn CNTT, điều kiện tốt nghiệp, miễn giảm học phí...):"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
     with st.chat_message("assistant"):
-        with st.spinner("Đang tra cứu quy chế và tổng hợp câu trả lời..."):
-            res = pipeline.query(
+        history = [m for m in st.session_state.messages if m.get("content")]
+
+        if use_stream:
+            gen_stream, sources, timings, is_refused = pipeline.query_stream(
                 question=prompt,
                 method=retriever_mode,
                 top_k=top_k,
-                use_rerank=use_rerank
+                use_rerank=use_rerank,
+                chat_history=history
             )
-            answer_text = res["answer"]
-            sources = res.get("sources", [])
-            lat = res.get("latency_ms", {})
+            t_start = time.time()
+            if is_refused:
+                answer_raw = next(gen_stream, "Tôi không tìm thấy thông tin này trong tài liệu được cung cấp.")
+                st.markdown(answer_raw)
+            else:
+                answer_raw = st.write_stream(gen_stream)
+            total_time = (time.time() - t_start) * 1000 + timings.get("retrieve_ms", 0) + timings.get("rerank_ms", 0)
 
-            # Log LLM output vào debug terminal
-            gen_result = res.get("citations_valid", [])
-            hal_result = res.get("citations_hallucinated", [])
-            rag_logger.get_logger().info(
-                f"[Answer] {len(answer_text)} ký tự | citations={gen_result} | hallucinated={hal_result}"
-            )
-
-            # Hiển thị câu trả lời với inline citation được làm giàu
-            display_text = render_answer_with_inline_citations(
-                answer_text, sources)
-            st.markdown(display_text)
-
+            annotated_answer = render_answer_with_inline_citations(answer_raw, sources)
             st.caption(
-                f"⏱️ Phản hồi trong {lat.get('total_ms', 0):.0f}ms "
-                f"(Truy xuất: {lat.get('retrieve_ms', 0):.0f}ms, "
-                f"Rerank: {lat.get('rerank_ms', 0):.0f}ms, "
-                f"LLM: {lat.get('generate_ms', 0):.0f}ms)"
+                f"⏱️ Phản hồi trong {total_time:.0f}ms "
+                f"(Truy xuất: {timings.get('retrieve_ms', 0):.0f}ms, "
+                f"Rerank: {timings.get('rerank_ms', 0):.0f}ms)"
             )
-
             if sources:
                 display_sources(sources, expanded=True)
 
             st.session_state.messages.append({
                 "role": "assistant",
-                "content": display_text,
+                "content": annotated_answer,
                 "sources": sources
             })
+        else:
+            with st.spinner("Đang tra cứu quy chế và tổng hợp câu trả lời..."):
+                res = pipeline.query(
+                    question=prompt,
+                    method=retriever_mode,
+                    top_k=top_k,
+                    use_rerank=use_rerank,
+                    chat_history=history
+                )
+                answer_text = res["answer"]
+                sources = res.get("sources", [])
+                lat = res.get("latency_ms", {})
+
+                display_text = render_answer_with_inline_citations(answer_text, sources)
+                st.markdown(display_text)
+
+                st.caption(
+                    f"⏱️ Phản hồi trong {lat.get('total_ms', 0):.0f}ms "
+                    f"(Truy xuất: {lat.get('retrieve_ms', 0):.0f}ms, "
+                    f"Rerank: {lat.get('rerank_ms', 0):.0f}ms, "
+                    f"LLM: {lat.get('generate_ms', 0):.0f}ms)"
+                )
+                if sources:
+                    display_sources(sources, expanded=True)
+
+                st.session_state.messages.append({
+                    "role": "assistant",
+                    "content": display_text,
+                    "sources": sources
+                })

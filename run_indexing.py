@@ -1,6 +1,6 @@
 """
 Script chạy toàn bộ quy trình tiền xử lý và lập chỉ mục:
-Raw Data (PDF/DOCX/TXT) -> Extract -> Clean -> Chunk (S3) -> FAISS Indexing (GPU) -> Lưu đĩa
+Raw Data (PDF/DOCX/DOC/TXT) -> Extract (kèm Markdown Tables) -> Clean -> Chunk (S3) -> FAISS Indexing (GPU) -> Lưu đĩa
 """
 
 import os
@@ -41,18 +41,27 @@ def run_pipeline_indexing(config_path: str = "config/config.yaml"):
     print("BƯỚC 1: TRÍCH XUẤT VÀ LÀM SẠCH VĂN BẢN")
     print("=" * 60)
 
-    # Lấy toàn bộ file PDF, DOCX, TXT trong data/raw/
-    supported_exts = ["*.pdf", "*.docx", "*.txt"]
+    # Lấy toàn bộ file PDF, DOCX, DOC, TXT trong data/raw/
+    supported_exts = ["*.pdf", "*.docx", "*.doc", "*.txt"]
     file_paths = []
     for ext in supported_exts:
         file_paths.extend(glob.glob(os.path.join(raw_dir, ext)))
 
+    # Tránh xử lý trùng lặp nếu cả file .doc và .docx cùng tồn tại
+    filtered_paths = []
+    for fp in file_paths:
+        base, ext = os.path.splitext(fp)
+        if ext.lower() == ".doc" and (os.path.exists(base + ".docx") or (base + ".docx") in file_paths):
+            continue
+        filtered_paths.append(fp)
+    file_paths = sorted(list(set(filtered_paths)))
+
     if not file_paths:
         print(f"[!] LỖI: Không tìm thấy tài liệu nào trong '{raw_dir}'!")
-        print("    Vui lòng copy các file .pdf, .docx, hoặc .txt vào data/raw/ trước khi chạy.")
+        print("    Vui lòng copy các file .pdf, .docx, .doc hoặc .txt vào data/raw/ trước khi chạy.")
         return
 
-    print(f"[*] Tìm thấy {len(file_paths)} tài liệu. Bắt đầu xử lý...")
+    print(f"[*] Tìm thấy {len(file_paths)} tài liệu hợp lệ. Bắt đầu xử lý...")
     all_pages_data = []
 
     for fpath in file_paths:
@@ -66,7 +75,7 @@ def run_pipeline_indexing(config_path: str = "config/config.yaml"):
             print(f"     [!] Lỗi khi xử lý {fname}: {e}")
 
     print("\n" + "=" * 60)
-    print("BƯỚC 2: PHÂN ĐOẠN THEO CẤU TRÚC ĐIỀU/KHOẢN")
+    print("BƯỚC 2: PHÂN ĐOẠN THEO CẤU TRÚC ĐIỀU/KHOẢN & BẢNG BIỂU")
     print("=" * 60)
     t0 = time.time()
     chunks = chunk_structural(

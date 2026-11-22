@@ -1,7 +1,7 @@
-"""Pipeline RAG End-to-End cho tài liệu tiếng Việt (NLP-21)."""
+"""Pipeline RAG End-to-End cho tài liệu tiếng Việt (NLP-21) đã nâng cấp Multi-turn, Stream và Refusal Gate chuẩn hóa."""
 
 import time
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Optional, Tuple, Generator
 from sentence_transformers import SentenceTransformer
 
 from src.utils import load_config
@@ -53,9 +53,10 @@ class RAGPipeline:
         print(f"[*] Đang nạp chỉ mục từ: {idx_dir}...")
         self.vector_index.load(idx_dir)
 
-        print(f"[*] Nạp Query Encoder ({self.emb_model_name}) trên CPU...")
+        print(f"[*] Nạp Query Encoder ({self.emb_model_name}) trên CPU (max_seq_len=512)...")
         self.query_encoder = SentenceTransformer(
             self.emb_model_name, device="cpu")
+        self.query_encoder.max_seq_length = 512
 
         bm25_cfg = self.retrieval_cfg.get("bm25", {})
         bm25_mode = bm25_cfg.get("mode", "dual")
@@ -133,15 +134,28 @@ class RAGPipeline:
 
         return final_chunks, timings
 
+    def get_max_confidence_score(self, contexts: List[Dict[str, Any]]) -> float:
+        """Trích xuất điểm số tin cậy cao nhất đã chuẩn hóa [0, 1] phục vụ Refusal Gate."""
+        if not contexts:
+            return 0.0
+        c0 = contexts[0]
+        if "rerank_score" in c0:
+            return float(c0["rerank_score"])
+        if "dense_score" in c0 and float(c0["dense_score"]) > 0.0:
+            return float(c0["dense_score"])
+        return float(c0.get("score", 0.0))
+
     def query(
         self,
         question: str,
         method: str = "hybrid",
         top_k: int = 5,
-        use_rerank: bool = True
+        use_rerank: bool = True,
+        chat_history: Optional[List[Dict[str, str]]] = None
     ) -> Dict[str, Any]:
         """
         Hàm xử lý truy vấn hỏi đáp hoàn chỉnh từ đầu đến cuối (End-to-End).
+        Hỗ trợ lịch sử hội thoại nhiều lượt (Multi-turn QA).
         """
         rag_logger.log_query_start(question, method, top_k, use_rerank)
         question = question.strip()
@@ -154,13 +168,21 @@ class RAGPipeline:
                 "latency_ms": {}
             }
 
-        # Baseline B0: Không truy hồi (No Retrieval) - Đo năng lực thuần của LLM khi không có RAG
+        # Multi-turn Query Rewriting: Tái cấu trúc câu hỏi nếu có ngữ cảnh trước đó
+        search_query = question
+        if chat_history and len(chat_history) >= 2:
+            search_query = self.generator.rewrite_query(question, chat_history)
+            if search_query != question:
+                print(f"[*] Query Rewrite: '{question}' -> '{search_query}'")
+
+        # Baseline B0: Không truy hồi (No Retrieval)
         if method == "no_retrieval":
             t0 = time.time()
-            gen_res = self.generator.generate_without_retrieval(question)
+            gen_res = self.generator.generate_without_retrieval(search_query)
             gen_ms = (time.time() - t0) * 1000
             return {
                 "question": question,
+                "search_query": search_query,
                 "answer": gen_res["answer"],
                 "refused": gen_res["refused"],
                 "sources": [],
@@ -175,19 +197,18 @@ class RAGPipeline:
 
         # Bước 1: Truy xuất và xếp hạng
         contexts, timings = self.retrieve(
-            question, method=method, top_k=top_k, use_rerank=use_rerank)
+            search_query, method=method, top_k=top_k, use_rerank=use_rerank)
 
         # Bước 2: Kiểm tra ngưỡng từ chối Lớp 1 (Refusal Gate)
-        max_score = 0.0
-        if contexts:
-            max_score = contexts[0].get(
-                "rerank_score", contexts[0].get("score", 0.0))
+        max_score = self.get_max_confidence_score(contexts)
 
-        rag_logger.log_refusal_check(
-            max_score, self.refusal_threshold, not contexts or max_score < self.refusal_threshold)
-        if not contexts or max_score < self.refusal_threshold:
+        is_below_threshold = not contexts or max_score < self.refusal_threshold
+        rag_logger.log_refusal_check(max_score, self.refusal_threshold, is_below_threshold)
+
+        if is_below_threshold:
             return {
                 "question": question,
+                "search_query": search_query,
                 "answer": "Tôi không tìm thấy thông tin này trong tài liệu được cung cấp.",
                 "refused": True,
                 "refusal_reason": f"Điểm tương đồng cao nhất ({max_score:.3f}) dưới ngưỡng từ chối ({self.refusal_threshold}).",
@@ -196,9 +217,9 @@ class RAGPipeline:
                 "latency_ms": {**timings, "generate_ms": 0.0, "total_ms": sum(timings.values())}
             }
 
-        # Bước 3: Gọi LLM sinh câu trả lời (Lớp 2 - LLM tự đọc hiểu, suy luận ngữ nghĩa và đối chiếu)
+        # Bước 3: Gọi LLM sinh câu trả lời
         t2 = time.time()
-        gen_res = self.generator.generate(question, contexts)
+        gen_res = self.generator.generate(search_query, contexts)
         timings["generate_ms"] = (time.time() - t2) * 1000
         timings["total_ms"] = sum(timings.values())
         rag_logger.log_latency(timings)
@@ -222,7 +243,6 @@ class RAGPipeline:
                         "snippet": c.get("text", "")[:250] + "..."
                     })
         else:
-            # Fallback: cung cấp đầy đủ Top-K để người dùng đối chiếu
             for idx, c in enumerate(contexts, 1):
                 sources.append({
                     "citation_id": idx,
@@ -238,6 +258,7 @@ class RAGPipeline:
 
         return {
             "question": question,
+            "search_query": search_query,
             "answer": gen_res["answer"],
             "refused": gen_res["refused"],
             "sources": sources,
@@ -246,3 +267,46 @@ class RAGPipeline:
             "citations_hallucinated": gen_res["hallucinated_citations"],
             "latency_ms": timings
         }
+
+    def query_stream(
+        self,
+        question: str,
+        method: str = "hybrid",
+        top_k: int = 5,
+        use_rerank: bool = True,
+        chat_history: Optional[List[Dict[str, str]]] = None
+    ) -> Tuple[Generator[str, None, None], List[Dict[str, Any]], Dict[str, float], bool]:
+        """
+        Phiên bản stream của pipeline phục vụ giao diện Streamlit:
+        Trả về (token_generator, sources, timings, is_refused).
+        """
+        question = question.strip()
+        search_query = question
+        if chat_history and len(chat_history) >= 2:
+            search_query = self.generator.rewrite_query(question, chat_history)
+
+        contexts, timings = self.retrieve(
+            search_query, method=method, top_k=top_k, use_rerank=use_rerank)
+        max_score = self.get_max_confidence_score(contexts)
+
+        if not contexts or max_score < self.refusal_threshold:
+            def refused_gen():
+                yield "Tôi không tìm thấy thông tin này trong tài liệu được cung cấp."
+            return refused_gen(), [], timings, True
+
+        sources = []
+        for idx, c in enumerate(contexts, 1):
+            sources.append({
+                "citation_id": idx,
+                "doc_id": c.get("doc_id"),
+                "page_start": c.get("page_start"),
+                "page_end": c.get("page_end"),
+                "heading": c.get("heading"),
+                "clause": c.get("clause"),
+                "score": c.get("rerank_score", c.get("score")),
+                "text": c.get("text", ""),
+                "snippet": c.get("text", "")[:250] + "..."
+            })
+
+        gen = self.generator.generate_stream(search_query, contexts)
+        return gen, sources, timings, False

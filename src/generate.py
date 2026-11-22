@@ -1,11 +1,12 @@
-"""Module sinh câu trả lời (Generation) cho hệ thống RAG tiếng Việt (NLP-21)."""
+"""Module sinh câu trả lời (Generation) cho hệ thống RAG tiếng Việt (NLP-21) đã nâng cấp Stream và Multi-turn Query Rewriting."""
 
 import re
 import os
 import gc
+from threading import Thread
 import torch
-from typing import List, Dict, Any, Tuple, Optional
-from transformers import AutoTokenizer, AutoModelForCausalLM
+from typing import List, Dict, Any, Tuple, Optional, Generator
+from transformers import AutoTokenizer, AutoModelForCausalLM, TextIteratorStreamer
 from src import logger as rag_logger
 
 
@@ -98,96 +99,135 @@ class VietnameseLLMGenerator:
             use_fast=True
         )
 
-        print(
-            f"[*] Đang tải LLM Model: {self.model_name} (chế độ: {self.quantization}, thiết bị: {self.device})...")
-
-        if self.device == "cuda" and self.quantization == "4bit":
+        print(f"[*] Đang tải mô hình LLM: {self.model_name} (chế độ: {self.quantization})...")
+        if self.quantization == "4bit" and torch.cuda.is_available():
             try:
                 from transformers import BitsAndBytesConfig
-
                 bnb_config = BitsAndBytesConfig(
                     load_in_4bit=True,
                     bnb_4bit_quant_type="nf4",
                     bnb_4bit_compute_dtype=torch.float16,
-                    bnb_4bit_use_double_quant=True,
+                    bnb_4bit_use_double_quant=True
                 )
                 self.model = AutoModelForCausalLM.from_pretrained(
                     self.model_name,
                     quantization_config=bnb_config,
                     device_map="auto",
-                    trust_remote_code=True,
-                    torch_dtype=torch.float16,
+                    trust_remote_code=True
                 )
-                print("[+] Đã nạp LLM thành công với BitsAndBytes 4-bit NF4!")
+                print("[+] Nạp thành công LLM 4-bit vào GPU VRAM!")
             except Exception as e:
-                print(
-                    f"[!] Không thể nạp BitsAndBytes 4-bit ({e}). Fallback sang float16...")
+                print(f"[!] Cảnh báo không thể nạp 4-bit ({e}), chuyển sang fp16...")
                 self.model = AutoModelForCausalLM.from_pretrained(
                     self.model_name,
-                    device_map="auto",
                     torch_dtype=torch.float16,
-                    trust_remote_code=True,
+                    device_map="auto",
+                    trust_remote_code=True
                 )
         else:
+            dtype = torch.float16 if self.device == "cuda" else torch.float32
             self.model = AutoModelForCausalLM.from_pretrained(
                 self.model_name,
-                device_map="cpu",
-                torch_dtype=torch.float32,
-                trust_remote_code=True,
+                torch_dtype=dtype,
+                device_map=self.device,
+                trust_remote_code=True
             )
-            print("[+] Đã nạp LLM trên CPU.")
 
         self.model.eval()
 
-    def build_prompt(self, query: str, context_chunks: List[Dict[str, Any]]) -> str:
-        """Xây dựng prompt theo Chat Template của Qwen2.5, đánh số [1],[2]... cho từng đoạn context."""
-        context_parts = []
-        for i, chunk in enumerate(context_chunks):
-            doc_id = chunk.get("doc_id", "Tài liệu")
-            heading = chunk.get("heading", "")
-            clause = chunk.get("clause", "")
-            page_start = chunk.get("page_start", 1)
-            page_end = chunk.get("page_end", 1)
+    def rewrite_query(self, query: str, chat_history: Optional[List[Dict[str, str]]] = None) -> str:
+        """
+        Tái cấu trúc câu hỏi dựa trên lịch sử hội thoại (Coreference Resolution / Multi-turn RAG).
+        Chuyển các đại từ phụ thuộc ('nó', 'điều đó', 'kỳ sau', 'thế còn...') thành câu hỏi độc lập.
+        """
+        if not chat_history or len(chat_history) < 2:
+            return query
 
-            loc_str = f"{doc_id}"
-            if heading:
-                loc_str += f" - {heading}"
-            if clause:
-                loc_str += f" - {clause}"
-            loc_str += f" (tr. {page_start})" if page_start == page_end else f" (tr. {page_start}-{page_end})"
+        recent_msgs = chat_history[-4:]
+        history_str = "\n".join([f"{m.get('role', 'user')}: {m.get('content', '')}" for m in recent_msgs])
 
-            body = chunk.get("text", "").strip()
-            context_parts.append(
-                f"[{i + 1}] Nguồn: {loc_str}\nNội dung: {body}")
+        prompt = f"""Dưới đây là lịch sử hội thoại gần nhất:
+{history_str}
 
-        full_context_str = "\n\n".join(context_parts)
+Câu hỏi mới của sinh viên: "{query}"
 
-        user_content = f"""CÂU HỎI: {query}
+Nhiệm vụ: Hãy viết lại câu hỏi mới thành một câu hỏi độc lập duy nhất, làm rõ các đại từ thay thế (nó, điều đó, kỳ sau, trường hợp này...) dựa trên ngữ cảnh hội thoại để phục vụ tra cứu văn bản quy chế. CHỈ XUẤT RA CÂU HỎI ĐÃ VIẾT LẠI, không thêm bất kỳ lời dẫn hay giải thích nào."""
 
-ĐOẠN TÀI LIỆU THAM KHẢO:
-{full_context_str}
-Hãy đọc hiểu các đoạn tài liệu trên và trả lời câu hỏi của người dùng. Nếu câu hỏi dùng khẩu ngữ đời sống, 
-hãy chủ động liên kết ngữ nghĩa với các quy định, Điều/Khoản tương ứng trong tài liệu để trả lời trọn vẹn và ghi rõ mã nguồn trích dẫn [n] sau mỗi ý."""
-
+        self.load_model()
         messages = [
-            {"role": "system", "content": DEFAULT_SYSTEM_PROMPT},
-            {"role": "user", "content": user_content}
+            {"role": "system", "content": "Bạn là chuyên gia tái cấu trúc câu hỏi tra cứu quy chế đại học."},
+            {"role": "user", "content": prompt}
         ]
 
         if hasattr(self.tokenizer, "apply_chat_template"):
-            return self.tokenizer.apply_chat_template(
+            formatted_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+        else:
+            formatted_prompt = f"HỎI: {prompt}\n\nTRẢ LỜI:"
+
+        inputs = self.tokenizer(formatted_prompt, return_tensors="pt").to(self.model.device)
+        with torch.no_grad():
+            out = self.model.generate(
+                **inputs,
+                max_new_tokens=80,
+                temperature=0.1,
+                do_sample=False,
+                pad_token_id=self.tokenizer.eos_token_id
+            )
+        rewritten = self.tokenizer.decode(out[0][inputs.input_ids.shape[1]:], skip_special_tokens=True).strip()
+        rewritten = rewritten.strip('"').strip("'").strip()
+        return rewritten if len(rewritten) > 3 else query
+
+    def build_prompt(
+        self,
+        query: str,
+        context_chunks: List[Dict[str, Any]],
+        system_prompt: str = DEFAULT_SYSTEM_PROMPT
+    ) -> str:
+        """Định dạng context thành danh sách đoạn văn kèm mã trích dẫn [1], [2]..."""
+        formatted_contexts = []
+        for idx, chunk in enumerate(context_chunks):
+            doc_id = chunk.get("doc_id", "Tài liệu")
+            heading = chunk.get("heading")
+            clause = chunk.get("clause")
+            p_start = chunk.get("page_start", 1)
+
+            header_str = f"[{idx + 1}] Văn bản: {doc_id}"
+            if heading:
+                header_str += f" | {heading}"
+            if clause:
+                header_str += f" | {clause}"
+            header_str += f" (Trang {p_start})"
+
+            text = chunk.get("text", "").strip()
+            formatted_contexts.append(f"{header_str}\n{text}")
+
+        contexts_text = "\n\n".join(formatted_contexts)
+        user_message = f"""Dưới đây là các đoạn thông tin trích xuất từ văn bản quy chế:
+
+{contexts_text}
+
+---
+Dựa vào các đoạn thông tin trên, hãy trả lời câu hỏi sau của sinh viên:
+Câu hỏi: {query}"""
+
+        messages = [
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_message}
+        ]
+
+        if hasattr(self.tokenizer, "apply_chat_template"):
+            prompt = self.tokenizer.apply_chat_template(
                 messages,
                 tokenize=False,
                 add_generation_prompt=True
             )
         else:
-            return f"{DEFAULT_SYSTEM_PROMPT}\n\n{user_content}\n\nTRẢ LỜI:"
+            prompt = f"<|im_start|>system\n{system_prompt}<|im_end|>\n<|im_start|>user\n{user_message}<|im_end|>\n<|im_start|>assistant\n"
+
+        return prompt
 
     def parse_citations(self, answer_text: str, num_contexts: int) -> Tuple[List[int], List[int]]:
-        """
-        Tìm tất cả mã [n] trong câu trả lời.
-        Trả về (valid_citations, hallucinated_citations).
-        """
+        """Bóc tách các mã trích dẫn dạng [n] trong câu trả lời."""
         matches = re.findall(r"\[(\d+)\]", answer_text)
         valid = set()
         hallucinated = set()
@@ -269,6 +309,50 @@ hãy chủ động liên kết ngữ nghĩa với các quy định, Điều/Kho�
             "hallucinated_citations": fake_cites,
             "prompt": prompt
         }
+
+    def generate_stream(
+        self,
+        query: str,
+        context_chunks: List[Dict[str, Any]],
+        max_context_length: int = 2500
+    ) -> Generator[str, None, None]:
+        """Sinh câu trả lời dạng Streaming (Token-by-Token) cho giao diện người dùng thời gian thực."""
+        self.load_model()
+
+        if not context_chunks:
+            yield "Tôi không tìm thấy thông tin này trong tài liệu được cung cấp."
+            return
+
+        prompt = self.build_prompt(query, context_chunks)
+        inputs = self.tokenizer(prompt, return_tensors="pt")
+
+        input_ids = inputs.input_ids.to(self.model.device)
+        attention_mask = inputs.attention_mask.to(self.model.device)
+
+        if input_ids.shape[1] > max_context_length:
+            input_ids = input_ids[:, -max_context_length:]
+            attention_mask = attention_mask[:, -max_context_length:]
+
+        streamer = TextIteratorStreamer(self.tokenizer, skip_prompt=True, skip_special_tokens=True)
+        gen_kwargs = dict(
+            input_ids=input_ids,
+            attention_mask=attention_mask,
+            max_new_tokens=self.max_new_tokens,
+            temperature=self.temperature,
+            do_sample=self.temperature > 0.05,
+            top_p=0.9,
+            repetition_penalty=1.1,
+            pad_token_id=self.tokenizer.eos_token_id,
+            streamer=streamer
+        )
+
+        thread = Thread(target=self.model.generate, kwargs=gen_kwargs)
+        thread.start()
+
+        for new_text in streamer:
+            yield new_text
+
+        thread.join()
 
     def generate_without_retrieval(self, query: str) -> Dict[str, Any]:
         """Sinh câu trả lời trực tiếp từ LLM không có RAG (Baseline B0: No Retrieval)."""
