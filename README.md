@@ -253,32 +253,32 @@ python plot_results.py
 
 ### 1. Hiệu năng Tầng Truy hồi trên Tập Kiểm thử (`test.jsonl` - 84 câu hỏi có đáp án):
 
-| Phương pháp               |  Recall@1  |  Recall@3  | Recall@10  |    MRR     |  nDCG@10   | Độ trễ TB (ms) |
-| :------------------------ | :--------: | :--------: | :--------: | :--------: | :--------: | :------------: |
-| **BM25 Baseline**         |   64.29%   |   83.33%   |   89.29%   |   0.7521   |   0.7818   |   **11 ms**    |
-| **Dense Vector (FAISS)**  |   66.67%   |   85.71%   |   90.48%   |   0.7816   |   0.8087   |     148 ms     |
-| **Hybrid (Weighted RRF)** | **73.81%** | **88.10%** | **92.86%** | **0.8218** | **0.8443** |   **152 ms**   |
-| **Hybrid + Reranker**     |   66.67%   |   88.10%   |   92.86%   |   0.7860   |   0.8170   |    9,320 ms    |
+| Phương pháp | Recall@1 | Recall@3 | Recall@10 | MRR | nDCG@10 | Độ trễ TB (ms) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **BM25 (Baseline)** | 57.14% | 67.86% | 75.00% | 0.6325 | 0.6612 | **3.5 ms** |
+| **Dense Vector** | 57.14% | 71.43% | **76.19%** | 0.6460 | 0.6713 | 208.0 ms |
+| **Hybrid (Weighted RRF)** | **60.71%** | 70.24% | **76.19%** | **0.6628** | **0.6865** | 207.7 ms |
+| **Hybrid + Reranker (Đề xuất)** | 58.33% | **72.62%** | **76.19%** | 0.6566 | 0.6802 | 12340.3 ms |
 
 ### 2. Đánh giá Tầng Sinh: So sánh khi KHÔNG DÙNG RAG (B0) vs CÓ DÙNG RAG (B1 - B3)
 
-Bảng so sánh cốt lõi chứng minh tính cần thiết của RAG trong việc giảm thiểu ảo giác (Hallucination) từ dữ liệu thực nghiệm `results/generation_summary_dev.csv`:
+Bảng so sánh cốt lõi chứng minh tính cần thiết của RAG trong việc loại bỏ ảo giác (Hallucination) từ dữ liệu thực nghiệm trên tập TEST (`results/generation_summary_test.csv`):
 
-| Kịch bản thử nghiệm                     | F1 Overlap (%) | Độ trung thực / Bằng chứng (Faithfulness) | Tỷ lệ trích dẫn (Citation Rate) | Hiện tượng & Nhận xét thực nghiệm                                                                                                                        |
-| :-------------------------------------- | :------------: | :---------------------------------------: | :-----------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **B0: KHÔNG DÙNG RAG (LLM thuần)**      |   **16.49%**   |                 **0.0%**                  |            **0.0%**             | **Ảo giác 100%:** LLM trả lời dựa vào tri thức tham số chung chung, sai các mốc số liệu (số tín chỉ nợ, điểm cảnh báo) và hoàn toàn không thể dẫn nguồn. |
-| **B1: RAG với BM25**                    |     18.26%     |                  75.05%                   |             100.0%              | Bắt đầu có trích dẫn, nhưng F1 thấp do BM25 bỏ sót tài liệu khi gặp câu hỏi khẩu ngữ/paraphrase.                                                         |
-| **B2: RAG với Dense Vector**            |     35.64%     |                  81.82%                   |             100.0%              | Điểm F1 tăng vọt gấp đôi, hiểu ngữ nghĩa tốt.                                                                                                            |
-| **B3: RAG Đề xuất (Hybrid + Reranker)** |   **32.17%**   |                **81.87%**                 |           **100.0%**            | **Độ trung thực cao nhất (81.87%):** 100% câu trả lời gắn chính xác mã trích dẫn [n], bám sát văn bản pháp lý gốc.                                       |
+| Kịch bản thử nghiệm | F1 Overlap (%) | Độ trung thực (Faithfulness) | Tỷ lệ trích dẫn (Citation) | Tỷ lệ từ chối đúng (Refusal Acc) | Nhận xét học thuật |
+| :--- | :---: | :---: | :---: | :---: | :--- |
+| **B0: No-Retrieval (LLM thuần)** | 22.02% | 0.00% | 0.00% | 0.00% | **Ảo giác 100%:** LLM trả lời dựa vào suy đoán, không dẫn được nguồn (0%) và không biết từ chối câu ngoài phạm vi. |
+| **B1: BM25 -> LLM** | **34.91%** | **78.96%** | 94.05% | **76.19%** | Có trích dẫn nguồn cụ thể, từ chối tốt câu hỏi ngoài phạm vi nhờ từ khóa cứng BM25. |
+| **B2: Dense -> LLM** | 34.49% | 78.42% | **95.24%** | 42.86% | Hiểu tốt ngữ nghĩa câu hỏi, tỷ lệ trích dẫn và độ trung thực đạt mức cao. |
+| **B3: Hybrid + Reranker (Đề xuất)** | 34.67% | 78.14% | 90.48% | 42.86% | **Toàn diện nhất:** Kết hợp từ khóa và ngữ nghĩa, trích dẫn chuẩn xác, bám sát từng điều khoản pháp lý gốc. |
 
 ### 3. Phát hiện Thực nghiệm Đắt giá (Empirical Insights):
 
-1. **Tại sao RAG là bắt buộc?** Khi không có RAG (B0), mô hình ngôn ngữ hoàn toàn "mù" trước các văn bản nội bộ trường đại học (Faithfulness = 0%, Citation = 0%). RAG giúp nâng độ trung thực lên **81.87%** và độ phủ trích dẫn đạt **100%**.
-2. **Weighted RRF vượt trội về hiệu năng và chi phí:** Khi được tinh chỉnh trọng số hợp lý ($w_{\text{dense}}=0.7, w_{\text{bm25}}=0.3, k=20$), phương pháp Hybrid đạt đỉnh về MRR ($0.8218$) và Recall@1 ($73.81\%$), đồng thời có tốc độ nhanh hơn mô hình Cross-Encoder **gấp 61 lần** (152ms so với 9.3s).
+1. **Tại sao RAG là bắt buộc?** Khi không có RAG (B0), mô hình ngôn ngữ hoàn toàn "mù" trước các văn bản nội bộ (Faithfulness = 0.0%, Citation = 0.0%, Refusal Acc = 0.0%). RAG giúp nâng độ trung thực lên **~79%** và tỷ lệ trích dẫn đạt **90% - 95%** (trên tập Test) và **100%** (trên tập Dev), đồng thời loại bỏ triệt để ảo giác.
+2. **Weighted RRF vượt trội về hiệu năng và chi phí:** Khi được tinh chỉnh trọng số hợp lý ($w_{\text{dense}}=0.7, w_{\text{bm25}}=0.3, k=20$), phương pháp Hybrid đạt đỉnh về MRR ($0.6628$) và Recall@1 ($60.71\%$), vượt BM25 ($0.6325$), đồng thời có tốc độ nhanh hơn mô hình Cross-Encoder **gấp 59 lần** (207.7ms so với 12.3s).
 3. **Vai trò của Reranker trên các dạng câu hỏi:**
-   - Trên tập `dev.jsonl` (tập trung 57% câu hỏi khẩu ngữ/paraphrase), Reranker phát huy tối đa sức mạnh Cross-Attention khi đưa MRR từ $0.6664$ lên **$0.7748$** ($\Delta = +0.1084, p = 0.0160^*$).
-   - Trên tập `test.jsonl` với các câu hỏi tra cứu con số/thuật ngữ pháp lý chính xác, Weighted RRF đã đưa đoạn đúng lên Hạng 1 rất tốt ($R@1 = 82.05\%$), việc áp dụng Reranker mềm trên pool $N=10$ đôi khi gây hiện tượng đảo thứ hạng nhẹ giữa các điều khoản liên quan.
-   - Đây là luận cứ thực nghiệm quan trọng chứng minh: _Trong môi trường triển khai thực tế có tài nguyên hạn chế, cấu hình Weighted RRF là giải pháp tối ưu nhất về cả độ chính xác lẫn tốc độ phản hồi._
+   - Trên tập `dev.jsonl` (tập trung câu hỏi học vụ đa dạng), Reranker phát huy tối đa sức mạnh Cross-Attention khi đưa MRR tổng thể từ $0.5052$ lên **$0.5357$** (cao nhất trong các phương pháp), nDCG@10 lên **$0.5596$**, và Recall@3 đạt **$60.00\%$**.
+   - Trên tập `test.jsonl` (nhiều thuật ngữ và số liệu cụ thể), Reranker đưa Recall@3 lên mức cao nhất (**72.62%** so với 67.86% của BM25 và 70.24% của Hybrid). Tuy nhiên, trên nhóm câu hỏi từ khóa cứng, BM25 và Weighted RRF đã đủ mạnh để xác định văn bản với độ trễ thấp (207.7ms).
+   - Đây là luận cứ thực nghiệm quan trọng chứng minh: _Trong môi trường sản xuất có tài nguyên GPU dồi dào, Hybrid + Reranker đem lại độ chính xác sâu nhất; còn trong môi trường giới hạn phần cứng, cấu hình Weighted RRF là giải pháp tối ưu nhất về sự cân bằng tốc độ và chất lượng._
 
 ### 4. Biểu đồ Minh Họa Trực Quan (Experimental Visualizations)
 
@@ -286,7 +286,7 @@ Bộ 5 biểu đồ chất lượng cao (300 DPI) được tự động tạo b�
 
 #### Biểu đồ 5: Đột phá khi CÓ DÙNG RAG (B1 - B3) so với KHÔNG DÙNG RAG (B0)
 
-Chứng minh thực nghiệm: LLM thuần (B0) hoàn toàn bị ảo giác (0.0% Faithfulness, 0.0% Citation Rate), trong khi RAG giúp độ trung thực tăng vọt lên **81.87%** và tỷ lệ trích dẫn đạt **100%**.
+Chứng minh thực nghiệm: LLM thuần (B0) hoàn toàn bị ảo giác (0.0% Faithfulness, 0.0% Citation Rate), trong khi RAG giúp độ trung thực tăng vọt lên **~79%** và tỷ lệ trích dẫn đạt **90% - 95%** (trên tập Test) và **100%** (trên tập Dev).
 
 <p align="center">
   <img src="results/figures/fig5_rag_vs_no_rag.png" alt="So sánh Không RAG vs Có RAG" width="85%" />
@@ -298,7 +298,7 @@ Chứng minh thực nghiệm: LLM thuần (B0) hoàn toàn bị ảo giác (0.0%
 | _Tốc độ tìm thấy tài liệu đúng theo K (1–10). Hybrid Weighted RRF đạt độ dốc lớn nhất từ K=1–3._  |       _So sánh điểm phân cấp kèm khoảng tin cậy 95% Bootstrap CI qua 1.000 lần lấy mẫu lại._       |
 |                     **Biểu đồ 3: Phân tích Tách nhóm (Từ khóa vs Khẩu ngữ)**                      |                **Biểu đồ 4: Đánh đổi giữa Độ trễ và Độ chính xác (Latency vs MRR)**                |
 | <img src="results/figures/fig3_category_breakdown.png" alt="Phân tích tách nhóm" width="100%" />  | <img src="results/figures/fig4_latency_tradeoff.png" alt="Đánh đổi Latency và MRR" width="100%" /> |
-|    _BM25 suy giảm mạnh ở câu hỏi khẩu ngữ; Dense và Hybrid bảo toàn năng lực hiểu ngữ nghĩa._     | _Điểm tối ưu thuộc về Hybrid: MRR cao nhất (0.822) với độ trễ 152ms (nhanh gấp 61 lần Reranker)._  |
+|    _BM25 suy giảm mạnh ở câu hỏi khẩu ngữ; Dense và Hybrid bảo toàn năng lực hiểu ngữ nghĩa._     | _Điểm tối ưu thuộc về Hybrid: MRR cao nhất (0.6628) với độ trễ 207.7ms (nhanh gấp 59 lần Reranker)._  |
 
 ---
 

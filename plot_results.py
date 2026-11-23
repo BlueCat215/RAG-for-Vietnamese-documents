@@ -6,6 +6,7 @@ Script vẽ đồ thị thực nghiệm định lượng phục vụ báo cáo k
 import os
 import sys
 import re
+import math
 
 # Cấu hình UTF-8 cho Windows console
 if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
@@ -83,7 +84,9 @@ def plot_fig1_recall_curve(df: pd.DataFrame, out_dir: str):
     ax.set_ylabel("Tỷ lệ tìm thấy bằng chứng - Recall@K (%)",
                   fontsize=11, labelpad=8)
     ax.set_xticks(k_vals)
-    ax.set_ylim(55, 100)
+    min_rec = min(min(row[c] * 100 for c in k_cols) for _, row in df.iterrows())
+    max_rec = max(max(row[c] * 100 for c in k_cols) for _, row in df.iterrows())
+    ax.set_ylim(max(0, math.floor(min_rec / 5) * 5 - 5), min(102, math.ceil(max_rec / 5) * 5 + 5))
     ax.legend(title="Phương pháp", fontsize=9.5, title_fontsize=10,
               loc="lower right", framealpha=0.95)
 
@@ -158,7 +161,9 @@ def plot_fig2_mrr_ndcg(df: pd.DataFrame, out_dir: str):
     ax.set_ylabel("Điểm số [0.0 - 1.0]", fontsize=11, labelpad=8)
     ax.set_xticks(x)
     ax.set_xticklabels(methods, fontsize=10)
-    ax.set_ylim(0.5, 0.98)
+    min_val = min(min(mrr_vals), min(ndcg_vals))
+    max_val = max(max(mrr_vals), max(ndcg_vals))
+    ax.set_ylim(max(0.0, math.floor(min_val * 10) / 10 - 0.1), min(1.05, math.ceil(max_val * 10) / 10 + 0.15))
     ax.legend(loc="lower right", fontsize=9.5, framealpha=0.95)
 
     out_path = os.path.join(out_dir, "fig2_mrr_ndcg.png")
@@ -223,7 +228,9 @@ def plot_fig3_category_breakdown(df_bd: pd.DataFrame, out_dir: str):
     ax.set_ylabel("Điểm MRR", fontsize=11, labelpad=8)
     ax.set_xticks(x)
     ax.set_xticklabels(methods, fontsize=10)
-    ax.set_ylim(0.5, 0.98)
+    min_val = min(min(lex_mrr), min(para_mrr))
+    max_val = max(max(lex_mrr), max(para_mrr))
+    ax.set_ylim(max(0.0, math.floor(min_val * 10) / 10 - 0.1), min(1.05, math.ceil(max_val * 10) / 10 + 0.15))
     ax.legend(loc="lower left", fontsize=9.5, framealpha=0.95)
 
     out_path = os.path.join(out_dir, "fig3_category_breakdown.png")
@@ -370,11 +377,11 @@ def plot_fig5_rag_vs_no_rag(df_gen: pd.DataFrame, out_dir: str):
         ax.annotate(f"{h:.0f}%", xy=(rect.get_x() + rect.get_width() / 2, h),
                     xytext=(0, 3), textcoords="offset points", ha="center", va="bottom", fontsize=8.5)
 
-    # Đánh dấu chú thích làm nổi bật luận điểm khoa học
+    f1_b0 = f1_vals[0] if len(f1_vals) > 0 else 0
     ax.annotate(
         "B0 (Không RAG):\n0% Bằng chứng\n(Ảo giác 100%)",
-        xy=(0, 17),
-        xytext=(0.15, 45),
+        xy=(0, f1_b0),
+        xytext=(0.2, 50),
         arrowprops=dict(facecolor="#d62728", shrink=0.08,
                         width=1.5, headwidth=6),
         fontsize=9,
@@ -405,7 +412,11 @@ def main():
 
     test_ablation_file = "results/retrieval_ablation_test.csv"
     test_breakdown_file = "results/retrieval_breakdown_test.csv"
-    gen_summary_file = "results/generation_summary_dev.csv"
+    gen_summary_file = (
+        "results/generation_summary_test.csv"
+        if os.path.exists("results/generation_summary_test.csv")
+        else "results/generation_summary_dev.csv"
+    )
 
     if not os.path.exists(test_ablation_file) or not os.path.exists(test_breakdown_file):
         print(f"[!] Lỗi: Không tìm thấy file dữ liệu thực nghiệm trong results/")
