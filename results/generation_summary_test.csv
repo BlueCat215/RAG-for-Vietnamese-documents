@@ -1,0 +1,5 @@
+﻿Method,Accuracy F1 (%),Faithfulness (%),Citation Rate (%),Refusal Acc (%),Over-Refusal (%),Avg Latency (ms)
+B0: No-Retrieval (LLM thuần),22.02,0.0,0.0,0.0,0.0,10620.3
+B1: BM25 -> LLM,34.91,78.96,94.05,76.19,0.0,15080.6
+B2: Dense -> LLM,34.49,78.42,95.24,42.86,0.0,16387.4
+B3: Hybrid + Reranker (Đề xuất),34.67,78.14,90.48,42.86,0.0,24318.9

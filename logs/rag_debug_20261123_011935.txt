@@ -1,0 +1,6 @@
+01:19:35 | INFO  | Logger khởi động. File log: logs\rag_debug_20261123_011935.txt
+01:19:35 | INFO  | 
+============================================================
+01:19:35 | INFO  | QUERY MỚI: 'Sinh viên muốn thôi học theo nguyện vọng cá nhân thì cần làm gì?'
+01:19:35 | INFO  | Cấu hình: method=no_retrieval, top_k=4, use_rerank=False
+01:19:35 | INFO  | ============================================================
